@@ -52,8 +52,10 @@ if [[ $arch == all || $arch == m68k ]]; then
     check_target 'MC68000'
     "$target-gcc" -mmintelf hello.c -o hello.tos
     check_prgelf hello.tos
-    "$target-gcc" -mfastcall hello.c -o fastcall.elf
-    "$target-readelf" -A fastcall.elf | grep -q 'fastcall'
+    "$target-gcc" -mfastcall -c hello.c -o fastcall.o
+    "$target-readelf" -A fastcall.o | grep -Eq 'fastcall|5 \(0x5\)'
+    "$target-gcc" -mfastcall fastcall.o -o fastcall.elf
+    check_elf fastcall.elf ELF32 'MC68000'
     [[ $("$target-gcc" -mfastcall -print-libgcc-file-name) != $("$target-gcc" -print-libgcc-file-name) ]]
 
     cat > pic.c <<'EOF'
@@ -88,6 +90,13 @@ EOF
     "$target-as" -o start.o start.s
     "$target-ld" -o bare.elf start.o
     check_elf bare.elf ELF32 'Advanced Micro Devices X86-64'
+    "$target-gcc" -nostdlib -shared start.o -o loader.so
+    headers=$("$target-readelf" -lW loader.so)
+    grep -q GNU_RELRO <<< "$headers"
+    if grep -Eq 'GNU_STACK.*RWE' <<< "$headers"; then
+        echo 'The pTOS loader requires a non-executable stack' >&2
+        exit 1
+    fi
 
     printf '%s\n' '_Static_assert(sizeof(void *) == 8 && sizeof(long) == 8, "LP64 kernel ABI");' \
         'void _start(void) {}' > kernel.c

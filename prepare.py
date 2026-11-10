@@ -90,6 +90,7 @@ m68k-*-ptos-prgelf)
     tm_defines="${tm_defines} MOTOROLA=1"
     tmake_file="m68k/t-floatlib m68k/t-mint"
     extra_options="${extra_options} m68k/ptos.opt"
+    gcc_cv_initfini_array=yes
     ;;
 m68k-*-mintelf*)
 """)
@@ -98,13 +99,18 @@ m68k-*-mintelf*)
         # Keep ELF's normal GOT/PLT code generation available. The MiNT
         # target's compile-time restriction is specific to its PRG output.
         options = root / "gcc/config/m68k/ptos.opt"
-        options.write_text("""\
+        options.write_text("""
 mmintelf
-Driver
+Target RejectNegative
 Link a MiNT PRG+ELF executable.
+
 """)
         options.with_suffix(".opt.urls").touch()
         target_header = r"""
+#undef TARGET_OS_CPP_BUILTINS
+#define TARGET_OS_CPP_BUILTINS() \
+  do { builtin_define ("__ptos__"); GCC_HAVE_INITFINI_ARRAY_SUPPORT } while (0)
+
 #undef SUBTARGET_OVERRIDE_OPTIONS
 #define SUBTARGET_OVERRIDE_OPTIONS do { } while (0)
 
@@ -156,7 +162,7 @@ MULTILIB_REQUIRED = m64 m64/mno-red-zone
 #define MULTILIB_DEFAULTS { "mx32" }
 #undef SUBTARGET_DRIVER_SELF_SPECS
 #define SUBTARGET_DRIVER_SELF_SPECS \
-  "%{m16|m32:%epTOS supports x32 and LP64, not IA-32}"
+  "%{m16|m32:%eUse -mx32 for pTOS applications or -m64 for the kernel}"
 
 #define PTOS_RELOCATABLE_LINK "%{!m64:-q -z max-page-size=4096 -z noseparate-code} "
 #undef LINK_SPEC
@@ -176,6 +182,8 @@ case ${target} in
     gas=yes
     gnu_ld=yes
     use_gcc_stdint=provide
+    # Build libgcc before installing the pTOS C library in the sysroot.
+    inhibit_libc=true
     ;;
 esac
 
@@ -190,7 +198,7 @@ esac
 /* When a caller supplies its own link or startup, leave its layout alone. */
 #define PTOS_APPLICATION_LINK \
   "%{!nostdlib:%{!nostartfiles:%{!shared:%{!r:%{!pie:%{!static-pie:" \
-  "%{!T*:-static " PTOS_RELOCATABLE_LINK "}%{!e*:-e _start}}}}}}} "
+  "%{!T*:-static " PTOS_RELOCATABLE_LINK "} %{!e*:-e _start}}}}}}} "
 #define PTOS_LINK_MODE "%{static:-static} %{shared:-shared} %{rdynamic:-export-dynamic} "
 
 #undef STARTFILE_PREFIX_SPEC

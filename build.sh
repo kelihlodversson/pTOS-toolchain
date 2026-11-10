@@ -58,11 +58,15 @@ prepare() {
 
 build_binutils() (
     local arch=$1 target=$2 archive mint_patch=
+    local options=(--disable-default-execstack)
     archive=$(download "https://ftp.gnu.org/gnu/binutils/binutils-$binutils_version.tar.xz" \
         c50c0e7f9cb188980e2cc97e4537626b1672441815587f1eab69d2a1bfbef5d2)
     if [[ $arch == m68k ]]; then
         mint_patch=$(download "$crossmint/binutils/binutils-2.45-mint-20250812.patch" \
             82bd5f13fcbb0bbd3664b8d75cd3a4bb5df99072736b797f7be41726a0ebbc91)
+        options+=(--enable-relro)
+    elif [[ $arch == x86_64 ]]; then
+        options+=(--enable-relro --enable-separate-code)
     fi
     prepare binutils "$arch" "$archive" "$mint_patch"
     mkdir -p -- "$work/$arch/binutils-build"
@@ -70,7 +74,7 @@ build_binutils() (
     if [[ ! -f Makefile ]]; then
         ../binutils-src/configure --target="$target" --prefix="$prefix" \
             --with-sysroot="$prefix/$target/sysroot" --disable-nls --disable-werror \
-            --disable-gprofng --disable-gdb --disable-sim --without-debuginfod
+            --disable-gprofng --disable-gdb --disable-sim --without-debuginfod "${options[@]}"
     fi
     make -j "$jobs" MAKEINFO=true
     make MAKEINFO=true install

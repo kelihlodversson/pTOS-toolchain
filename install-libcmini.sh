@@ -2,6 +2,7 @@
 set -euo pipefail
 
 arch=$1 target=$2 prefix=$3 work=$4 jobs=$5
+project=$(cd -- "$(dirname -- "$0")" && pwd)
 revision=c85f67a52679b68782c49fd967732d14bfe87841
 source="$work/$arch/libcmini-$revision"
 build="$work/$arch/libcmini-build"
@@ -26,8 +27,9 @@ esac
 make_libcmini=(make -C "$source" BUILDDIR="$build" CROSSPREFIX="$prefix/bin/$target-"
     'ARCH_CFLAGS=-fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -fno-unwind-tables')
 "${make_libcmini[@]}" "$config"
-"${make_libcmini[@]}" -j "$jobs" libs startups
 "${make_libcmini[@]}" PREFIX_FOR_INCLUDE="$sysroot/include" install-include
+install -m 644 "$project/sysroot/locale.h" "$sysroot/include/locale.h"
+"${make_libcmini[@]}" -j "$jobs" libs startups
 
 # libcmini only builds the user ABI on ARM and x86-64. The m68k startup
 # and archives have to follow GCC's CPU/calling-convention multilib layout.

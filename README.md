@@ -11,8 +11,9 @@ pinned to the versions used by pTOS's m68k build.
 | `arm-unknown-ptos-elf` | Little-endian ELF32, ARMv6K ARM state, AAPCS hard-float | `-march`, `-mcpu` and `-mfpu` for pTOS's newer ARM boards |
 | `x86_64-unknown-ptos-elfx32` | Little-endian ELF32, `EM_X86_64` x32 (ILP32) | `-m64` for freestanding LP64, `ld -m i386pep` for the UEFI kernel image |
 
-The m68k port takes GCC's fastcall implementation and Binutils' PRG+ELF
-support from [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint).
+The m68k port reuses the GCC fastcall implementation and the Binutils
+PRG+ELF support. [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint)
+
 The `-mmintelf` option changes the linker emulation. Object files are ELF in
 both modes, and `-mfastcall` selects its own compiler runtime and libcmini
 variant. Link together objects that agree on the m68k calling convention.
@@ -63,9 +64,12 @@ rebasable. x32 uses 4 KiB pages at the standard user image base. Keep the
 relocation records on binaries that need rebasing. For your own startup and
 linker script, use `-ffreestanding -nostdlib` and specify the layout directly.
 
+On m68k, enable `CONF_WITH_ELF_LOADER` in the pTOS kernel to run plain ELF
+programs. The `virt-m68k-cli-elf` configuration enables it.
+
 Shared libraries and dynamic executables use the corresponding pTOS
-runtime linker and entry ABI. See [pTOS's ELF shared libraries document](https://github.com/kelihlodversson/pTOS/blob/master/doc/elf-shared.txt)
-for the interpreter paths, loader flags and runtime conventions.
+runtime linker and entry ABI. The interpreter paths and loader flags are
+documented in [ELF shared libraries](https://github.com/kelihlodversson/pTOS/blob/master/doc/elf-shared.txt).
 
 ## Build the pTOS kernel
 
@@ -73,8 +77,8 @@ Run these commands from a pTOS checkout with its submodules initialised.
 Use separate checkouts or `make distclean` between configurations.
 
 ```sh
-make virt-m68k-fastcall_defconfig
-make CROSS_COMPILE=m68k-unknown-ptos-prgelf-
+make virt-m68k-cli-elf_defconfig
+make CROSS_COMPILE=m68k-unknown-ptos-prgelf- CROSSPREFIX=m68k-unknown-ptos-prgelf- BUILD_TOOLCHAIN_ELF=y
 
 make virt-arm_defconfig
 make CROSS_COMPILE=arm-unknown-ptos-elf- CROSSPREFIX=arm-unknown-ptos-elf-
@@ -84,12 +88,29 @@ make CROSS_COMPILE=x86_64-unknown-ptos-elfx32-
 ```
 
 With the current pTOS Makefile, pass `LDSO_M68K_PREFIX=m68k-unknown-ptos-prgelf-`
-to select this toolchain for m68k shared libraries as well. For m68k EmuCON
-or a test program that should be plain ELF, pass `M68K_ELF=y` to select the
-ELF CLI link, or use `TEST_LDFLAGS='-Wl,-q,-Ttext=0,-e,_start'` for the test
-harness. For a PRG compatibility build, add `-mmintelf` to the program's
-link flags instead.
+to select this toolchain for m68k shared libraries as well. Select the ELF
+EmuCON link with `BUILD_TOOLCHAIN_ELF=y` and the ELF test-harness link with
+`TEST_LDFLAGS='-Wl,-q,-Ttext=0,-e,_start'`. The `relocprobe2-unpacked.tos`
+fixture in the current pTOS test suite uses the MiNT linker script layout.
+Add `-m m68kmintelf` to its direct `ld` invocation and keep its explicit
+`--oformat=elf32-m68k`. For a PRG compatibility application, add `-mmintelf`
+to the GCC link flags.
 
 The x86-64 Makefile already selects `-m64 -mno-red-zone` for the kernel and
 the `i386pep` linker emulation for its boot image. The driver selects a
 dedicated no-red-zone LP64 `libgcc` for that build. Applications use x32.
+
+## Verification
+
+The SDK smoke tests cover the three application ABIs, m68k PRG+ELF,
+fastcall library selection and GOT/PLT relocations, and x86-64 LP64 and
+EFI linking. The x32 shared-library test also checks stack permissions and
+GNU RELRO against pTOS's runtime loader requirements.
+
+Kernel builds were exercised on pTOS commit `e83242935290`, with
+`virt-m68k-fastcall`, `virt-m68k-cli-elf`, `virt-m68k-aspace`,
+`virt-arm-cli`, and `pc-x86_64-desktop-tests`. The ARM suite passed 27 tests
+and the x32 suite passed 22, with five shutdown checks each. SDK hello
+programs ran in QEMU on ARM, x32 and m68k. The m68k runs exercised plain ELF
+and fastcall PRG+ELF. The `virt-m68k-aspace` regression run stopped before the
+EmuCON prompt.
