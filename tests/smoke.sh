@@ -63,6 +63,22 @@ EOF
             exit 1
         fi
     done
+    # ROM variables can be bytes at fixed addresses. Widening an indexed
+    # byte read backwards by three bytes can fault on a plain 68000.
+    cat > rommode.c <<'EOF'
+extern unsigned char rom_mode;
+extern const unsigned short mode_table[8][3];
+unsigned int mode_value(void) { return mode_table[rom_mode & 7][1]; }
+EOF
+    for optimization in -O2 -Os; do
+        for abi in -mnofastcall -mfastcall; do
+            "$target-gcc" "$optimization" "$abi" -m68000 -S rommode.c -o rommode.s
+            if grep -Eq 'rom_mode[[:space:]]*-' rommode.s; then
+                echo 'm68k: byte ROM variable widened to a read before its address' >&2
+                exit 1
+            fi
+        done
+    done
     check_target 'MC68000'
     "$target-gcc" -mmintelf hello.c -o hello.tos
     check_prgelf hello.tos

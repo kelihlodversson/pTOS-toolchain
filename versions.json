@@ -89,7 +89,7 @@
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz",
       "sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
       "patch": "patches/gcc-16.2.0-mint.patch",
-      "patch_sha256": "f1519b59163ce550c2d3cdda6f73e8e60878ab70057e8759decd7bf60342ea30"
+      "patch_sha256": "bb2d80573a3dc4bdc69dbf15f2f810f5546e773846c31bbc49b80936af1ee4df"
     }
   ],
   "binutils": [

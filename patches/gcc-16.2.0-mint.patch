@@ -10362,6 +10362,25 @@ index 3cdbe46..6ba384e 100644
  /* Write all bytes in [s,s+n) into the specified stream.
  	 If outputting to a Windows console, convert UTF-8 to UTF-16 if needed.
  	 Errors are ignored.  */
+diff --git a/gcc/rtlhooks.cc b/gcc/rtlhooks.cc
+index a236a6e..c53c30d 100644
+--- a/gcc/rtlhooks.cc
++++ b/gcc/rtlhooks.cc
+@@ -114,6 +114,14 @@ gen_lowpart_if_possible (machine_mode mode, rtx x)
+     return result;
+   else if (MEM_P (x))
+     {
++      /* A lowpart must not read outside the original memory object.
++         In particular, widening a byte on big-endian m68k can introduce
++         an odd-address word access.  A volatile access must also keep
++         its original width.  */
++      if (MEM_VOLATILE_P (x)
++          || maybe_gt (GET_MODE_SIZE (mode), GET_MODE_SIZE (GET_MODE (x))))
++        return 0;
++
+       /* This is the only other case we handle.  */
+       poly_int64 offset = byte_lowpart_offset (mode, GET_MODE (x));
+       rtx new_rtx = adjust_address_nv (x, mode, offset);
 diff --git a/gcc/stab.def b/gcc/stab.def
 new file mode 100644
 index 0000000..e5af19b
