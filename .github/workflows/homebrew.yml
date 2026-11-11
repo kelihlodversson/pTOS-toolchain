@@ -1,0 +1,44 @@
+name: Homebrew SDK
+
+on:
+  pull_request:
+    paths:
+      - "Formula/**"
+      - "lib/ptos_toolchain_formula.rb"
+      - ".github/workflows/homebrew.yml"
+  push:
+    branches: [main]
+    paths:
+      - "Formula/**"
+      - "lib/ptos_toolchain_formula.rb"
+      - ".github/workflows/homebrew.yml"
+  workflow_dispatch:
+
+jobs:
+  install:
+    runs-on: macos-latest
+    timeout-minutes: 90
+    strategy:
+      fail-fast: false
+      matrix:
+        formula: [ptos-m68k, ptos-arm, ptos-x86_64]
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: "1"
+      HOMEBREW_NO_INSTALL_CLEANUP: "1"
+      HOMEBREW_MAKE_JOBS: "3"
+    steps:
+      - uses: actions/checkout@v4
+      - name: Register checkout as a development tap
+        run: |
+          brew tap kelihlodversson/ptos-ci "$GITHUB_WORKSPACE"
+          if brew command trust >/dev/null 2>&1; then
+            brew trust --formula "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+          fi
+      - name: Check formula style
+        run: brew style "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+      - name: Install from source
+        run: brew install --build-from-source --verbose "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+      - name: Test installed SDK
+        run: brew test "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+      - name: Check linking
+        run: brew linkage --test "kelihlodversson/ptos-ci/${{ matrix.formula }}"

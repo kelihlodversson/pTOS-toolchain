@@ -1,8 +1,10 @@
 require_relative "../lib/ptos_toolchain_formula"
 
 class PtosArm < Formula
-  desc "GCC, Binutils and C SDK for pTOS on ARM"
   include PtosToolchainFormula
+
+  desc "GCC, Binutils and C SDK for pTOS on ARM"
+  homepage "https://github.com/kelihlodversson/pTOS-toolchain"
 
   def install
     install_ptos "arm"

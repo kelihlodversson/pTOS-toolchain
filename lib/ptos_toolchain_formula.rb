@@ -1,8 +1,10 @@
+# typed: true
+# frozen_string_literal: true
+
 # Shared implementation for the three formulae in this tap.
 module PtosToolchainFormula
   def self.included(formula)
     formula.class_eval do
-      homepage "https://github.com/kelihlodversson/pTOS-toolchain"
       url "https://github.com/kelihlodversson/pTOS-toolchain/archive/bb00f4c276504cc80cc20fd2e9235621c6f9e3ba.tar.gz"
       version "16.2.0"
       sha256 "9c8f89fd97d2150337be8b80e3a53dba2dc9ab35614fc50d08661bdc9814f861"
@@ -54,16 +56,16 @@ module PtosToolchainFormula
       (buildpath/"python-modules").install Dir["*.py"]
     end
 
-    ENV["MAKE"] = Formula["make"].opt_bin/"gmake"
-    ENV["JOBS"] = ENV.make_jobs
+    ENV["MAKE"] = Utils::Path.formula_opt_bin("make")/"gmake"
+    ENV["JOBS"] = ENV.make_jobs.to_s
     ENV["PTOS_WORKDIR"] = work
     ENV["PTOS_CACHE"] = downloads
     ENV["PYTHONPATH"] = buildpath/"python-modules"
-    ENV.prepend_path "PATH", Formula["python@3.13"].opt_bin
+    ENV.prepend_path "PATH", Utils::Path.formula_opt_bin("python@3.13")
     # Also work when Homebrew's superenv hides the brew executable.
     %w[gmp mpfr libmpc].each do |name|
-      ENV.append "CPPFLAGS", "-I#{Formula[name].opt_include}"
-      ENV.append "LDFLAGS", "-L#{Formula[name].opt_lib}"
+      ENV.append "CPPFLAGS", "-I#{Utils::Path.formula_opt_include(name)}"
+      ENV.append "LDFLAGS", "-L#{Utils::Path.formula_opt_lib(name)}"
     end
 
     system "/bin/bash", "build.sh", arch, prefix,

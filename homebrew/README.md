@@ -28,17 +28,22 @@ local checkout under a development name:
 
 ```sh
 brew tap kelihlodversson/ptos-dev /absolute/path/to/pTOS-toolchain
+brew trust --formula kelihlodversson/ptos-dev/ptos-arm
 brew info kelihlodversson/ptos-dev/ptos-arm
 brew install --build-from-source kelihlodversson/ptos-dev/ptos-arm
 brew test kelihlodversson/ptos-dev/ptos-arm
 ```
+
+On Homebrew versions without `brew trust`, omit that command. Review and trust
+the other formulae individually when testing them as well.
 
 The local tap is a clone. Pull subsequent committed changes in its directory
 with `git -C "$(brew --repository kelihlodversson/ptos-dev)" pull --ff-only`.
 Do not install the development and published versions of the same target
 together: their executable names are identical.
 
-Before merging, build and test each formula in a clean macOS Homebrew
-environment. Verify that all three can be linked simultaneously. Bottle
+The Homebrew SDK workflow installs each formula from source on macOS, runs
+its installed smoke test and checks dynamic library linkage. Before merging,
+also verify that all three can be linked simultaneously. Bottle
 building and publication are intentionally left for a later change; GCC's
 embedded Cellar/sysroot paths need relocation testing first.

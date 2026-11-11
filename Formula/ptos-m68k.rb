@@ -1,8 +1,10 @@
 require_relative "../lib/ptos_toolchain_formula"
 
 class PtosM68k < Formula
-  desc "GCC, Binutils and C SDK for pTOS on m68k"
   include PtosToolchainFormula
+
+  desc "GCC, Binutils and C SDK for pTOS on m68k"
+  homepage "https://github.com/kelihlodversson/pTOS-toolchain"
 
   def install
     install_ptos "m68k"
