@@ -70,6 +70,24 @@ target. This checks source preparation; it does not compile the toolchains.
 
 ### macOS
 
+The repository also provides a Homebrew tap with one formula per target:
+
+```sh
+brew tap kelihlodversson/ptos-toolchain https://github.com/kelihlodversson/pTOS-toolchain.git
+brew install kelihlodversson/ptos-toolchain/ptos-m68k
+brew install kelihlodversson/ptos-toolchain/ptos-arm
+brew install kelihlodversson/ptos-toolchain/ptos-x86_64
+```
+
+Each formula builds GCC 16.2.0, Binutils 2.45 and the libcmini SDK from
+checksum-pinned sources. The formulae currently build from source; no bottles
+are published. The target-prefixed commands are linked into Homebrew's `bin`
+directory, and the three SDKs can be installed together. Run `brew test
+ptos-arm` (or the other formula name) to run the installed SDK's ABI smoke
+tests. See [Homebrew maintenance](homebrew/README.md) for local development.
+
+To build directly from this checkout instead of using a formula:
+
 Install Apple's Command Line Tools (`xcode-select --install`) and the build
 dependencies with Homebrew:
 
