@@ -20,8 +20,15 @@ jobs:
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
-          sudo apt-get update
-          sudo apt-get install -y build-essential libgmp-dev libmpfr-dev libmpc-dev bison flex m4 xz-utils python3-venv
+          # Keep Ubuntu's signed packages, but avoid relying on the runner's
+          # Azure/Canonical mirror endpoints, which can fail DNS resolution.
+          printf '%s\n' \
+            https://mirrors.edge.kernel.org/ubuntu \
+            https://archive.ubuntu.com/ubuntu \
+            https://security.ubuntu.com/ubuntu \
+            | sudo tee /etc/apt/apt-mirrors.txt
+          sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
+          sudo apt-get -o Acquire::Retries=3 install -y build-essential libgmp-dev libmpfr-dev libmpc-dev bison flex m4 xz-utils python3-venv
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: brew install make gmp mpfr libmpc python xz
