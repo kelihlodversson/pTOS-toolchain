@@ -170,3 +170,9 @@ Validation on 2026-11-11, after pushing the initial port as `cdb2dda`:
   `LDSO_M68K_PREFIX=m68k-unknown-ptos-prgelf-`. The resulting reported RAM
   usage was 625568 and 714580 bytes respectively. These are build results,
   not performance measurements or boot tests.
+
+The first m68k QEMU run exposed a volatile-access regression: a 32-bit read
+used as a conditional bit test became a byte-wide memory `btst`, which virtio
+MMIO rejects. The GCC 16 patch now excludes volatile memory from the SI-mode
+branch bit-test pattern that narrows its operand to QImode. The SDK smoke test
+checks the reproducer at `-O2` and `-Os`. GCC 14.3 preserved the full-width load.

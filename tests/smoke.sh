@@ -49,6 +49,20 @@ check_target() {
 
 if [[ $arch == all || $arch == m68k ]]; then
     target="$bin/m68k-unknown-ptos-prgelf"
+
+    # A memory BTST reads one byte on m68k. A volatile 32-bit MMIO read
+    # must retain its width even when only one bit is used by a branch.
+    cat > mmio.c <<'EOF'
+extern void use(void);
+void probe(volatile unsigned long *p) { if (*p & 0x01000000UL) use(); }
+EOF
+    for optimization in -O2 -Os; do
+        "$target-gcc" "$optimization" -m68020 -S mmio.c -o mmio.s
+        if grep -Eq 'btst.*\(' mmio.s; then
+            echo 'm68k: volatile long MMIO read narrowed to a byte BTST' >&2
+            exit 1
+        fi
+    done
     check_target 'MC68000'
     "$target-gcc" -mmintelf hello.c -o hello.tos
     check_prgelf hello.tos

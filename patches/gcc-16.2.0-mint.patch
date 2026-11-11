@@ -2837,7 +2837,7 @@ index 350d147..1c12c68 100644
 +};
 +#endif
 diff --git a/gcc/config/m68k/m68k.md b/gcc/config/m68k/m68k.md
-index e77ac13..1aa75a2 100644
+index e77ac13..dec4478 100644
 --- a/gcc/config/m68k/m68k.md
 +++ b/gcc/config/m68k/m68k.md
 @@ -131,8 +131,11 @@
@@ -2852,6 +2852,16 @@ index e77ac13..1aa75a2 100644
     (PIC_REG		13)
     (A6_REG		14)
     (SP_REG		15)
+@@ -653,7 +656,8 @@
+ 			(const_int 0)])
+ 		      (label_ref (match_operand 3 ""))
+ 		      (pc)))]
+-  "!(REG_P (operands[1]) && !IN_RANGE (INTVAL (operands[2]), 0, 31))"
++  "!(REG_P (operands[1]) && !IN_RANGE (INTVAL (operands[2]), 0, 31))
++   && !(MEM_P (operands[1]) && MEM_VOLATILE_P (operands[1]))"
+ {
+   rtx_code code = GET_CODE (operands[0]);
+   if (GET_CODE (operands[1]) == MEM)
 diff --git a/gcc/config/m68k/m68k.opt b/gcc/config/m68k/m68k.opt
 index 7558ce1..13572bd 100644
 --- a/gcc/config/m68k/m68k.opt
