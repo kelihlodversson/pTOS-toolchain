@@ -74,6 +74,10 @@ jobs:
           bottles=(bottles/*.bottle*.tar.gz)
           test "${#bottles[@]}" -eq 1
           brew uninstall "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+          # Homebrew 7 revokes per-formula trust when uninstalling.
+          if brew command trust >/dev/null 2>&1; then
+            brew trust --formula "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+          fi
           brew install --force-bottle "$GITHUB_WORKSPACE/${bottles[0]}"
           brew info --json=v2 "kelihlodversson/ptos-toolchain/${{ matrix.formula }}" |
             jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'

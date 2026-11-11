@@ -54,6 +54,11 @@ metadata as a GitHub Actions artifact. Each target has its own artifact,
 retained for 14 days, available from the workflow run's summary page.
 The local reinstall step sets `HOMEBREW_DEVELOPER=1` because Homebrew 7 disables
 installation from file paths by default; this is limited to that CI step.
+It also restores per-formula trust after uninstalling, since Homebrew 7 removes
+that trust on uninstall. The embedded formula references the shared helper,
+so Homebrew may warn that it cannot load it from the bottle and fall back to
+the formula in the registered tap. That fallback still pours the local archive;
+CI verifies this with the installed `poured_from_bottle` receipt field.
 
 Bottles cover the host macOS version and CPU architecture of `macos-latest`;
 the three formula names identify the cross-compilation targets. Homebrew
