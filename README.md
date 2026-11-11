@@ -12,7 +12,11 @@ pinned to the versions used by pTOS's m68k build.
 | `x86_64-unknown-ptos-elfx32` | Little-endian ELF32, `EM_X86_64` x32 (ILP32) | `-m64` for freestanding LP64, `ld -m i386pep` for the UEFI kernel image |
 
 The m68k port reuses the GCC fastcall implementation and the Binutils
-PRG+ELF support. [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint)
+PRG+ELF support from [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint).
+The patches are stored locally in [patches/](patches/README.md); the build
+verifies their checksums and applies them without downloading patches.
+That directory also archives the upstream patches for other GCC and Binutils
+versions.
 
 The `-mmintelf` option changes the linker emulation. Object files are ELF in
 both modes, and `-mfastcall` selects its own compiler runtime and libcmini

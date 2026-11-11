@@ -26,7 +26,12 @@ export PATH="$prefix/bin:$PATH"
 
 gcc_version=14.3.0
 binutils_version=2.45
-crossmint=https://raw.githubusercontent.com/th-otto/crossmint/53ff5e25af1cd679bb60d46ab4e808d559ae5af2/patches
+
+local_patch() {
+    local file="$project/patches/$1" hash=$2
+    printf '%s  %s\n' "$hash" "$file" | sha256sum -c - >&2
+    printf '%s\n' "$file"
+}
 
 download() (
     local url=$1 hash=$2 file="$cache/${1##*/}" temporary
@@ -62,7 +67,7 @@ build_binutils() (
     archive=$(download "https://ftp.gnu.org/gnu/binutils/binutils-$binutils_version.tar.xz" \
         c50c0e7f9cb188980e2cc97e4537626b1672441815587f1eab69d2a1bfbef5d2)
     if [[ $arch == m68k ]]; then
-        mint_patch=$(download "$crossmint/binutils/binutils-2.45-mint-20250812.patch" \
+        mint_patch=$(local_patch "binutils/binutils-2.45-mint-20250812.patch" \
             82bd5f13fcbb0bbd3664b8d75cd3a4bb5df99072736b797f7be41726a0ebbc91)
         options+=(--enable-relro)
     elif [[ $arch == x86_64 ]]; then
@@ -85,7 +90,7 @@ build_gcc() (
     local options=()
     case $arch in
         m68k)
-            mint_patch=$(download "$crossmint/gcc/gcc-14.3.0-mint-20250702.patch" \
+            mint_patch=$(local_patch "gcc/gcc-14.3.0-mint-20250702.patch" \
                 3dd3c201985fe09a81c59bdf50a7079bec53545f302f152f7c65ad182db4b2a0)
             ;;
         arm)
