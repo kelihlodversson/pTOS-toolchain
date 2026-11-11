@@ -32,31 +32,40 @@ concurrency:
 jobs:
   install:
     runs-on: macos-latest
-    timeout-minutes: 90
-    strategy:
-      fail-fast: false
-      matrix:
-        formula: [ptos-m68k, ptos-arm, ptos-x86_64]
+    name: Build and test all Homebrew bottles
+    timeout-minutes: 240
     env:
       HOMEBREW_NO_AUTO_UPDATE: "1"
       HOMEBREW_NO_INSTALL_CLEANUP: "1"
       HOMEBREW_MAKE_JOBS: "3"
+      FORMULAE: "ptos-m68k ptos-arm ptos-x86_64"
     steps:
       - uses: actions/checkout@v4
       - name: Register checkout as a development tap
         run: |
           brew tap kelihlodversson/ptos-toolchain "$GITHUB_WORKSPACE"
           if brew command trust >/dev/null 2>&1; then
-            brew trust --formula "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+            for formula in $FORMULAE; do
+              brew trust --formula "kelihlodversson/ptos-toolchain/$formula"
+            done
           fi
-      - name: Check formula style
-        run: brew style "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
-      - name: Install from source
-        run: brew install --build-bottle --verbose "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
-      - name: Test installed SDK
-        run: brew test "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
-      - name: Check linking
-        run: brew linkage --test --strict "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+      - name: Check macOS host setup
+        run: |
+          brew install make
+          /bin/bash tests/host.sh
+          python3 tests/test_versions.py
+          python3 tests/test_ci_changes.py
+      - name: Build and test source installations
+        run: |
+          for formula in $FORMULAE; do
+            echo "::group::Build and test $formula"
+            full_name="kelihlodversson/ptos-toolchain/$formula"
+            brew style "$full_name"
+            brew install --build-bottle --verbose "$full_name"
+            brew test "$full_name"
+            brew linkage --test --strict "$full_name"
+            echo "::endgroup::"
+          done
       - name: Build bottle and checksum metadata
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
@@ -68,7 +77,9 @@ jobs:
             tag=$(jq -rn --arg tag "$RELEASE_TAG" '$tag | @uri')
             args+=(--root-url "https://github.com/$GITHUB_REPOSITORY/releases/download/$tag")
           fi
-          brew bottle "${args[@]}" "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+          for formula in $FORMULAE; do
+            brew bottle "${args[@]}" "kelihlodversson/ptos-toolchain/$formula"
+          done
       - name: Reinstall from bottle
         shell: bash
         env:
@@ -77,23 +88,33 @@ jobs:
         run: |
           shopt -s nullglob
           bottles=(bottles/*.bottle*.tar.gz)
-          test "${#bottles[@]}" -eq 1
-          brew uninstall "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+          test "${#bottles[@]}" -eq 3
+          for formula in $FORMULAE; do
+            brew uninstall "kelihlodversson/ptos-toolchain/$formula"
+          done
           # Homebrew 7 revokes per-formula trust when uninstalling.
           if brew command trust >/dev/null 2>&1; then
-            brew trust --formula "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+            for formula in $FORMULAE; do
+              brew trust --formula "kelihlodversson/ptos-toolchain/$formula"
+            done
           fi
-          brew install --force-bottle "$GITHUB_WORKSPACE/${bottles[0]}"
-          brew info --json=v2 "kelihlodversson/ptos-toolchain/${{ matrix.formula }}" |
-            jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'
+          for bottle in "${bottles[@]}"; do
+            brew install --force-bottle "$GITHUB_WORKSPACE/$bottle"
+          done
+          for formula in $FORMULAE; do
+            brew info --json=v2 "kelihlodversson/ptos-toolchain/$formula" |
+              jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'
+          done
       - name: Test bottled SDK
         run: |
-          brew test "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
-          brew linkage --test --strict "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+          for formula in $FORMULAE; do
+            brew test "kelihlodversson/ptos-toolchain/$formula"
+            brew linkage --test --strict "kelihlodversson/ptos-toolchain/$formula"
+          done
       - name: Upload tested bottle
         uses: actions/upload-artifact@v4
         with:
-          name: bottles-${{ matrix.formula }}-${{ runner.os }}-${{ runner.arch }}
+          name: bottles-${{ runner.os }}-${{ runner.arch }}
           path: |
             bottles/*.bottle*.tar.gz
             bottles/*.bottle.json

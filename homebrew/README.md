@@ -50,8 +50,12 @@ for missing or undeclared dynamic library dependencies. It then runs
 `brew bottle --json`, uninstalls the source build and installs the local bottle.
 CI verifies that Homebrew actually poured the bottle, then repeats the smoke
 test and strict linkage check before uploading the archive and JSON checksum
-metadata as a GitHub Actions artifact. Each target has its own artifact,
-retained for 14 days, available from the workflow run's summary page.
+metadata as a GitHub Actions artifact. All three targets run sequentially on
+one macOS runner and share one artifact, retained for 14 days and available
+from the workflow run's summary page. All three source installations coexist
+before bottling; after uninstalling them, CI pours all three bottles together
+and repeats every SDK test and linkage check. Both the compiler and bottle
+jobs allow up to four hours for the sequential builds.
 The local reinstall step sets `HOMEBREW_DEVELOPER=1` because Homebrew 7 disables
 installation from file paths by default; this is limited to that CI step.
 It also restores per-formula trust after uninstalling, since Homebrew 7 removes
