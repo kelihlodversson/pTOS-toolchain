@@ -3,6 +3,7 @@ set -euo pipefail
 
 arch=$1 target=$2 prefix=$3 work=$4 jobs=$5
 project=$(cd -- "$(dirname -- "$0")" && pwd)
+source "$project/host.sh"
 revision=c85f67a52679b68782c49fd967732d14bfe87841
 source="$work/$arch/libcmini-$revision"
 build="$work/$arch/libcmini-build-${6:-default}"
@@ -24,7 +25,7 @@ case $arch in
     x86_64) config=ptos_x86_64_defconfig ;;
 esac
 
-make_libcmini=(make -C "$source" BUILDDIR="$build" CROSSPREFIX="$prefix/bin/$target-"
+make_libcmini=("$MAKE" -C "$source" BUILDDIR="$build" CROSSPREFIX="$prefix/bin/$target-"
     'ARCH_CFLAGS=-fno-pie -fno-stack-protector -fno-asynchronous-unwind-tables -fno-unwind-tables')
 "${make_libcmini[@]}" "$config"
 "${make_libcmini[@]}" PREFIX_FOR_INCLUDE="$sysroot/include" install-include

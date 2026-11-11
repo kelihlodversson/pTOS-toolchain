@@ -31,7 +31,7 @@ while [[ $# -gt 0 ]]; do
         *) positional+=("$1"); shift ;;
     esac
 done
-set -- "${positional[@]}"
+set -- ${positional[@]+"${positional[@]}"}
 [[ $# -ge 2 && $# -le 3 ]] || usage
 case $1 in
     all) architectures=(m68k arm x86_64) ;;
@@ -42,12 +42,17 @@ stage=${3:-all}
 case $stage in all|binutils|gcc|sdk) ;; *) usage ;; esac
 
 # Resolve versions before creating directories or starting downloads.
-gcc_recipe=$(python3 "$project/versions.py" gcc "$gcc_version")
-binutils_recipe=$(python3 "$project/versions.py" binutils "$binutils_version")
-mapfile -t gcc_recipe <<< "$gcc_recipe"
-mapfile -t binutils_recipe <<< "$binutils_recipe"
+gcc_recipe_text=$(python3 "$project/versions.py" gcc "$gcc_version")
+binutils_recipe_text=$(python3 "$project/versions.py" binutils "$binutils_version")
+# macOS ships Bash 3.2, which has no mapfile/readarray builtin.
+gcc_recipe=()
+binutils_recipe=()
+while IFS= read -r value; do gcc_recipe+=("$value"); done <<< "$gcc_recipe_text"
+while IFS= read -r value; do binutils_recipe+=("$value"); done <<< "$binutils_recipe_text"
 gcc_version=${gcc_recipe[0]}
 binutils_version=${binutils_recipe[0]}
+
+source "$project/host.sh"
 
 prefix=$(mkdir -p -- "$2" && cd -- "$2" && pwd)
 work=$(mkdir -p -- "${PTOS_WORKDIR:-$project/.work}" && cd -- "${PTOS_WORKDIR:-$project/.work}" && pwd)
@@ -57,29 +62,23 @@ jobs=${JOBS:-$(getconf _NPROCESSORS_ONLN)}
 
 export PATH="$prefix/bin:$PATH"
 
-crossmint=https://raw.githubusercontent.com/th-otto/crossmint/53ff5e25af1cd679bb60d46ab4e808d559ae5af2/patches
-
 download() (
     local url=$1 hash=$2 file="$cache/${1##*/}" temporary
     if [[ ! -f $file ]]; then
         temporary=$(mktemp "$cache/.${file##*/}.XXXXXX")
         trap 'rm -f -- "$temporary"' EXIT
-        curl --fail --location --silent --show-error --retry 2 "$url" -o "$temporary"
-        printf '%s  %s\n' "$hash" "$temporary" | sha256sum -c - >&2
-        mv -- "$temporary" "$file"
+        curl --fail --location --silent --show-error --retry 2 "$url" -o "$temporary" || return 1
+        printf '%s  %s\n' "$hash" "$temporary" | sha256_check >&2 || return 1
+        mv -- "$temporary" "$file" || return 1
     fi
-    printf '%s  %s\n' "$hash" "$file" | sha256sum -c - >&2
+    printf '%s  %s\n' "$hash" "$file" | sha256_check >&2 || return 1
     printf '%s\n' "$file"
 )
 
 patch_file() {
-    local path=$1 hash=$2
-    if [[ -f $project/$path ]]; then
-        printf '%s  %s\n' "$hash" "$project/$path" | sha256sum -c - >&2
-        printf '%s\n' "$project/$path"
-    else
-        download "$crossmint/${path#patches/}" "$hash"
-    fi
+    local file="$project/$1" hash=$2
+    printf '%s  %s\n' "$hash" "$file" | sha256_check >&2 || return 1
+    printf '%s\n' "$file"
 }
 
 prepare() {
@@ -88,7 +87,7 @@ prepare() {
     if [[ ! -d $source ]]; then
         rm -rf -- "$staging"
         mkdir -p -- "$staging"
-        tar --extract --file="$archive" --directory="$staging" --strip-components=1
+        tar -xf "$archive" -C "$staging" --strip-components=1
         if [[ -n $mint_patch ]]; then
             patch --directory="$staging" -p1 --batch --forward --silent < "$mint_patch"
         fi
@@ -113,10 +112,11 @@ build_binutils() (
     if [[ ! -f Makefile ]]; then
         ../binutils-$binutils_version-src/configure --target="$target" --prefix="$prefix" \
             --with-sysroot="$prefix/$target/sysroot" --disable-nls --disable-werror \
-            --disable-gprofng --disable-gdb --disable-sim --without-debuginfod "${options[@]}"
+            --disable-gprofng --disable-gdb --disable-sim --without-debuginfod \
+            ${host_binutils_options[@]+"${host_binutils_options[@]}"} "${options[@]}"
     fi
-    make -j "$jobs" MAKEINFO=true
-    make MAKEINFO=true install
+    "$MAKE" -j "$jobs" MAKEINFO=true
+    "$MAKE" MAKEINFO=true install
 )
 
 build_gcc() (
@@ -142,10 +142,10 @@ build_gcc() (
             --with-gnu-as --with-gnu-ld --without-headers --disable-bootstrap \
             --enable-languages=c --disable-nls --disable-shared --disable-threads \
             --disable-libssp --disable-libgomp --disable-libquadmath --disable-libatomic \
-            "${options[@]}"
+            ${host_gcc_options[@]+"${host_gcc_options[@]}"} ${options[@]+"${options[@]}"}
     fi
-    make -j "$jobs" MAKEINFO=true all-gcc all-target-libgcc
-    make MAKEINFO=true install-gcc install-target-libgcc
+    "$MAKE" -j "$jobs" MAKEINFO=true all-gcc all-target-libgcc
+    "$MAKE" MAKEINFO=true install-gcc install-target-libgcc
 )
 
 for arch in "${architectures[@]}"; do

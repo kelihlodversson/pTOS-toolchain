@@ -24,6 +24,7 @@ class Versions(unittest.TestCase):
                 self.assertTrue(entry["url"].startswith(f"https://ftp.gnu.org/gnu/{component}/"))
                 self.assertTrue(entry["patch"].startswith("patches/"))
                 local_patch = PROJECT / entry["patch"]
+                self.assertTrue(local_patch.is_file(), entry["patch"])
                 if local_patch.is_file():
                     import hashlib
                     self.assertEqual(hashlib.sha256(local_patch.read_bytes()).hexdigest(), entry["patch_sha256"])

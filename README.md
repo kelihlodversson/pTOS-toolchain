@@ -13,7 +13,11 @@ Binutils 2.45). Source archives and patches are verified with SHA-256.
 | `x86_64-unknown-ptos-elfx32` | Little-endian ELF32, `EM_X86_64` x32 (ILP32) | `-m64` for freestanding LP64, `ld -m i386pep` for the UEFI kernel image |
 
 The m68k port reuses the GCC fastcall implementation and the Binutils
-PRG+ELF support. [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint)
+PRG+ELF support from [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint).
+The patches are stored locally in [patches/](patches/README.md); the build
+verifies their checksums and applies them without downloading patches.
+That directory also archives the upstream patches for other GCC and Binutils
+versions.
 
 The `-mmintelf` option changes the linker emulation. Object files are ELF in
 both modes, and `-mfastcall` selects its own compiler runtime and libcmini
@@ -23,9 +27,10 @@ The ordinary ELF mode also supports `-fPIC -shared` with a GOT and PLT.
 ## Build
 
 The build needs Bash, GNU Make 4.3 or later, a host C/C++ compiler, the GMP,
-MPFR and MPC development libraries, bison, flex, m4, Git, curl, patch, GNU tar,
-xz, `sha256sum`, and Python 3 with `kconfiglib`. Install `kconfiglib` in an
-active virtual environment if the host keeps its Python environment managed.
+MPFR and MPC development libraries, bison, flex, m4, Git, curl, patch, tar
+with xz support, `sha256sum` or `shasum`, and Python 3 with `kconfiglib`.
+Install `kconfiglib` in an active virtual environment if the host keeps its
+Python environment managed.
 
 ```sh
 python3 -m pip install kconfiglib
@@ -62,6 +67,26 @@ With the source archives and patches already cached, run
 `python3 tests/prepare_versions.py /path/to/downloads` to verify checksums,
 patch application and pTOS source preparation for every supported release and
 target. This checks source preparation; it does not compile the toolchains.
+
+### macOS
+
+Install Apple's Command Line Tools (`xcode-select --install`) and the build
+dependencies with Homebrew:
+
+```sh
+brew install make gmp mpfr libmpc python xz
+python3 -m venv .work/venv
+source .work/venv/bin/activate
+python3 -m pip install kconfiglib
+./build.sh all "$HOME/opt/ptos"
+./tests/smoke.sh "$HOME/opt/ptos"
+```
+
+The build selects Homebrew's `gmake` (Apple's bundled Make is too old),
+finds Homebrew's GMP/MPFR/MPC prefixes on both Apple Silicon and Intel,
+uses the macOS system zlib, and supports Apple's tar and checksum tools.
+Set `MAKE` to override the
+GNU Make executable. The selected Make also builds libcmini.
 
 ## Build a C application
 
@@ -126,6 +151,10 @@ the `i386pep` linker emulation for its boot image. The driver selects a
 dedicated no-red-zone LP64 `libgcc` for that build. Applications use x32.
 
 ## Verification
+
+Run `bash tests/host.sh` to check host setup and rejection of failed or
+corrupt downloads without building a compiler. GitHub Actions builds all
+three SDKs on Linux and macOS and runs the smoke tests for each target.
 
 The SDK smoke tests cover the three application ABIs, m68k PRG+ELF,
 fastcall library selection and GOT/PLT relocations, and x86-64 LP64 and
