@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Select a checksum-pinned CrossMiNT source recipe."""
+"""Select a source recipe with an archive checksum and a local patch path."""
 
 import argparse
 import json
@@ -21,7 +21,7 @@ def main():
     entry = next((entry for entry in entries if entry["version"] == selected), None)
     if entry is None:
         parser.error(f"unsupported {args.component} version: {args.version}")
-    for key in ("version", "url", "sha256", "patch", "patch_sha256"):
+    for key in ("version", "url", "sha256", "patch"):
         print(entry[key])
 
 

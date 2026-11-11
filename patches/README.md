@@ -8,8 +8,8 @@ retrieved on 2026-11-11. This was also the upstream `master` revision at retriev
 Original filenames, patch contents, copyright notices and license notices are preserved.
 
 `versions.json` selects the active GCC (12 and newer) and Binutils recipes,
-including their exact local patch paths and hashes. For each upstream release,
-the newest archived snapshot is selected; multiple dated patches for one
+including their exact local patch paths and source archive checksums. For each
+upstream release, the newest archived snapshot is selected; multiple dated patches for one
 version are alternatives, not a patch series. The remaining versions and the
 separate fastcall and segment-alignment patches are retained for reference.
 
@@ -52,12 +52,7 @@ repository. For example, the source URL of a patch is:
 https://raw.githubusercontent.com/th-otto/crossmint/53ff5e25af1cd679bb60d46ab4e808d559ae5af2/patches/<component>/<filename>
 ```
 
-`SHA256SUMS` records every archived patch and the local GCC 12.5, 13.5, 14.4,
-15.3 and 16.2 ports. Verify all patches from the repository root:
-
-```sh
-(cd patches && sha256sum -c SHA256SUMS)
-```
-
-The build checks the selected patch hashes independently against `versions.json`
-before use. GNU source tarballs and the SDK dependencies retain their existing download behavior.
+Patch contents and their history are tracked in Git. The build applies the
+selected local patch directly; no separate patch checksum manifest is needed.
+Downloaded GNU source archives are still verified against the SHA-256 checksums
+in `versions.json`. SDK dependencies retain their existing download behavior.

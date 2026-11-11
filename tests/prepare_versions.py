@@ -27,11 +27,8 @@ TARGETS = {
 def check(cache, component, recipe):
     archive = cache / recipe["url"].rsplit("/", 1)[-1]
     patch = PROJECT / recipe["patch"]
-    if not patch.is_file():
-        patch = cache / recipe["patch"].rsplit("/", 1)[-1]
-    for path, checksum in ((archive, recipe["sha256"]), (patch, recipe["patch_sha256"])):
-        with path.open("rb") as stream:
-            assert hashlib.file_digest(stream, "sha256").hexdigest() == checksum, path
+    with archive.open("rb") as stream:
+        assert hashlib.file_digest(stream, "sha256").hexdigest() == recipe["sha256"], archive
     # Only extract files read by prepare.py or changed by the CrossMiNT patch.
     patch_text = patch.read_text()
     needed = PREPARE_FILES | set(re.findall(r"^--- a/(.*)$", patch_text, re.M))

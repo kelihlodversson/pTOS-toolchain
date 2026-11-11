@@ -5,7 +5,7 @@ GCC and GNU Binutils targets, together with `libgcc`, libcmini headers and
 archives, and pTOS program startup objects. The default is the newest configured
 GCC and Binutils release (GCC 16.2.0 and Binutils 2.45). Recipes use pinned
 CrossMiNT patches or the local ports described below, including GCC 12.5.0,
-13.5.0, 14.4.0 and 15.3.0. Source archives and patches are verified with SHA-256.
+13.5.0, 14.4.0 and 15.3.0. Downloaded source archives are verified with SHA-256.
 
 | Target | Default output | Additional mode |
 | --- | --- | --- |
@@ -15,8 +15,8 @@ CrossMiNT patches or the local ports described below, including GCC 12.5.0,
 
 The m68k port reuses the GCC fastcall implementation and the Binutils
 PRG+ELF support from [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint).
-The patches are stored locally in [patches/](patches/README.md); the build
-verifies their checksums and applies them without downloading patches.
+The patches are tracked in Git under [patches/](patches/README.md); the build
+applies them directly without downloading patches.
 That directory also archives the upstream patches for other GCC and Binutils
 versions.
 
@@ -68,10 +68,10 @@ and `PTOS_CACHE` selects the download cache. Use a fresh work directory when
 changing the installation prefix, source recipe or host toolchain.
 `versions.json` records the supported recipes; `versions.py` selects and lists
 them. Run `python3 tests/test_versions.py` for the offline selection checks.
-With the source archives and patches already cached, run
-`python3 tests/prepare_versions.py /path/to/downloads` to verify checksums,
-patch application and pTOS source preparation for every supported release and
-target. This checks source preparation; it does not compile the toolchains.
+With the source archives already cached, run
+`python3 tests/prepare_versions.py /path/to/downloads` to verify archive
+checksums, patch application and pTOS source preparation for every supported
+release and target. This checks source preparation; it does not compile the toolchains.
 
 ### macOS
 
@@ -211,9 +211,10 @@ builds C only. GCC 16's upstream libiberty PIC selection and poly-int class
 already supersede the corresponding GCC 15 patch hunks. The removed
 `diagnostic-color.cc` host portability hunk is not carried over.
 
-Local patches are verified against the checksum in `versions.json`, just like
-remote patches. Full compiler and SDK builds, smoke tests and QEMU regression runs have now
-passed for m68k, ARM and x32, including a separate m68k fastcall run. Hatari
+Local patches are tracked in Git; `versions.json` records their paths and the
+checksums of downloaded source archives. Full compiler and SDK builds, smoke
+tests and QEMU regression runs have now passed for m68k, ARM and x32, including
+a separate m68k fastcall run. Hatari
 ROM validation also covers a 192 KB French ST image and a 512 KB STE image. See the
 [validation report](validation/gcc-16.2.md) for results, the runtime-discovered
 MMIO and ROM alignment fixes, and exact test settings. Source preparation alone does not establish
