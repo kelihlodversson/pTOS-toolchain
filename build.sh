@@ -72,6 +72,16 @@ download() (
     printf '%s\n' "$file"
 )
 
+patch_file() {
+    local path=$1 hash=$2
+    if [[ -f $project/$path ]]; then
+        printf '%s  %s\n' "$hash" "$project/$path" | sha256sum -c - >&2
+        printf '%s\n' "$project/$path"
+    else
+        download "$crossmint/${path#patches/}" "$hash"
+    fi
+}
+
 prepare() {
     local component=$1 arch=$2 archive=$3 mint_patch=${4:-} version=$5
     local source="$work/$arch/$component-$version-src" staging="$work/$arch/$component-$version-src.tmp"
@@ -92,7 +102,7 @@ build_binutils() (
     local options=(--disable-default-execstack)
     archive=$(download "${binutils_recipe[1]}" "${binutils_recipe[2]}")
     if [[ $arch == m68k ]]; then
-        mint_patch=$(download "$crossmint/${binutils_recipe[3]#patches/}" "${binutils_recipe[4]}")
+        mint_patch=$(patch_file "${binutils_recipe[3]}" "${binutils_recipe[4]}")
         options+=(--enable-relro)
     elif [[ $arch == x86_64 ]]; then
         options+=(--enable-relro --enable-separate-code)
@@ -114,7 +124,7 @@ build_gcc() (
     local options=()
     case $arch in
         m68k)
-            mint_patch=$(download "$crossmint/${gcc_recipe[3]#patches/}" "${gcc_recipe[4]}")
+            mint_patch=$(patch_file "${gcc_recipe[3]}" "${gcc_recipe[4]}")
             ;;
         arm)
             options=(--with-arch=armv6k --with-tune=arm1176jzf-s --with-mode=arm \

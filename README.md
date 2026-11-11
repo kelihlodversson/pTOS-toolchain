@@ -3,7 +3,7 @@
 This C SDK builds pTOS programs and freestanding kernels. It builds native
 GCC and GNU Binutils targets, together with `libgcc`, libcmini headers and
 archives, and pTOS program startup objects. The default is the newest GCC and
-Binutils release in the pinned CrossMiNT patch catalogue (GCC 15.2.0 and
+Binutils release in the pinned CrossMiNT patch catalogue (GCC 16.2.0 and
 Binutils 2.45). Source archives and patches are verified with SHA-256.
 
 | Target | Default output | Additional mode |
@@ -37,7 +37,8 @@ export PATH="$HOME/opt/ptos/bin:$PATH"
 Pass `m68k`, `arm` or `x86_64` instead of `all` to build a single target.
 Select GCC and Binutils independently; omitted versions (or `latest`) select
 the newest entry. Each release uses its newest patch from the pinned CrossMiNT
-revision. GCC 12 and newer are supported.
+revision, except GCC 16.2.0, which uses the local patch described below.
+GCC 12 and newer are supported.
 List the available versions without downloading or building anything:
 
 ```sh
@@ -138,3 +139,19 @@ and the x32 suite passed 22, with five shutdown checks each. SDK hello
 programs ran in QEMU on ARM, x32 and m68k. The m68k runs exercised plain ELF
 and fastcall PRG+ELF. The `virt-m68k-aspace` regression run stopped before the
 EmuCON prompt.
+
+## GCC 16.2 MiNT port
+
+`patches/gcc-16.2.0-mint.patch` adapts the C compiler and runtime parts of
+CrossMiNT's `gcc-15.2.0-mint-20250810.patch` at revision
+`53ff5e25af1cd679bb60d46ab4e808d559ae5af2` to the official GCC 16.2.0 archive.
+It retains m68k fastcall, MiNT ELF target registration, compiler runtime and
+STABS support. Changes for the other language runtimes are excluded: this SDK
+builds C only. GCC 16's upstream libiberty PIC selection and poly-int class
+already supersede the corresponding GCC 15 patch hunks. The removed
+`diagnostic-color.cc` host portability hunk is not carried over.
+
+Local patches are verified against the checksum in `versions.json`, just like
+remote patches. The initial port is experimental until compiler and pTOS build
+validation is complete; source patch application alone does not establish ABI
+or runtime correctness.

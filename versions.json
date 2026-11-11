@@ -83,6 +83,13 @@
       "sha256": "438fd996826b0c82485a29da03a72d71d6e3541a83ec702df4271f6fe025d24e",
       "patch": "patches/gcc/gcc-15.2.0-mint-20250810.patch",
       "patch_sha256": "b23ded32ed9262b1d9595c7d2482ba721f493c7240de4037ab02082e7abf4bab"
+    },
+    {
+      "version": "16.2.0",
+      "url": "https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz",
+      "sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
+      "patch": "patches/gcc-16.2.0-mint.patch",
+      "patch_sha256": "5a08ccefad843f32a6f64071b576dfdc82ff679c7ee67006b57f987def3dc5bc"
     }
   ],
   "binutils": [

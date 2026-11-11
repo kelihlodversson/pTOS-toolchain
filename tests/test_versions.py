@@ -22,7 +22,11 @@ class Versions(unittest.TestCase):
                 for field in ("sha256", "patch_sha256"):
                     self.assertRegex(entry[field], r"^[a-f0-9]{64}$")
                 self.assertTrue(entry["url"].startswith(f"https://ftp.gnu.org/gnu/{component}/"))
-                self.assertTrue(entry["patch"].startswith(f"patches/{component}/{component}-{entry['version']}-mint-"))
+                self.assertTrue(entry["patch"].startswith("patches/"))
+                local_patch = PROJECT / entry["patch"]
+                if local_patch.is_file():
+                    import hashlib
+                    self.assertEqual(hashlib.sha256(local_patch.read_bytes()).hexdigest(), entry["patch_sha256"])
                 selected = subprocess.check_output(
                     ["python3", str(PROJECT / "versions.py"), component, entry["version"]], text=True
                 ).splitlines()

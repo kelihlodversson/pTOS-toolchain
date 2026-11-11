@@ -26,7 +26,9 @@ TARGETS = {
 
 def check(cache, component, recipe):
     archive = cache / recipe["url"].rsplit("/", 1)[-1]
-    patch = cache / recipe["patch"].rsplit("/", 1)[-1]
+    patch = PROJECT / recipe["patch"]
+    if not patch.is_file():
+        patch = cache / recipe["patch"].rsplit("/", 1)[-1]
     for path, checksum in ((archive, recipe["sha256"]), (patch, recipe["patch_sha256"])):
         with path.open("rb") as stream:
             assert hashlib.file_digest(stream, "sha256").hexdigest() == checksum, path
