@@ -2,8 +2,9 @@
 
 This C SDK builds pTOS programs and freestanding kernels. It builds native
 GCC and GNU Binutils targets, together with `libgcc`, libcmini headers and
-archives, and pTOS program startup objects. GCC 14.3.0 and Binutils 2.45 are
-pinned to the versions used by pTOS's m68k build.
+archives, and pTOS program startup objects. The default is the newest GCC and
+Binutils release in the pinned CrossMiNT patch catalogue (GCC 16.2.0 and
+Binutils 2.45). Source archives and patches are verified with SHA-256.
 
 | Target | Default output | Additional mode |
 | --- | --- | --- |
@@ -39,9 +40,33 @@ export PATH="$HOME/opt/ptos/bin:$PATH"
 ```
 
 Pass `m68k`, `arm` or `x86_64` instead of `all` to build a single target.
+Select GCC and Binutils independently; omitted versions (or `latest`) select
+the newest entry. Each release uses its newest patch from the pinned CrossMiNT
+revision, except GCC 16.2.0, which uses the local patch described below.
+GCC 12 and newer are supported.
+List the available versions without downloading or building anything:
+
+```sh
+./build.sh --list-versions
+./build.sh m68k "$HOME/opt/ptos-gcc14" --gcc 14.3.0 --binutils 2.45
+./build.sh all "$HOME/opt/ptos-gcc15" gcc --gcc 15.2.0
+```
+
+The optional third positional argument selects `binutils`, `gcc` or `sdk`;
+omitting it builds all stages. Install matching Binutils before running the
+`gcc` stage alone. Use separate installation prefixes to retain several SDKs.
+Source and compiler build directories are separated by version. The download
+cache is shared, including between versions.
+
 `JOBS` controls Make parallelism. `PTOS_WORKDIR` selects the build directory,
 and `PTOS_CACHE` selects the download cache. Use a fresh work directory when
 changing the installation prefix, source recipe or host toolchain.
+`versions.json` records the supported recipes; `versions.py` selects and lists
+them. Run `python3 tests/test_versions.py` for the offline selection checks.
+With the source archives and patches already cached, run
+`python3 tests/prepare_versions.py /path/to/downloads` to verify checksums,
+patch application and pTOS source preparation for every supported release and
+target. This checks source preparation; it does not compile the toolchains.
 
 ### macOS
 
@@ -130,6 +155,12 @@ dedicated no-red-zone LP64 `libgcc` for that build. Applications use x32.
 Run `bash tests/host.sh` to check host setup and rejection of failed or
 corrupt downloads without building a compiler. GitHub Actions builds all
 three SDKs on Linux and macOS and runs the smoke tests for each target.
+For a manual run, open **Actions → Build SDK → Run workflow** and choose the
+GCC and Binutils versions independently from the dropdowns. `latest` selects
+the newest supported recipe. Push and pull-request builds use `latest` for
+both components. All six OS/architecture combinations use the selected pair;
+unsupported versions are rejected before dependency installation. Keep the
+workflow's dropdown options in sync when adding recipes to `versions.json`.
 
 The SDK smoke tests cover the three application ABIs, m68k PRG+ELF,
 fastcall library selection and GOT/PLT relocations, and x86-64 LP64 and
@@ -143,3 +174,43 @@ and the x32 suite passed 22, with five shutdown checks each. SDK hello
 programs ran in QEMU on ARM, x32 and m68k. The m68k runs exercised plain ELF
 and fastcall PRG+ELF. The `virt-m68k-aspace` regression run stopped before the
 EmuCON prompt.
+
+## GCC 16.2 MiNT port
+
+`patches/gcc-16.2.0-mint.patch` adapts the C compiler and runtime parts of
+CrossMiNT's `gcc-15.2.0-mint-20250810.patch` at revision
+`53ff5e25af1cd679bb60d46ab4e808d559ae5af2` to the official GCC 16.2.0 archive.
+It retains m68k fastcall, MiNT ELF target registration, compiler runtime and
+STABS support. Changes for the other language runtimes are excluded: this SDK
+builds C only. GCC 16's upstream libiberty PIC selection and poly-int class
+already supersede the corresponding GCC 15 patch hunks. The removed
+`diagnostic-color.cc` host portability hunk is not carried over.
+
+Local patches are verified against the checksum in `versions.json`, just like
+remote patches. Full compiler and SDK builds, smoke tests and QEMU regression runs have now
+passed for m68k, ARM and x32, including a separate m68k fastcall run. Hatari
+ROM validation also covers a 192 KB French ST image and a 512 KB STE image. See the
+[validation report](validation/gcc-16.2.md) for results, the runtime-discovered
+MMIO and ROM alignment fixes, and exact test settings. Source preparation alone does not establish
+ABI or runtime correctness.
+
+Validation on 2026-11-11, after pushing the initial port as `cdb2dda`:
+
+- GCC 16.2.0 source patching and pTOS target registration passed for m68k,
+  ARM and x32; the offline version-selection tests passed.
+- Binutils 2.45, the m68k GCC C compiler, all configured `libgcc` multilibs,
+  and the libcmini SDK built successfully with the default build recipe.
+- `./tests/smoke.sh /workspace/ptos-gcc16 m68k` passed ELF, PRG+ELF,
+  fastcall ABI/library selection and GOT/PLT shared-library checks.
+- On pTOS `9193f7c7b`, clean `virt-m68k-cli-elf` and `virt-m68k-fastcall`
+  builds passed with `CROSS_COMPILE=m68k-unknown-ptos-prgelf-`,
+  `CROSSPREFIX=m68k-unknown-ptos-prgelf-`, `BUILD_TOOLCHAIN_ELF=y` and
+  `LDSO_M68K_PREFIX=m68k-unknown-ptos-prgelf-`. The resulting reported RAM
+  usage was 625568 and 714580 bytes respectively. These are build results,
+  not performance measurements or boot tests.
+
+The first m68k QEMU run exposed a volatile-access regression: a 32-bit read
+used as a conditional bit test became a byte-wide memory `btst`, which virtio
+MMIO rejects. The GCC 16 patch now excludes volatile memory from the SI-mode
+branch bit-test pattern that narrows its operand to QImode. The SDK smoke test
+checks the reproducer at `-O2` and `-Os`. GCC 14.3 preserved the full-width load.

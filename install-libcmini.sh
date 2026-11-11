@@ -6,7 +6,7 @@ project=$(cd -- "$(dirname -- "$0")" && pwd)
 source "$project/host.sh"
 revision=c85f67a52679b68782c49fd967732d14bfe87841
 source="$work/$arch/libcmini-$revision"
-build="$work/$arch/libcmini-build"
+build="$work/$arch/libcmini-build-${6:-default}"
 sysroot="$prefix/$target/sysroot"
 cc="$prefix/bin/$target-gcc"
 

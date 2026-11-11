@@ -5,9 +5,48 @@ on:
     branches: [main]
   pull_request:
   workflow_dispatch:
+    inputs:
+      gcc_version:
+        description: 'GCC version to build'
+        required: true
+        default: latest
+        type: choice
+        options:
+          - latest
+          - '12.2.0'
+          - '12.3.0'
+          - '12.4.0'
+          - '13.1.0'
+          - '13.2.0'
+          - '13.3.0'
+          - '13.4.0'
+          - '14.1.0'
+          - '14.2.0'
+          - '14.3.0'
+          - '15.1.0'
+          - '15.2.0'
+          - '16.2.0'
+      binutils_version:
+        description: 'Binutils version to build'
+        required: true
+        default: latest
+        type: choice
+        options:
+          - latest
+          - '2.39'
+          - '2.40'
+          - '2.41'
+          - '2.42'
+          - '2.43'
+          - '2.44'
+          - '2.45'
 
 jobs:
   build:
+    name: ${{ matrix.os }} / ${{ matrix.arch }} / GCC ${{ inputs.gcc_version || 'latest' }} / Binutils ${{ inputs.binutils_version || 'latest' }}
+    env:
+      GCC_VERSION: ${{ inputs.gcc_version || 'latest' }}
+      BINUTILS_VERSION: ${{ inputs.binutils_version || 'latest' }}
     strategy:
       fail-fast: false
       matrix:
@@ -17,6 +56,10 @@ jobs:
     timeout-minutes: 90
     steps:
       - uses: actions/checkout@v4
+      - name: Validate requested versions
+        run: |
+          python3 versions.py gcc "$GCC_VERSION"
+          python3 versions.py binutils "$BINUTILS_VERSION"
       - name: Install Linux dependencies
         if: runner.os == 'Linux'
         run: |
@@ -42,6 +85,8 @@ jobs:
       - name: Build toolchain and C SDK
         env:
           JOBS: '3'
-        run: /bin/bash build.sh '${{ matrix.arch }}' "$RUNNER_TEMP/ptos"
+        run: |
+          /bin/bash build.sh '${{ matrix.arch }}' "$RUNNER_TEMP/ptos" \
+            --gcc "$GCC_VERSION" --binutils "$BINUTILS_VERSION"
       - name: Verify SDK
         run: /bin/bash tests/smoke.sh "$RUNNER_TEMP/ptos" '${{ matrix.arch }}'

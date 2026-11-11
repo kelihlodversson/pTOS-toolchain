@@ -56,7 +56,7 @@ for status in 0 22; do
         exit 1
     fi
     [[ ! -e $work/downloads/binutils-2.45.tar.xz ]]
-    [[ ! -e $work/arm/binutils-src.tmp ]]
+    [[ ! -e $work/arm/binutils-2.45-src.tmp ]]
     [[ -z $(ls -A "$work/downloads") ]]
 done
 
@@ -68,5 +68,5 @@ if PTOS_WORKDIR="$work" JOBS=1 "$BASH" "$project/build.sh" arm "$scratch/prefix"
     echo 'Accepted a corrupt cached archive' >&2
     exit 1
 fi
-[[ ! -e $work/arm/binutils-src.tmp ]]
+[[ ! -e $work/arm/binutils-2.45-src.tmp ]]
 echo 'Host setup and download failure checks passed'
