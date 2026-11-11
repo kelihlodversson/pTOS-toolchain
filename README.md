@@ -152,9 +152,11 @@ already supersede the corresponding GCC 15 patch hunks. The removed
 `diagnostic-color.cc` host portability hunk is not carried over.
 
 Local patches are verified against the checksum in `versions.json`, just like
-remote patches. The port remains experimental: the m68k compiler, SDK and kernel builds below
-passed, but boot/runtime validation and full ARM/x32 compiler builds have not
-been run. Source preparation alone does not establish ABI or runtime correctness.
+remote patches. Full compiler and SDK builds, smoke tests and QEMU regression runs have now
+passed for m68k, ARM and x32, including a separate m68k fastcall run. See the
+[validation report](validation/gcc-16.2.md) for results, the runtime-discovered
+MMIO fix and exact test settings. Source preparation alone does not establish
+ABI or runtime correctness.
 
 Validation on 2026-11-11, after pushing the initial port as `cdb2dda`:
 
