@@ -1,0 +1,40 @@
+name: Build SDK
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build:
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+        arch: [m68k, arm, x86_64]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 90
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install Linux dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential libgmp-dev libmpfr-dev libmpc-dev bison flex m4 xz-utils python3-venv
+      - name: Install macOS dependencies
+        if: runner.os == 'macOS'
+        run: brew install make gmp mpfr libmpc python xz
+      - name: Install Python dependencies
+        run: |
+          python3 -m venv .work/venv
+          .work/venv/bin/python -m pip install kconfiglib
+          echo "$PWD/.work/venv/bin" >> "$GITHUB_PATH"
+      - name: Check host setup and download failures
+        run: /bin/bash tests/host.sh
+      - name: Build toolchain and C SDK
+        env:
+          JOBS: '3'
+        run: /bin/bash build.sh '${{ matrix.arch }}' "$RUNNER_TEMP/ptos"
+      - name: Verify SDK
+        run: /bin/bash tests/smoke.sh "$RUNNER_TEMP/ptos" '${{ matrix.arch }}'

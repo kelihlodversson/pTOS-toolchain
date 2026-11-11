@@ -16,6 +16,7 @@ stage=${3:-all}
 case $stage in all|binutils|gcc|sdk) ;; *) usage ;; esac
 
 project=$(cd -- "$(dirname -- "$0")" && pwd)
+source "$project/host.sh"
 prefix=$(mkdir -p -- "$2" && cd -- "$2" && pwd)
 work=$(mkdir -p -- "${PTOS_WORKDIR:-$project/.work}" && cd -- "${PTOS_WORKDIR:-$project/.work}" && pwd)
 cache=$(mkdir -p -- "${PTOS_CACHE:-$work/downloads}" && cd -- "${PTOS_CACHE:-$work/downloads}" && pwd)
@@ -29,7 +30,7 @@ binutils_version=2.45
 
 local_patch() {
     local file="$project/patches/$1" hash=$2
-    printf '%s  %s\n' "$hash" "$file" | sha256sum -c - >&2
+    printf '%s  %s\n' "$hash" "$file" | sha256_check >&2 || return 1
     printf '%s\n' "$file"
 }
 
@@ -38,11 +39,11 @@ download() (
     if [[ ! -f $file ]]; then
         temporary=$(mktemp "$cache/.${file##*/}.XXXXXX")
         trap 'rm -f -- "$temporary"' EXIT
-        curl --fail --location --silent --show-error --retry 2 "$url" -o "$temporary"
-        printf '%s  %s\n' "$hash" "$temporary" | sha256sum -c - >&2
-        mv -- "$temporary" "$file"
+        curl --fail --location --silent --show-error --retry 2 "$url" -o "$temporary" || return 1
+        printf '%s  %s\n' "$hash" "$temporary" | sha256_check >&2 || return 1
+        mv -- "$temporary" "$file" || return 1
     fi
-    printf '%s  %s\n' "$hash" "$file" | sha256sum -c - >&2
+    printf '%s  %s\n' "$hash" "$file" | sha256_check >&2 || return 1
     printf '%s\n' "$file"
 )
 
@@ -52,7 +53,7 @@ prepare() {
     if [[ ! -d $source ]]; then
         rm -rf -- "$staging"
         mkdir -p -- "$staging"
-        tar --extract --file="$archive" --directory="$staging" --strip-components=1
+        tar -xf "$archive" -C "$staging" --strip-components=1
         if [[ -n $mint_patch ]]; then
             patch --directory="$staging" -p1 --batch --forward --silent < "$mint_patch"
         fi
@@ -79,10 +80,11 @@ build_binutils() (
     if [[ ! -f Makefile ]]; then
         ../binutils-src/configure --target="$target" --prefix="$prefix" \
             --with-sysroot="$prefix/$target/sysroot" --disable-nls --disable-werror \
-            --disable-gprofng --disable-gdb --disable-sim --without-debuginfod "${options[@]}"
+            --disable-gprofng --disable-gdb --disable-sim --without-debuginfod \
+            ${host_binutils_options[@]+"${host_binutils_options[@]}"} "${options[@]}"
     fi
-    make -j "$jobs" MAKEINFO=true
-    make MAKEINFO=true install
+    "$MAKE" -j "$jobs" MAKEINFO=true
+    "$MAKE" MAKEINFO=true install
 )
 
 build_gcc() (
@@ -110,10 +112,10 @@ build_gcc() (
             --with-gnu-as --with-gnu-ld --without-headers --disable-bootstrap \
             --enable-languages=c --disable-nls --disable-shared --disable-threads \
             --disable-libssp --disable-libgomp --disable-libquadmath --disable-libatomic \
-            "${options[@]}"
+            ${host_gcc_options[@]+"${host_gcc_options[@]}"} ${options[@]+"${options[@]}"}
     fi
-    make -j "$jobs" MAKEINFO=true all-gcc all-target-libgcc
-    make MAKEINFO=true install-gcc install-target-libgcc
+    "$MAKE" -j "$jobs" MAKEINFO=true all-gcc all-target-libgcc
+    "$MAKE" MAKEINFO=true install-gcc install-target-libgcc
 )
 
 for arch in "${architectures[@]}"; do
