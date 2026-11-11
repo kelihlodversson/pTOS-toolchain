@@ -59,7 +59,6 @@ jobs:
       matrix:
         arch: [m68k, arm, x86_64]
     env:
-      PTOS_WORKDIR: ${{ runner.temp }}/ptos-work
       JOBS: '3'
     steps:
       - uses: actions/checkout@v4
@@ -76,6 +75,7 @@ jobs:
           dpkg --validate-version "$version"
           echo "PACKAGE_VERSION=$version" >> "$GITHUB_ENV"
           echo "SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)" >> "$GITHUB_ENV"
+          echo "PTOS_WORKDIR=$RUNNER_TEMP/ptos-work" >> "$GITHUB_ENV"
       - name: Install build dependencies
         run: |
           printf '%s\tpriority:%s\n' \

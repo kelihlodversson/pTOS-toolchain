@@ -24,6 +24,8 @@ metadata and coexistence. Invalid package version rejection also passed.
 Release tag conversion and Debian prerelease version ordering passed.
 The existing version-selection and host/download-failure tests passed, as did
 workflow YAML parsing, shell syntax, documentation links and whitespace checks.
+Actionlint 1.7.7 passed after moving the runner-dependent work directory setup
+into a step; GitHub rejects the `runner` context in job-level `env`.
 
 This local validation used extracted packages rather than a system-wide apt
 installation. The release workflow adds a separate Ubuntu 24.04 runner that
