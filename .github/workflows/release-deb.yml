@@ -1,0 +1,158 @@
+name: Debian SDK packages
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:
+    inputs:
+      package_version:
+        description: 'Debian version for a test build (no release upload)'
+        default: '0.0.0~ci'
+        required: true
+        type: string
+  pull_request:
+    paths:
+      - '.github/workflows/release-deb.yml'
+      - 'packaging/**'
+      - 'tests/test_deb.py'
+      - 'versions.json'
+      - 'install-libcmini.sh'
+  push:
+    branches: [main]
+    paths:
+      - '.github/workflows/release-deb.yml'
+      - 'packaging/**'
+      - 'tests/test_deb.py'
+      - 'versions.json'
+      - 'install-libcmini.sh'
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deb-${{ github.event.release.tag_name || github.ref }}
+  cancel-in-progress: false
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install packaging test dependencies
+        run: |
+          printf '%s\tpriority:%s\n' \
+            https://mirrors.edge.kernel.org/ubuntu 1 \
+            https://archive.ubuntu.com/ubuntu 2 \
+            https://security.ubuntu.com/ubuntu 3 | sudo tee /etc/apt/apt-mirrors.txt
+          sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
+          sudo apt-get -o Acquire::Retries=3 install -y dpkg-dev binutils
+      - name: Test package assembly and coexistence
+        run: python3 tests/test_deb.py
+
+  build:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 120
+    strategy:
+      fail-fast: false
+      matrix:
+        arch: [m68k, arm, x86_64]
+    env:
+      PTOS_WORKDIR: ${{ runner.temp }}/ptos-work
+      JOBS: '3'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Resolve package version
+        env:
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+          MANUAL_VERSION: ${{ inputs.package_version }}
+        run: |
+          if [[ $GITHUB_EVENT_NAME == release ]]; then
+            version=$(bash packaging/release-version.sh "$RELEASE_TAG")
+          else
+            version=$MANUAL_VERSION
+          fi
+          dpkg --validate-version "$version"
+          echo "PACKAGE_VERSION=$version" >> "$GITHUB_ENV"
+          echo "SOURCE_DATE_EPOCH=$(git show -s --format=%ct HEAD)" >> "$GITHUB_ENV"
+      - name: Install build dependencies
+        run: |
+          printf '%s\tpriority:%s\n' \
+            https://mirrors.edge.kernel.org/ubuntu 1 \
+            https://archive.ubuntu.com/ubuntu 2 \
+            https://security.ubuntu.com/ubuntu 3 | sudo tee /etc/apt/apt-mirrors.txt
+          sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
+          sudo apt-get -o Acquire::Retries=3 install -y build-essential dpkg-dev \
+            libgmp-dev libmpfr-dev libmpc-dev bison flex m4 xz-utils python3-venv
+          python3 -m venv "$RUNNER_TEMP/venv"
+          "$RUNNER_TEMP/venv/bin/pip" install kconfiglib==14.1.0
+          echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
+      - name: Build SDK at its installation prefix
+        run: |
+          prefix=/opt/ptos/${{ matrix.arch }}
+          sudo install -d -o "$(id -un)" -g "$(id -gn)" "$prefix"
+          ./build.sh '${{ matrix.arch }}' "$prefix"
+          ./tests/smoke.sh "$prefix" '${{ matrix.arch }}'
+      - name: Assemble Debian package
+        run: |
+          python3 packaging/package-deb.py '${{ matrix.arch }}' \
+            '/opt/ptos/${{ matrix.arch }}' "$PACKAGE_VERSION" dist
+      - uses: actions/upload-artifact@v4
+        with:
+          name: deb-${{ matrix.arch }}
+          path: dist/*.deb
+          if-no-files-found: error
+          compression-level: 0
+
+  verify:
+    needs: build
+    runs-on: ubuntu-24.04
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: deb-*
+          merge-multiple: true
+          path: dist
+      - name: Install all three SDKs on a fresh runner
+        run: |
+          printf '%s\tpriority:%s\n' \
+            https://mirrors.edge.kernel.org/ubuntu 1 \
+            https://archive.ubuntu.com/ubuntu 2 \
+            https://security.ubuntu.com/ubuntu 3 | sudo tee /etc/apt/apt-mirrors.txt
+          sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
+          sudo apt-get -o Acquire::Retries=3 install -y ./dist/*.deb
+      - name: Verify installed SDKs through /usr/bin
+        run: |
+          for arch in m68k arm x86_64; do
+            package=ptos-sdk-${arch//_/-}
+            bash "/usr/share/doc/$package/smoke.sh" /usr "$arch"
+            case $arch in
+              m68k) target=m68k-unknown-ptos-prgelf ;;
+              arm) target=arm-unknown-ptos-elf ;;
+              x86_64) target=x86_64-unknown-ptos-elfx32 ;;
+            esac
+            test "$("$target-gcc" -print-sysroot)" = "/opt/ptos/$arch/$target/sysroot"
+          done
+
+  publish:
+    if: github.event_name == 'release'
+    needs: verify
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: deb-*
+          merge-multiple: true
+          path: dist
+      - name: Attach tested packages to the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ github.event.release.tag_name }}
+        run: |
+          test "$(find dist -maxdepth 1 -name '*.deb' | wc -l)" -eq 3
+          (cd dist && sha256sum *.deb > SHA256SUMS)
+          gh release upload "$RELEASE_TAG" dist/*.deb dist/SHA256SUMS --clobber

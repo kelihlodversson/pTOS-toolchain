@@ -19,6 +19,27 @@ and its multilibs require GCC 13 or newer. Link together objects that agree on
 the m68k calling convention.
 The ordinary ELF mode also supports `-fPIC -shared` with a GOT and PLT.
 
+## Debian/Ubuntu release packages
+
+Publishing a GitHub release builds `amd64` host packages for all three targets:
+`ptos-sdk-m68k`, `ptos-sdk-arm` and `ptos-sdk-x86-64`. Each contains GCC,
+Binutils, libgcc, libcmini and startup objects. Packages are built on Ubuntu
+24.04 and tested together on a fresh runner before being attached to the
+release with `SHA256SUMS`.
+
+Download the required `.deb` from a published release and install it with:
+
+```sh
+sudo apt-get install ./ptos-sdk-m68k_*_amd64.deb
+```
+
+The SDKs install under `/opt/ptos/<target-arch>` and expose their target-prefixed
+commands in `/usr/bin`, so no PATH change is needed and all three can coexist.
+Use the compiler prefixes shown below when building pTOS. The packages provide
+the SDK; Make, Python and kconfiglib are still needed to build pTOS itself.
+See [Debian packaging](packaging/README.md) for a pinned-release pTOS CI example,
+release version rules and manual package builds.
+
 ## Build
 
 The build needs Bash, GNU Make 4.3 or later, a host C/C++ compiler, the GMP,

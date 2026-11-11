@@ -1,0 +1,12 @@
+Upstream-Name: pTOS toolchain
+Source: https://github.com/kelihlodversson/pTOS-toolchain
+Comment:
+ This package contains GNU GCC, GNU Binutils and the libcmini SDK.
+ Component versions, source URLs, source archive checksums and the exact
+ toolchain commit (including local patches and build scripts) are recorded
+ in build-info.json in this directory.
+ GCC and Binutils are distributed under the GNU General Public License,
+ version 3 or later; the GCC Runtime Library Exception applies to libgcc.
+ libcmini is distributed under the GNU Lesser General Public License,
+ version 2.1 or later. Copyright notices are retained in the sources.
+ The full license texts and GCC Runtime Library Exception accompany this file.
