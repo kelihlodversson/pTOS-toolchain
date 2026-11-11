@@ -152,6 +152,21 @@ already supersede the corresponding GCC 15 patch hunks. The removed
 `diagnostic-color.cc` host portability hunk is not carried over.
 
 Local patches are verified against the checksum in `versions.json`, just like
-remote patches. The initial port is experimental until compiler and pTOS build
-validation is complete; source patch application alone does not establish ABI
-or runtime correctness.
+remote patches. The port remains experimental: the m68k compiler, SDK and kernel builds below
+passed, but boot/runtime validation and full ARM/x32 compiler builds have not
+been run. Source preparation alone does not establish ABI or runtime correctness.
+
+Validation on 2026-11-11, after pushing the initial port as `cdb2dda`:
+
+- GCC 16.2.0 source patching and pTOS target registration passed for m68k,
+  ARM and x32; the offline version-selection tests passed.
+- Binutils 2.45, the m68k GCC C compiler, all configured `libgcc` multilibs,
+  and the libcmini SDK built successfully with the default build recipe.
+- `./tests/smoke.sh /workspace/ptos-gcc16 m68k` passed ELF, PRG+ELF,
+  fastcall ABI/library selection and GOT/PLT shared-library checks.
+- On pTOS `9193f7c7b`, clean `virt-m68k-cli-elf` and `virt-m68k-fastcall`
+  builds passed with `CROSS_COMPILE=m68k-unknown-ptos-prgelf-`,
+  `CROSSPREFIX=m68k-unknown-ptos-prgelf-`, `BUILD_TOOLCHAIN_ELF=y` and
+  `LDSO_M68K_PREFIX=m68k-unknown-ptos-prgelf-`. The resulting reported RAM
+  usage was 625568 and 714580 bytes respectively. These are build results,
+  not performance measurements or boot tests.
