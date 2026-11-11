@@ -94,8 +94,10 @@ brew install kelihlodversson/ptos-toolchain/ptos-x86_64
 ```
 
 Each formula builds GCC 16.2.0, Binutils 2.45 and the libcmini SDK from
-checksum-pinned sources. The formulae currently build from source; no bottles
-are published. The target-prefixed commands are linked into Homebrew's `bin`
+checksum-pinned sources. The release workflow also publishes tested macOS
+bottles and their metadata alongside the Debian packages. Maintainers activate
+bottles by merging the release metadata into the formulae; until then,
+installation builds from source. The target-prefixed commands are linked into Homebrew's `bin`
 directory, and the three SDKs can be installed together. Run `brew test
 ptos-arm` (or the other formula name) to run the installed SDK's ABI smoke
 tests. See [Homebrew maintenance](homebrew/README.md) for local development.

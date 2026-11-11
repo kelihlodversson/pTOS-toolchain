@@ -52,6 +52,8 @@ CI verifies that Homebrew actually poured the bottle, then repeats the smoke
 test and strict linkage check before uploading the archive and JSON checksum
 metadata as a GitHub Actions artifact. Each target has its own artifact,
 retained for 14 days, available from the workflow run's summary page.
+The local reinstall step sets `HOMEBREW_DEVELOPER=1` because Homebrew 7 disables
+installation from file paths by default; this is limited to that CI step.
 
 Bottles cover the host macOS version and CPU architecture of `macos-latest`;
 the three formula names identify the cross-compilation targets. Homebrew
@@ -60,10 +62,46 @@ The reinstall check validates pouring into the runner's normal prefix; it
 does not establish compatibility with other macOS versions, Intel Macs or
 custom Homebrew prefixes. The generated JSON records any Cellar restriction.
 
-These are CI artifacts, not published release bottles. Normal `brew install`
-continues to build from source until a release process publishes the bottles
-and adds their URLs and checksums to the formulae. No release credentials or
-write permissions are needed for this workflow.
+Pull requests and ordinary pushes produce CI artifacts only. The **SDK release
+packages** workflow reuses the same build and test jobs when a GitHub Release
+is published. It sets the bottle root URL to that release, then publishes the
+three tested archives and their `.bottle.json` metadata alongside the Debian
+packages. Both Debian verification and every bottle test must pass before the
+shared publication job runs. `SHA256SUMS` covers the Debian packages, bottle
+archives and JSON metadata. Only the publication job has `contents: write`.
+Manual dispatch builds both package types as artifacts without release uploads.
+
+Homebrew's local bottle names use `--` between the formula name and version,
+but its download URLs use `-`. `packaging/prepare-bottles.py` verifies that the
+metadata describes all three formulae in this tap, checks release URLs and
+archive checksums, then renames archives to their metadata's download names.
+Cellar restrictions and checksums from `brew bottle` are retained unchanged.
+
+### Activate published bottles
+
+Publication does not edit the tap automatically. After a release build succeeds,
+download that release's metadata and merge the bottle blocks in a follow-up PR:
+
+```sh
+tag=v1.0.0 # Select the release to activate.
+metadata=$(mktemp -d)
+gh release download "$tag" --repo kelihlodversson/pTOS-toolchain \
+  --pattern '*.bottle.json' --dir "$metadata"
+brew bottle --merge --write --no-commit "$metadata"/*.bottle.json
+```
+
+Run this from the registered tap checkout, review the changes under `Formula/`,
+and run `brew style` on the changed formulae before committing. The metadata
+includes the release URL, archive checksums and detected Cellar compatibility.
+Merge it only while the formula version, revision, resources and source commit
+still match the release build. A later formula update needs new bottles.
+
+Once these blocks are merged, `brew update` followed by a normal `brew install`
+uses a matching bottle automatically. Other host platforms or incompatible
+Cellar prefixes continue to build from source. Until the activation PR is
+merged, normal installation also builds from source. Release reruns replace
+assets of the same name, so do not rebuild an already activated release unless
+its bottle metadata is updated together.
 
 [Local Apple Silicon validation](../validation/homebrew-macos.md)
 also verified simultaneous installation and relinking of all three SDKs.

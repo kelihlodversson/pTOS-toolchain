@@ -13,6 +13,13 @@ on:
       - "lib/ptos_toolchain_formula.rb"
       - ".github/workflows/homebrew.yml"
   workflow_dispatch:
+  workflow_call:
+    inputs:
+      release_tag:
+        description: Release tag used as the bottle download URL (empty for CI builds)
+        required: false
+        default: ""
+        type: string
 
 permissions:
   contents: read
@@ -33,41 +40,51 @@ jobs:
       - uses: actions/checkout@v4
       - name: Register checkout as a development tap
         run: |
-          brew tap kelihlodversson/ptos-ci "$GITHUB_WORKSPACE"
+          brew tap kelihlodversson/ptos-toolchain "$GITHUB_WORKSPACE"
           if brew command trust >/dev/null 2>&1; then
-            brew trust --formula "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+            brew trust --formula "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
           fi
       - name: Check formula style
-        run: brew style "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+        run: brew style "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
       - name: Install from source
-        run: brew install --build-bottle --verbose "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+        run: brew install --build-bottle --verbose "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
       - name: Test installed SDK
-        run: brew test "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+        run: brew test "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
       - name: Check linking
-        run: brew linkage --test --strict "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+        run: brew linkage --test --strict "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
       - name: Build bottle and checksum metadata
+        env:
+          RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
           mkdir bottles
           cd bottles
-          brew bottle --json "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+          args=(--json)
+          if [[ -n $RELEASE_TAG ]]; then
+            tag=$(jq -rn --arg tag "$RELEASE_TAG" '$tag | @uri')
+            args+=(--root-url "https://github.com/$GITHUB_REPOSITORY/releases/download/$tag")
+          fi
+          brew bottle "${args[@]}" "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
       - name: Reinstall from bottle
         shell: bash
+        env:
+          # Homebrew 7 requires developer mode to install our locally built bottle.
+          HOMEBREW_DEVELOPER: "1"
         run: |
           shopt -s nullglob
           bottles=(bottles/*.bottle*.tar.gz)
           test "${#bottles[@]}" -eq 1
-          brew uninstall "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+          brew uninstall "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
           brew install --force-bottle "$GITHUB_WORKSPACE/${bottles[0]}"
-          brew info --json=v2 "kelihlodversson/ptos-ci/${{ matrix.formula }}" |
+          brew info --json=v2 "kelihlodversson/ptos-toolchain/${{ matrix.formula }}" |
             jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'
       - name: Test bottled SDK
         run: |
-          brew test "kelihlodversson/ptos-ci/${{ matrix.formula }}"
-          brew linkage --test --strict "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+          brew test "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
+          brew linkage --test --strict "kelihlodversson/ptos-toolchain/${{ matrix.formula }}"
       - name: Upload tested bottle
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.formula }}-${{ runner.os }}-${{ runner.arch }}-bottle
+          name: bottles-${{ matrix.formula }}-${{ runner.os }}-${{ runner.arch }}
           path: |
             bottles/*.bottle*.tar.gz
             bottles/*.bottle.json
