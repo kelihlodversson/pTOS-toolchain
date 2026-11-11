@@ -74,9 +74,9 @@ The repository also provides a Homebrew tap with one formula per target:
 
 ```sh
 brew tap kelihlodversson/ptos-toolchain https://github.com/kelihlodversson/pTOS-toolchain.git
-brew install ptos-m68k
-brew install ptos-arm
-brew install ptos-x86_64
+brew install kelihlodversson/ptos-toolchain/ptos-m68k
+brew install kelihlodversson/ptos-toolchain/ptos-arm
+brew install kelihlodversson/ptos-toolchain/ptos-x86_64
 ```
 
 Each formula builds GCC 16.2.0, Binutils 2.45 and the libcmini SDK from
