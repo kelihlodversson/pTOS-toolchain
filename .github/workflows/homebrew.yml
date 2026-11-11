@@ -57,7 +57,7 @@ jobs:
           bottles=(bottles/*.bottle*.tar.gz)
           test "${#bottles[@]}" -eq 1
           brew uninstall "kelihlodversson/ptos-ci/${{ matrix.formula }}"
-          brew install --force-bottle "${bottles[0]}"
+          brew install --force-bottle "$GITHUB_WORKSPACE/${bottles[0]}"
           brew info --json=v2 "kelihlodversson/ptos-ci/${{ matrix.formula }}" |
             jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'
       - name: Test bottled SDK
