@@ -48,6 +48,11 @@ on:
 permissions:
   contents: read
 
+# Only PR runs supersede one another; other events keep their own run group.
+concurrency:
+  group: sdk-build-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
   changes:
     name: Detect SDK changes
