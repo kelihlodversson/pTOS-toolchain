@@ -20,8 +20,10 @@ runtime Python dependency.
 
 The SDKs install into separate Cellar prefixes. Target-specific executables,
 libraries and man pages retain their target names. Shared GCC/Binutils Info
-manuals and section 7 man pages move into each formula's own share directory
-to avoid link conflicts when installing more than one SDK.
+manuals and section 7 man pages move into each formula's own share directory.
+The BFD dependency plugin gets a formula-specific filename; BFD discovers it
+by scanning the plugin directory. These paths avoid link conflicts when
+installing more than one SDK.
 
 To try an unpublished branch, commit the formula changes first, then tap the
 local checkout under a development name:

@@ -75,6 +75,10 @@ module PtosToolchainFormula
     # directory so the SDKs can be linked side by side.
     pkgshare.install info if info.exist?
     pkgshare.install man7 if man7.exist?
+    # BFD discovers plugins by scanning the directory, so their basenames can
+    # be target-specific without changing discovery or sharing a linked file.
+    plugin = lib/"bfd-plugins/libdep.so"
+    plugin.rename(plugin.dirname/"#{name}-libdep.so") if plugin.exist?
   end
 
   def test_ptos(arch)
