@@ -45,7 +45,9 @@ Do not install the development and published versions of the same target
 together: their executable names are identical.
 
 The Homebrew SDK workflow installs each formula from source on macOS, runs
-its installed smoke test and checks dynamic library linkage. Before merging,
-also verify that all three can be linked simultaneously. Bottle
+its installed smoke test and checks for missing or undeclared dynamic library
+dependencies. [Local Apple Silicon validation](../validation/homebrew-macos.md)
+also verified simultaneous installation and relinking of all three SDKs.
+Repeat that coexistence check when changing shared installation paths. Bottle
 building and publication are intentionally left for a later change; GCC's
 embedded Cellar/sysroot paths need relocation testing first.
