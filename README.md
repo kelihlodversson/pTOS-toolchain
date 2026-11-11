@@ -21,7 +21,8 @@ versions.
 
 The `-mmintelf` option changes the linker emulation. Object files are ELF in
 both modes, and `-mfastcall` selects its own compiler runtime and libcmini
-variant. Link together objects that agree on the m68k calling convention.
+variant. The archived GCC 12 patches provide the stack ABI only; `-mfastcall`
+and its multilibs require GCC 13 or newer. Link together objects that agree on the m68k calling convention.
 The ordinary ELF mode also supports `-fPIC -shared` with a GOT and PLT.
 
 ## Build

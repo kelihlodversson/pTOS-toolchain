@@ -49,6 +49,12 @@ check_target() {
 
 if [[ $arch == all || $arch == m68k ]]; then
     target="$bin/m68k-unknown-ptos-prgelf"
+    # CrossMiNT's GCC 12 patch predates the fastcall compiler option and
+    # multilibs. Later supported tracks must provide both.
+    fastcall=true
+    case $("$target-gcc" -dumpfullversion) in 12.*) fastcall=false ;; esac
+    abi_modes=(stack)
+    if $fastcall; then abi_modes+=(fastcall); fi
 
     # A memory BTST reads one byte on m68k. A volatile 32-bit MMIO read
     # must retain its width even when only one bit is used by a branch.
@@ -71,8 +77,10 @@ extern const unsigned short mode_table[8][3];
 unsigned int mode_value(void) { return mode_table[rom_mode & 7][1]; }
 EOF
     for optimization in -O2 -Os; do
-        for abi in -mnofastcall -mfastcall; do
-            "$target-gcc" "$optimization" "$abi" -m68000 -S rommode.c -o rommode.s
+        for abi in "${abi_modes[@]}"; do
+            abi_options=()
+            if [[ $abi == fastcall ]]; then abi_options=(-mfastcall); fi
+            "$target-gcc" "$optimization" ${abi_options[@]+"${abi_options[@]}"} -m68000 -S rommode.c -o rommode.s
             if grep -Eq 'rom_mode[[:space:]]*-' rommode.s; then
                 echo 'm68k: byte ROM variable widened to a read before its address' >&2
                 exit 1
@@ -82,11 +90,15 @@ EOF
     check_target 'MC68000'
     "$target-gcc" -mmintelf hello.c -o hello.tos
     check_prgelf hello.tos
-    "$target-gcc" -mfastcall -c hello.c -o fastcall.o
-    "$target-readelf" -A fastcall.o | grep -Eq 'fastcall|5 \(0x5\)'
-    "$target-gcc" -mfastcall fastcall.o -o fastcall.elf
-    check_elf fastcall.elf ELF32 'MC68000'
-    [[ $("$target-gcc" -mfastcall -print-libgcc-file-name) != $("$target-gcc" -print-libgcc-file-name) ]]
+    if $fastcall; then
+        "$target-gcc" -mfastcall -c hello.c -o fastcall.o
+        "$target-readelf" -A fastcall.o | grep -Eq 'fastcall|5 \(0x5\)'
+        "$target-gcc" -mfastcall fastcall.o -o fastcall.elf
+        check_elf fastcall.elf ELF32 'MC68000'
+        [[ $("$target-gcc" -mfastcall -print-libgcc-file-name) != $("$target-gcc" -print-libgcc-file-name) ]]
+    else
+        echo "m68k: fastcall unavailable in the GCC 12 patch (stack ABI only)"
+    fi
 
     cat > pic.c <<'EOF'
 extern volatile int number;
@@ -97,7 +109,7 @@ EOF
     relocations=$("$target-readelf" -r libpic.so)
     grep -q R_68K_GLOB_DAT <<< "$relocations"
     grep -q R_68K_JMP_SLOT <<< "$relocations"
-    echo 'm68k: ELF, PRG+ELF, fastcall, and GOT/PLT shared library passed'
+    echo 'm68k: ELF, PRG+ELF, available ABI variants, and GOT/PLT shared library passed'
 fi
 
 if [[ $arch == all || $arch == arm ]]; then
