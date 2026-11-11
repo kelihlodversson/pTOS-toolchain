@@ -14,6 +14,9 @@ on:
       - ".github/workflows/homebrew.yml"
   workflow_dispatch:
 
+permissions:
+  contents: read
+
 jobs:
   install:
     runs-on: macos-latest
@@ -37,8 +40,36 @@ jobs:
       - name: Check formula style
         run: brew style "kelihlodversson/ptos-ci/${{ matrix.formula }}"
       - name: Install from source
-        run: brew install --build-from-source --verbose "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+        run: brew install --build-bottle --verbose "kelihlodversson/ptos-ci/${{ matrix.formula }}"
       - name: Test installed SDK
         run: brew test "kelihlodversson/ptos-ci/${{ matrix.formula }}"
       - name: Check linking
         run: brew linkage --test --strict "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+      - name: Build bottle and checksum metadata
+        run: |
+          mkdir bottles
+          cd bottles
+          brew bottle --json "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+      - name: Reinstall from bottle
+        shell: bash
+        run: |
+          shopt -s nullglob
+          bottles=(bottles/*.bottle*.tar.gz)
+          test "${#bottles[@]}" -eq 1
+          brew uninstall "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+          brew install --force-bottle "${bottles[0]}"
+          brew info --json=v2 "kelihlodversson/ptos-ci/${{ matrix.formula }}" |
+            jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'
+      - name: Test bottled SDK
+        run: |
+          brew test "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+          brew linkage --test --strict "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+      - name: Upload tested bottle
+        uses: actions/upload-artifact@v4
+        with:
+          name: ${{ matrix.formula }}-${{ runner.os }}-${{ runner.arch }}-bottle
+          path: |
+            bottles/*.bottle*.tar.gz
+            bottles/*.bottle.json
+          if-no-files-found: error
+          retention-days: 14

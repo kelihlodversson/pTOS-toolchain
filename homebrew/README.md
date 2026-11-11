@@ -44,10 +44,27 @@ with `git -C "$(brew --repository kelihlodversson/ptos-dev)" pull --ff-only`.
 Do not install the development and published versions of the same target
 together: their executable names are identical.
 
-The Homebrew SDK workflow installs each formula from source on macOS, runs
-its installed smoke test and checks for missing or undeclared dynamic library
-dependencies. [Local Apple Silicon validation](../validation/homebrew-macos.md)
+The Homebrew SDK workflow installs each formula from source on `macos-latest`
+with `brew install --build-bottle`, runs its installed smoke test and checks
+for missing or undeclared dynamic library dependencies. It then runs
+`brew bottle --json`, uninstalls the source build and installs the local bottle.
+CI verifies that Homebrew actually poured the bottle, then repeats the smoke
+test and strict linkage check before uploading the archive and JSON checksum
+metadata as a GitHub Actions artifact. Each target has its own artifact,
+retained for 14 days, available from the workflow run's summary page.
+
+Bottles cover the host macOS version and CPU architecture of `macos-latest`;
+the three formula names identify the cross-compilation targets. Homebrew
+determines the bottle's Cellar compatibility without `--skip-relocation`.
+The reinstall check validates pouring into the runner's normal prefix; it
+does not establish compatibility with other macOS versions, Intel Macs or
+custom Homebrew prefixes. The generated JSON records any Cellar restriction.
+
+These are CI artifacts, not published release bottles. Normal `brew install`
+continues to build from source until a release process publishes the bottles
+and adds their URLs and checksums to the formulae. No release credentials or
+write permissions are needed for this workflow.
+
+[Local Apple Silicon validation](../validation/homebrew-macos.md)
 also verified simultaneous installation and relinking of all three SDKs.
-Repeat that coexistence check when changing shared installation paths. Bottle
-building and publication are intentionally left for a later change; GCC's
-embedded Cellar/sysroot paths need relocation testing first.
+Repeat that coexistence check when changing shared installation paths.
