@@ -61,7 +61,8 @@ module PtosToolchainFormula
     ENV["PTOS_WORKDIR"] = work
     ENV["PTOS_CACHE"] = downloads
     ENV["PYTHONPATH"] = buildpath/"python-modules"
-    ENV.prepend_path "PATH", Utils::Path.formula_opt_bin("python@3.13")
+    # Versioned Python formulae keep the unversioned python3 command here.
+    ENV.prepend_path "PATH", Utils::Path.formula_opt_libexec("python@3.13")/"bin"
     # Also work when Homebrew's superenv hides the brew executable.
     %w[gmp mpfr libmpc].each do |name|
       ENV.append "CPPFLAGS", "-I#{Utils::Path.formula_opt_include(name)}"
