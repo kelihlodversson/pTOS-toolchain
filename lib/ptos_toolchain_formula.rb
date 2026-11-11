@@ -11,14 +11,16 @@ module PtosToolchainFormula
       license all_of: ["GPL-3.0-or-later", "LGPL-2.1-or-later"]
 
       depends_on "bison" => :build
-      depends_on "flex" => :build
       depends_on "m4" => :build
       depends_on "make" => :build
       depends_on "python@3.13" => :build
       depends_on "xz" => :build
+      depends_on "flex"
       depends_on "gmp"
+      depends_on "isl"
       depends_on "libmpc"
       depends_on "mpfr"
+      depends_on "zstd"
 
       resource "gcc" do
         url "https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz"
@@ -64,7 +66,7 @@ module PtosToolchainFormula
     # Versioned Python formulae keep the unversioned python3 command here.
     ENV.prepend_path "PATH", Utils::Path.formula_opt_libexec("python@3.13")/"bin"
     # Also work when Homebrew's superenv hides the brew executable.
-    %w[gmp mpfr libmpc].each do |name|
+    %w[gmp mpfr libmpc isl zstd].each do |name|
       ENV.append "CPPFLAGS", "-I#{Utils::Path.formula_opt_include(name)}"
       ENV.append "LDFLAGS", "-L#{Utils::Path.formula_opt_lib(name)}"
     end

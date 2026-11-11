@@ -41,4 +41,4 @@ jobs:
       - name: Test installed SDK
         run: brew test "kelihlodversson/ptos-ci/${{ matrix.formula }}"
       - name: Check linking
-        run: brew linkage --test "kelihlodversson/ptos-ci/${{ matrix.formula }}"
+        run: brew linkage --test --strict "kelihlodversson/ptos-ci/${{ matrix.formula }}"
