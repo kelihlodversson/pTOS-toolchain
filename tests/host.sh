@@ -27,13 +27,14 @@ if command -v gmake >/dev/null 2>&1; then
 else
     selected_make=$(command -v make)
 fi
+printf 'abc' > "$scratch/checksum-input"
 PATH="$scratch/checksum-bin" MAKE="$selected_make" "$BASH" -c '
     set -euo pipefail
     source "$1/host.sh"
     printf "%s  %s\n" \
-        82bd5f13fcbb0bbd3664b8d75cd3a4bb5df99072736b797f7be41726a0ebbc91 \
-        "$1/patches/binutils/binutils-2.45-mint-20250812.patch" | sha256_check
-' _ "$project"
+        ba7816bf8f01cfea414140de5dae2223b00361a396177a9cb410ff61f20015ad \
+        "$2" | sha256_check
+' _ "$project" "$scratch/checksum-input"
 
 cat > "$scratch/bin/curl" <<'EOF'
 #!/usr/bin/env bash
