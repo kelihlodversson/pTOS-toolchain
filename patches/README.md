@@ -1,7 +1,8 @@
-# CrossMiNT patch archive
+# CrossMiNT patches and local ports
 
-These files are unmodified copies of all files in `patches/gcc/` and
-`patches/binutils/` from [Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint)
+The `gcc/` and `binutils/` subdirectories contain unmodified copies of all
+files in `patches/gcc/` and `patches/binutils/` from
+[Thorsten Otto's CrossMiNT](https://github.com/th-otto/crossmint)
 at commit [`53ff5e25af1cd679bb60d46ab4e808d559ae5af2`](https://github.com/th-otto/crossmint/tree/53ff5e25af1cd679bb60d46ab4e808d559ae5af2/patches),
 retrieved on 2026-11-11. This was also the upstream `master` revision at retrieval.
 Original filenames, patch contents, copyright notices and license notices are preserved.
@@ -12,12 +13,27 @@ the newest archived snapshot is selected; multiple dated patches for one
 version are alternatives, not a patch series. The remaining versions and the
 separate fastcall and segment-alignment patches are retained for reference.
 
-The local `gcc-12.5.0-mint.patch`, `gcc-13.5.0-mint.patch`,
-`gcc-14.4.0-mint.patch` and `gcc-15.3.0-mint.patch` rebase the newest archived
-patch for each major onto its next official bugfix release. The originals above
-remain unchanged. GCC 15.3's chrono header needed the existing `__out` rename
-carried across three upstream context changes. See the
-[bugfix-release validation report](../validation/gcc-12-15.md).
+The local ports in this directory add the following GCC releases. Their
+archived source patches remain unchanged.
+
+| Local patch | Archived CrossMiNT source patch |
+| --- | --- |
+| [gcc-12.5.0-mint.patch](gcc-12.5.0-mint.patch) | [gcc-12.4.0-mint-20240810.patch](gcc/gcc-12.4.0-mint-20240810.patch) |
+| [gcc-13.5.0-mint.patch](gcc-13.5.0-mint.patch) | [gcc-13.4.0-mint-20250702.patch](gcc/gcc-13.4.0-mint-20250702.patch) |
+| [gcc-14.4.0-mint.patch](gcc-14.4.0-mint.patch) | [gcc-14.3.0-mint-20250702.patch](gcc/gcc-14.3.0-mint-20250702.patch) |
+| [gcc-15.3.0-mint.patch](gcc-15.3.0-mint.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
+
+These four ports retain the full original patch contents, including language
+runtime changes, although this SDK builds C only. GCC 12–14 required only
+context rebasing. GCC 15.3's chrono header needed the existing `__out` rename
+carried across three upstream context changes. The GCC 12 patch provides only
+the stack ABI; fastcall requires GCC 13 or newer.
+
+All four passed source preparation for m68k, ARM and x32, plus m68k compiler,
+SDK, QEMU and Hatari validation on Linux. The French 192 KB ROM passed with
+GCC 13–15; GCC 12 used the US 512 KB ROM. See the
+[bugfix-release validation report](../validation/gcc-12-15.md) for results
+and the limits of that validation.
 
 `gcc-16.2.0-mint.patch` is the locally maintained C compiler/runtime port of the
 GCC 15.2 CrossMiNT patch, with the volatile MMIO and ROM alignment fixes found
@@ -36,8 +52,8 @@ repository. For example, the source URL of a patch is:
 https://raw.githubusercontent.com/th-otto/crossmint/53ff5e25af1cd679bb60d46ab4e808d559ae5af2/patches/<component>/<filename>
 ```
 
-`SHA256SUMS` records every patch, including the local GCC 16.2 port. Verify the
-complete archive from the repository root:
+`SHA256SUMS` records every archived patch and the local GCC 12.5, 13.5, 14.4,
+15.3 and 16.2 ports. Verify all patches from the repository root:
 
 ```sh
 (cd patches && sha256sum -c SHA256SUMS)

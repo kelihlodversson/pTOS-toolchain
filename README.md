@@ -2,9 +2,10 @@
 
 This C SDK builds pTOS programs and freestanding kernels. It builds native
 GCC and GNU Binutils targets, together with `libgcc`, libcmini headers and
-archives, and pTOS program startup objects. The default is the newest GCC and
-Binutils release in the pinned CrossMiNT patch catalogue (GCC 16.2.0 and
-Binutils 2.45). Source archives and patches are verified with SHA-256.
+archives, and pTOS program startup objects. The default is the newest configured
+GCC and Binutils release (GCC 16.2.0 and Binutils 2.45). Recipes use pinned
+CrossMiNT patches or the local ports described below, including GCC 12.5.0,
+13.5.0, 14.4.0 and 15.3.0. Source archives and patches are verified with SHA-256.
 
 | Target | Default output | Additional mode |
 | --- | --- | --- |
@@ -22,7 +23,8 @@ versions.
 The `-mmintelf` option changes the linker emulation. Object files are ELF in
 both modes, and `-mfastcall` selects its own compiler runtime and libcmini
 variant. The archived GCC 12 patches provide the stack ABI only; `-mfastcall`
-and its multilibs require GCC 13 or newer. Link together objects that agree on the m68k calling convention.
+and its multilibs require GCC 13 or newer. Link together objects that agree on
+the m68k calling convention.
 The ordinary ELF mode also supports `-fPIC -shared` with a GOT and PLT.
 
 ## Build
@@ -51,8 +53,8 @@ List the available versions without downloading or building anything:
 
 ```sh
 ./build.sh --list-versions
-./build.sh m68k "$HOME/opt/ptos-gcc14" --gcc 14.3.0 --binutils 2.45
-./build.sh all "$HOME/opt/ptos-gcc15" gcc --gcc 15.2.0
+./build.sh m68k "$HOME/opt/ptos-gcc14" --gcc 14.4.0 --binutils 2.45
+./build.sh all "$HOME/opt/ptos-gcc15" gcc --gcc 15.3.0
 ```
 
 The optional third positional argument selects `binutils`, `gcc` or `sdk`;
@@ -177,6 +179,26 @@ and the x32 suite passed 22, with five shutdown checks each. SDK hello
 programs ran in QEMU on ARM, x32 and m68k. The m68k runs exercised plain ELF
 and fastcall PRG+ELF. The `virt-m68k-aspace` regression run stopped before the
 EmuCON prompt.
+
+## GCC 12–15 bugfix-release MiNT patches
+
+Local patches add GCC 12.5.0, 13.5.0, 14.4.0 and 15.3.0 by rebasing the
+CrossMiNT patches for 12.4.0, 13.4.0, 14.3.0 and 15.2.0 respectively.
+All four releases are selectable with `--gcc` and in the manual CI dropdown;
+GCC 16.2.0 remains the default. See [patch provenance](patches/README.md) for
+the exact source patches.
+
+On pTOS `9193f7c7b`, all four m68k compiler, libgcc and SDK builds passed
+smoke tests, 26 QEMU regression suites, four shutdown probes and the scalable
+system-font replay. Hatari passed 20 suites on the French 192 KB ROM with
+GCC 13.5, 14.4 and 15.3, leaving 8400, 7570 and 6334 bytes free respectively.
+GCC 12.5 passed 29 suites on the US 512 KB ROM; its MiNT patch supports only
+the stack ABI, while the 192 KB configuration requires fastcall.
+
+Source preparation passed for m68k, ARM and x32. Full compiler and runtime
+validation for these four releases covered m68k on Linux; ARM, x32 and macOS
+builds were not run. See the [validation report](validation/gcc-12-15.md) for
+settings, results and ROM checksums.
 
 ## GCC 16.2 MiNT port
 
