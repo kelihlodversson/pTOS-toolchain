@@ -153,9 +153,10 @@ already supersede the corresponding GCC 15 patch hunks. The removed
 
 Local patches are verified against the checksum in `versions.json`, just like
 remote patches. Full compiler and SDK builds, smoke tests and QEMU regression runs have now
-passed for m68k, ARM and x32, including a separate m68k fastcall run. See the
+passed for m68k, ARM and x32, including a separate m68k fastcall run. Hatari
+ROM validation also covers a 192 KB French ST image and a 512 KB STE image. See the
 [validation report](validation/gcc-16.2.md) for results, the runtime-discovered
-MMIO fix and exact test settings. Source preparation alone does not establish
+MMIO and ROM alignment fixes, and exact test settings. Source preparation alone does not establish
 ABI or runtime correctness.
 
 Validation on 2026-11-11, after pushing the initial port as `cdb2dda`:

@@ -80,3 +80,73 @@ QEMU used the local firmware/ROM directory. The existing environment preload
 redirected vvfat temporary files from read-only `/var/tmp` to `/tmp`. x32 used
 OVMF and a raw FAT disk; its local monitor socket required execution outside
 the command sandbox. None of these environment adaptations changed pTOS code.
+
+## Hatari ROM image tests
+
+Added two clean ROM builds and complete Hatari regression runs on the same pTOS
+revision, using compiler fix `f9724e1`. Hatari was the locally installed
+2.6.1-devel build at pinned commit `23bc3060ebf0da348cc842e358c102ba88002b56`.
+
+| ROM/configuration | Hatari machine/mode | Raw ROM bytes | Padded image bytes | Free within ROM limit | Regression suites |
+| --- | --- | ---: | ---: | ---: | --- |
+| French `atari192`, `ptos192fr.img` | ST, 4 MB, low resolution | 189732 | 196608 | 6876 | 20 passed, 0 failed |
+| US `atari512`, `ptos512k.img` | STE, 4 MB, monochrome/high resolution | 433782 | 524288 | 90506 | 29 passed, 0 failed |
+
+The 192 KB configuration uses its stock `-Os`, LTO and `-mfastcall` settings;
+only the country choice was changed to French (`BUILD_COUNTRY_FR=y`). The
+512 KB configuration uses its stock `-O2` and stack calling convention. Both
+builds passed `mkrom`'s hard size check; the images were also checked to be
+exactly 192*1024 and 512*1024 bytes. Headroom measures the unpadded `emutos.img`
+against that limit, not the size of an already padded file.
+
+Each worktree built the default ROM and `test-hd`, using the m68k compiler
+prefixes above and `BUILD_TOOLCHAIN_ELF=y`. Test applications used
+`TEST_LDFLAGS=-mmintelf -Wl,-e,_start`, because these ROM configurations run
+MiNT PRG programs. Neither ROM's feature selection was reduced to make it fit.
+The French choice was set with kconfiglib under `CONFIG_=` (pTOS uses an empty
+Kconfig symbol prefix).
+
+Runs used the existing pTOS runner, with Hatari on PATH:
+
+```sh
+# French 192 KB worktree
+python3 tools/run-hatari-tests.py --tos ptos192fr.img --disk test-hd.img --mode low --timeout 600
+# US 512 KB worktree
+python3 tools/run-hatari-tests.py --tos ptos512k.img --disk test-hd.img --mode high --timeout 600
+```
+
+The ST legitimately skips the blitter suites. The STE run requires passing
+`raster_copy` and `text_blit` results: its checks included 9600 screen-copy,
+1440 clipped-copy, 384 Line-A, and 25616 text-blit cases, all without failure.
+
+### Additional compiler fault exposed by ROM boot
+
+Before `f9724e1`, the 512 KB image stopped with `Panic: Address Error` in
+`screen_get_current_mode_desc()`, at an `and.l` from odd address `$449`.
+This was distinct from the expected, recovered bus errors during hardware
+probing. The 192 KB image hit the same bad access.
+
+A masked byte used as a table index reproduced the issue without any hardware:
+
+```c
+extern unsigned char rom_mode;
+extern const unsigned short mode_table[8][3];
+unsigned int mode_value(void) { return mode_table[rom_mode & 7][1]; }
+```
+
+GCC 16.2's late-combine pass produced a longword read from `rom_mode-3`.
+The RTL lowpart helper now rejects widening a memory object and changing the
+width of a volatile access, preserving byte reads on the 68000. The new SDK
+smoke check fails before the fix and passes afterwards at `-O2` and `-Os`,
+with both calling conventions. No optimization-disabling build flag was used
+for the successful ROM runs. Source preparation and a clean SDK rebuild also
+passed after this fix.
+
+The m68k ELF and fastcall QEMU runs were repeated after the RTL fix: both
+passed all 26 suites, four shutdown probes and the scalable-system-font replay.
+ARM/x32 do not apply the MiNT patch, so their compiler sources were unchanged.
+
+Padded image SHA-256:
+
+- `ptos192fr.img`: `0a32212e1e788e7a976f6867c2f54d16c2dd3afe409a0e90f99acf978a800f97`
+- `ptos512k.img`: `ab550f937b5c91290e58af224ae504d8207f114e243a560e8c50fecece651ab9`
