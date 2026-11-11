@@ -45,8 +45,53 @@ on:
           - '2.44'
           - '2.45'
 
+permissions:
+  contents: read
+
 jobs:
+  changes:
+    name: Detect SDK changes
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.changes.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Classify changed paths
+        id: changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 .github/scripts/sdk_changes.py --event "$GITHUB_EVENT_NAME" \
+            --base "$BASE_SHA" --head "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+  host:
+    name: Host checks / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install GNU Make on macOS
+        if: runner.os == 'macOS'
+        env:
+          HOMEBREW_NO_AUTO_UPDATE: '1'
+        run: brew install make
+      - name: Check host setup and download failures
+        run: /bin/bash tests/host.sh
+      - name: Check version selection and CI change filters
+        run: |
+          python3 tests/test_versions.py
+          python3 tests/test_ci_changes.py
+
   build:
+    needs: [changes, host]
+    if: needs.changes.outputs.build == 'true'
     name: ${{ matrix.os }} / ${{ matrix.arch }} / GCC ${{ inputs.gcc_version || 'latest' }} / Binutils ${{ inputs.binutils_version || 'latest' }}
     env:
       GCC_VERSION: ${{ inputs.gcc_version || 'latest' }}
@@ -84,8 +129,6 @@ jobs:
           python3 -m venv .work/venv
           .work/venv/bin/python -m pip install kconfiglib
           echo "$PWD/.work/venv/bin" >> "$GITHUB_PATH"
-      - name: Check host setup and download failures
-        run: /bin/bash tests/host.sh
       - name: Build toolchain and C SDK
         env:
           JOBS: '3'

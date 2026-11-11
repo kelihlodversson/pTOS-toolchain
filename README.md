@@ -82,6 +82,21 @@ With the source archives already cached, run
 checksums, patch application and pTOS source preparation for every supported
 release and target. This checks source preparation; it does not compile the toolchains.
 
+### CI coverage
+
+The Build SDK workflow runs lightweight host/download checks and offline version
+tests once on macOS and Ubuntu for every PR and push to `main`. Full compiler
+builds for all three targets run when SDK inputs change, including build scripts,
+version recipes, patches, sysroot files and SDK smoke tests. Homebrew-only,
+Debian-packaging-only and documentation changes skip these compiler builds.
+Changes to the build workflow or its path classifier, and unknown paths, default
+to full builds. Manual dispatch always builds the requested GCC/Binutils pair.
+
+Homebrew changes separately build and test the formulae and bottles. They use
+the formulae's pinned SDK sources, so they do not replace compiler tests of the
+current checkout. Releases build Debian packages and Homebrew bottles through
+the release workflow without an additional plain SDK build matrix.
+
 ### macOS
 
 The repository also provides a Homebrew tap with one formula per target:
