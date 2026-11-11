@@ -2,10 +2,36 @@
 set -euo pipefail
 
 usage() {
-    echo "Usage: $0 <all|m68k|arm|x86_64> <install-prefix> [binutils|gcc|sdk]" >&2
-    exit 2
+    echo "Usage: $0 <all|m68k|arm|x86_64> <install-prefix> [binutils|gcc|sdk] [--gcc VERSION] [--binutils VERSION]" >&2
+    echo "       $0 --list-versions" >&2
+    exit "${1:-2}"
 }
 
+project=$(cd -- "$(dirname -- "$0")" && pwd)
+gcc_version=latest
+binutils_version=latest
+positional=()
+while [[ $# -gt 0 ]]; do
+    case $1 in
+        --gcc|--binutils)
+            [[ $# -ge 2 && $2 != --* ]] || usage
+            case $1 in
+                --gcc) gcc_version=$2 ;;
+                --binutils) binutils_version=$2 ;;
+            esac
+            shift 2 ;;
+        --list-versions)
+            for component in gcc binutils; do
+                printf '%s: ' "$component"
+                python3 "$project/versions.py" "$component" --list
+            done
+            exit ;;
+        -h|--help) usage 0 ;;
+        --*) usage ;;
+        *) positional+=("$1"); shift ;;
+    esac
+done
+set -- "${positional[@]}"
 [[ $# -ge 2 && $# -le 3 ]] || usage
 case $1 in
     all) architectures=(m68k arm x86_64) ;;
@@ -15,7 +41,14 @@ esac
 stage=${3:-all}
 case $stage in all|binutils|gcc|sdk) ;; *) usage ;; esac
 
-project=$(cd -- "$(dirname -- "$0")" && pwd)
+# Resolve versions before creating directories or starting downloads.
+gcc_recipe=$(python3 "$project/versions.py" gcc "$gcc_version")
+binutils_recipe=$(python3 "$project/versions.py" binutils "$binutils_version")
+mapfile -t gcc_recipe <<< "$gcc_recipe"
+mapfile -t binutils_recipe <<< "$binutils_recipe"
+gcc_version=${gcc_recipe[0]}
+binutils_version=${binutils_recipe[0]}
+
 prefix=$(mkdir -p -- "$2" && cd -- "$2" && pwd)
 work=$(mkdir -p -- "${PTOS_WORKDIR:-$project/.work}" && cd -- "${PTOS_WORKDIR:-$project/.work}" && pwd)
 cache=$(mkdir -p -- "${PTOS_CACHE:-$work/downloads}" && cd -- "${PTOS_CACHE:-$work/downloads}" && pwd)
@@ -24,8 +57,6 @@ jobs=${JOBS:-$(getconf _NPROCESSORS_ONLN)}
 
 export PATH="$prefix/bin:$PATH"
 
-gcc_version=14.3.0
-binutils_version=2.45
 crossmint=https://raw.githubusercontent.com/th-otto/crossmint/53ff5e25af1cd679bb60d46ab4e808d559ae5af2/patches
 
 download() (
@@ -42,8 +73,8 @@ download() (
 )
 
 prepare() {
-    local component=$1 arch=$2 archive=$3 mint_patch=${4:-}
-    local source="$work/$arch/$component-src" staging="$work/$arch/$component-src.tmp"
+    local component=$1 arch=$2 archive=$3 mint_patch=${4:-} version=$5
+    local source="$work/$arch/$component-$version-src" staging="$work/$arch/$component-$version-src.tmp"
     if [[ ! -d $source ]]; then
         rm -rf -- "$staging"
         mkdir -p -- "$staging"
@@ -59,20 +90,18 @@ prepare() {
 build_binutils() (
     local arch=$1 target=$2 archive mint_patch=
     local options=(--disable-default-execstack)
-    archive=$(download "https://ftp.gnu.org/gnu/binutils/binutils-$binutils_version.tar.xz" \
-        c50c0e7f9cb188980e2cc97e4537626b1672441815587f1eab69d2a1bfbef5d2)
+    archive=$(download "${binutils_recipe[1]}" "${binutils_recipe[2]}")
     if [[ $arch == m68k ]]; then
-        mint_patch=$(download "$crossmint/binutils/binutils-2.45-mint-20250812.patch" \
-            82bd5f13fcbb0bbd3664b8d75cd3a4bb5df99072736b797f7be41726a0ebbc91)
+        mint_patch=$(download "$crossmint/${binutils_recipe[3]#patches/}" "${binutils_recipe[4]}")
         options+=(--enable-relro)
     elif [[ $arch == x86_64 ]]; then
         options+=(--enable-relro --enable-separate-code)
     fi
-    prepare binutils "$arch" "$archive" "$mint_patch"
-    mkdir -p -- "$work/$arch/binutils-build"
-    cd -- "$work/$arch/binutils-build"
+    prepare binutils "$arch" "$archive" "$mint_patch" "$binutils_version"
+    mkdir -p -- "$work/$arch/binutils-$binutils_version-build"
+    cd -- "$work/$arch/binutils-$binutils_version-build"
     if [[ ! -f Makefile ]]; then
-        ../binutils-src/configure --target="$target" --prefix="$prefix" \
+        ../binutils-$binutils_version-src/configure --target="$target" --prefix="$prefix" \
             --with-sysroot="$prefix/$target/sysroot" --disable-nls --disable-werror \
             --disable-gprofng --disable-gdb --disable-sim --without-debuginfod "${options[@]}"
     fi
@@ -85,8 +114,7 @@ build_gcc() (
     local options=()
     case $arch in
         m68k)
-            mint_patch=$(download "$crossmint/gcc/gcc-14.3.0-mint-20250702.patch" \
-                3dd3c201985fe09a81c59bdf50a7079bec53545f302f152f7c65ad182db4b2a0)
+            mint_patch=$(download "$crossmint/${gcc_recipe[3]#patches/}" "${gcc_recipe[4]}")
             ;;
         arm)
             options=(--with-arch=armv6k --with-tune=arm1176jzf-s --with-mode=arm \
@@ -94,13 +122,12 @@ build_gcc() (
             ;;
         x86_64) options=(--with-abi=x32) ;;
     esac
-    archive=$(download "https://ftp.gnu.org/gnu/gcc/gcc-$gcc_version/gcc-$gcc_version.tar.xz" \
-        e0dc77297625631ac8e50fa92fffefe899a4eb702592da5c32ef04e2293aca3a)
-    prepare gcc "$arch" "$archive" "$mint_patch"
-    mkdir -p -- "$work/$arch/gcc-build" "$prefix/$target/sysroot/include"
-    cd -- "$work/$arch/gcc-build"
+    archive=$(download "${gcc_recipe[1]}" "${gcc_recipe[2]}")
+    prepare gcc "$arch" "$archive" "$mint_patch" "$gcc_version"
+    mkdir -p -- "$work/$arch/gcc-$gcc_version-binutils-$binutils_version-build" "$prefix/$target/sysroot/include"
+    cd -- "$work/$arch/gcc-$gcc_version-binutils-$binutils_version-build"
     if [[ ! -f Makefile ]]; then
-        ../gcc-src/configure --target="$target" --prefix="$prefix" \
+        ../gcc-$gcc_version-src/configure --target="$target" --prefix="$prefix" \
             --with-sysroot="$prefix/$target/sysroot" --with-native-system-header-dir=/include \
             --with-gnu-as --with-gnu-ld --without-headers --disable-bootstrap \
             --enable-languages=c --disable-nls --disable-shared --disable-threads \
@@ -125,6 +152,6 @@ for arch in "${architectures[@]}"; do
         build_gcc "$arch" "$target"
     fi
     if [[ $stage == all || $stage == sdk ]]; then
-        "$project/install-libcmini.sh" "$arch" "$target" "$prefix" "$work" "$jobs"
+        "$project/install-libcmini.sh" "$arch" "$target" "$prefix" "$work" "$jobs" "gcc-$gcc_version-binutils-$binutils_version"
     fi
 done

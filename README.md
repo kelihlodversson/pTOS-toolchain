@@ -2,8 +2,9 @@
 
 This C SDK builds pTOS programs and freestanding kernels. It builds native
 GCC and GNU Binutils targets, together with `libgcc`, libcmini headers and
-archives, and pTOS program startup objects. GCC 14.3.0 and Binutils 2.45 are
-pinned to the versions used by pTOS's m68k build.
+archives, and pTOS program startup objects. The default is the newest GCC and
+Binutils release in the pinned CrossMiNT patch catalogue (GCC 15.2.0 and
+Binutils 2.45). Source archives and patches are verified with SHA-256.
 
 | Target | Default output | Additional mode |
 | --- | --- | --- |
@@ -34,9 +35,32 @@ export PATH="$HOME/opt/ptos/bin:$PATH"
 ```
 
 Pass `m68k`, `arm` or `x86_64` instead of `all` to build a single target.
+Select GCC and Binutils independently; omitted versions (or `latest`) select
+the newest entry. Each release uses its newest patch from the pinned CrossMiNT
+revision. GCC 12 and newer are supported.
+List the available versions without downloading or building anything:
+
+```sh
+./build.sh --list-versions
+./build.sh m68k "$HOME/opt/ptos-gcc14" --gcc 14.3.0 --binutils 2.45
+./build.sh all "$HOME/opt/ptos-gcc15" gcc --gcc 15.2.0
+```
+
+The optional third positional argument selects `binutils`, `gcc` or `sdk`;
+omitting it builds all stages. Install matching Binutils before running the
+`gcc` stage alone. Use separate installation prefixes to retain several SDKs.
+Source and compiler build directories are separated by version. The download
+cache is shared, including between versions.
+
 `JOBS` controls Make parallelism. `PTOS_WORKDIR` selects the build directory,
 and `PTOS_CACHE` selects the download cache. Use a fresh work directory when
 changing the installation prefix, source recipe or host toolchain.
+`versions.json` records the supported recipes; `versions.py` selects and lists
+them. Run `python3 tests/test_versions.py` for the offline selection checks.
+With the source archives and patches already cached, run
+`python3 tests/prepare_versions.py /path/to/downloads` to verify checksums,
+patch application and pTOS source preparation for every supported release and
+target. This checks source preparation; it does not compile the toolchains.
 
 ## Build a C application
 
