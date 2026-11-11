@@ -12,6 +12,13 @@ the newest archived snapshot is selected; multiple dated patches for one
 version are alternatives, not a patch series. The remaining versions and the
 separate fastcall and segment-alignment patches are retained for reference.
 
+The local `gcc-12.5.0-mint.patch`, `gcc-13.5.0-mint.patch`,
+`gcc-14.4.0-mint.patch` and `gcc-15.3.0-mint.patch` rebase the newest archived
+patch for each major onto its next official bugfix release. The originals above
+remain unchanged. GCC 15.3's chrono header needed the existing `__out` rename
+carried across three upstream context changes. See the
+[bugfix-release validation report](../validation/gcc-12-15.md).
+
 `gcc-16.2.0-mint.patch` is the locally maintained C compiler/runtime port of the
 GCC 15.2 CrossMiNT patch, with the volatile MMIO and ROM alignment fixes found
 during validation. See [the validation report](../validation/gcc-16.2.md).

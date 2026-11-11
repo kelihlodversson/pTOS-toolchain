@@ -42,7 +42,9 @@ export PATH="$HOME/opt/ptos/bin:$PATH"
 Pass `m68k`, `arm` or `x86_64` instead of `all` to build a single target.
 Select GCC and Binutils independently; omitted versions (or `latest`) select
 the newest entry. Each release uses its newest patch from the pinned CrossMiNT
-revision, except GCC 16.2.0, which uses the local patch described below.
+revision, except the locally ported GCC 12.5.0, 13.5.0, 14.4.0, 15.3.0 and
+16.2.0 patches. See [patch provenance](patches/README.md) and the
+[12–15 bugfix-release validation](validation/gcc-12-15.md).
 GCC 12 and newer are supported.
 List the available versions without downloading or building anything:
 

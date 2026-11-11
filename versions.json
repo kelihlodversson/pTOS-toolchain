@@ -22,6 +22,13 @@
       "patch_sha256": "c6f79b77adcce591e0349ec356dd78529f211b59045519fa9e22854328e40b24"
     },
     {
+      "version": "12.5.0",
+      "url": "https://ftp.gnu.org/gnu/gcc/gcc-12.5.0/gcc-12.5.0.tar.xz",
+      "sha256": "71cd373d0f04615e66c5b5b14d49c1a4c1a08efa7b30625cd240b11bab4062b3",
+      "patch": "patches/gcc-12.5.0-mint.patch",
+      "patch_sha256": "ef214d8d15aadf5a6c6dc217005396f1f6320b35330cffeef9fcc5e84179a3ff"
+    },
+    {
       "version": "13.1.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-13.1.0/gcc-13.1.0.tar.xz",
       "sha256": "61d684f0aa5e76ac6585ad8898a2427aade8979ed5e7f85492286c4dfc13ee86",
@@ -50,6 +57,13 @@
       "patch_sha256": "196381c3a139f41bc5fc21890a5196ed9052a2ce7522b9e22584132ec55ef5e5"
     },
     {
+      "version": "13.5.0",
+      "url": "https://ftp.gnu.org/gnu/gcc/gcc-13.5.0/gcc-13.5.0.tar.xz",
+      "sha256": "ec3df0015ed01411f91f9a9cd5b4da3070eb1222b02fadf4133c30c090399855",
+      "patch": "patches/gcc-13.5.0-mint.patch",
+      "patch_sha256": "03f50ff432b0d417a859ee88e9d5e5e65482247c4d094295579b9076b03e09b2"
+    },
+    {
       "version": "14.1.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.xz",
       "sha256": "e283c654987afe3de9d8080bc0bd79534b5ca0d681a73a11ff2b5d3767426840",
@@ -71,6 +85,13 @@
       "patch_sha256": "3dd3c201985fe09a81c59bdf50a7079bec53545f302f152f7c65ad182db4b2a0"
     },
     {
+      "version": "14.4.0",
+      "url": "https://ftp.gnu.org/gnu/gcc/gcc-14.4.0/gcc-14.4.0.tar.xz",
+      "sha256": "752b6f567beac83159c77a7680b1316bdd784738bff9a9d070112c09da90f6d9",
+      "patch": "patches/gcc-14.4.0-mint.patch",
+      "patch_sha256": "9b544ae3c88ca7c3b61f5a772cfaf45e4653c7fe8dde3ce13910989c96caca8d"
+    },
+    {
       "version": "15.1.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-15.1.0/gcc-15.1.0.tar.xz",
       "sha256": "e2b09ec21660f01fecffb715e0120265216943f038d0e48a9868713e54f06cea",
@@ -83,6 +104,13 @@
       "sha256": "438fd996826b0c82485a29da03a72d71d6e3541a83ec702df4271f6fe025d24e",
       "patch": "patches/gcc/gcc-15.2.0-mint-20250810.patch",
       "patch_sha256": "b23ded32ed9262b1d9595c7d2482ba721f493c7240de4037ab02082e7abf4bab"
+    },
+    {
+      "version": "15.3.0",
+      "url": "https://ftp.gnu.org/gnu/gcc/gcc-15.3.0/gcc-15.3.0.tar.xz",
+      "sha256": "fa59c1beef8995f27c4d71c1df227587189315d3e6faff1bb4306e61b0c530eb",
+      "patch": "patches/gcc-15.3.0-mint.patch",
+      "patch_sha256": "b8181c7bbc9905cebf52c0469d6f2fa75ef479c89ce40bed4aa30001440705e8"
     },
     {
       "version": "16.2.0",
