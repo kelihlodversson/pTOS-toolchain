@@ -83,6 +83,11 @@ module PtosToolchainFormula
   end
 
   def test_ptos(arch)
+    # brew test adds native macOS SDK include paths. Cross compilers must use
+    # their target sysroot instead of those host headers and libraries.
+    %w[CPATH C_INCLUDE_PATH CPLUS_INCLUDE_PATH OBJC_INCLUDE_PATH LIBRARY_PATH SDKROOT].each do |key|
+      ENV.delete key
+    end
     system "/bin/bash", pkgshare/"tests/smoke.sh", prefix, arch
   end
 end
