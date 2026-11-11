@@ -155,6 +155,12 @@ dedicated no-red-zone LP64 `libgcc` for that build. Applications use x32.
 Run `bash tests/host.sh` to check host setup and rejection of failed or
 corrupt downloads without building a compiler. GitHub Actions builds all
 three SDKs on Linux and macOS and runs the smoke tests for each target.
+For a manual run, open **Actions → Build SDK → Run workflow** and choose the
+GCC and Binutils versions independently from the dropdowns. `latest` selects
+the newest supported recipe. Push and pull-request builds use `latest` for
+both components. All six OS/architecture combinations use the selected pair;
+unsupported versions are rejected before dependency installation. Keep the
+workflow's dropdown options in sync when adding recipes to `versions.json`.
 
 The SDK smoke tests cover the three application ABIs, m68k PRG+ELF,
 fastcall library selection and GOT/PLT relocations, and x86-64 LP64 and
