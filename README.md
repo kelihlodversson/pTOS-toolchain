@@ -26,9 +26,10 @@ The ordinary ELF mode also supports `-fPIC -shared` with a GOT and PLT.
 ## Build
 
 The build needs Bash, GNU Make 4.3 or later, a host C/C++ compiler, the GMP,
-MPFR and MPC development libraries, bison, flex, m4, Git, curl, patch, GNU tar,
-xz, `sha256sum`, and Python 3 with `kconfiglib`. Install `kconfiglib` in an
-active virtual environment if the host keeps its Python environment managed.
+MPFR and MPC development libraries, bison, flex, m4, Git, curl, patch, tar
+with xz support, `sha256sum` or `shasum`, and Python 3 with `kconfiglib`.
+Install `kconfiglib` in an active virtual environment if the host keeps its
+Python environment managed.
 
 ```sh
 python3 -m pip install kconfiglib
@@ -41,6 +42,26 @@ Pass `m68k`, `arm` or `x86_64` instead of `all` to build a single target.
 `JOBS` controls Make parallelism. `PTOS_WORKDIR` selects the build directory,
 and `PTOS_CACHE` selects the download cache. Use a fresh work directory when
 changing the installation prefix, source recipe or host toolchain.
+
+### macOS
+
+Install Apple's Command Line Tools (`xcode-select --install`) and the build
+dependencies with Homebrew:
+
+```sh
+brew install make gmp mpfr libmpc python xz
+python3 -m venv .work/venv
+source .work/venv/bin/activate
+python3 -m pip install kconfiglib
+./build.sh all "$HOME/opt/ptos"
+./tests/smoke.sh "$HOME/opt/ptos"
+```
+
+The build selects Homebrew's `gmake` (Apple's bundled Make is too old),
+finds Homebrew's GMP/MPFR/MPC prefixes on both Apple Silicon and Intel,
+uses the macOS system zlib, and supports Apple's tar and checksum tools.
+Set `MAKE` to override the
+GNU Make executable. The selected Make also builds libcmini.
 
 ## Build a C application
 
@@ -105,6 +126,10 @@ the `i386pep` linker emulation for its boot image. The driver selects a
 dedicated no-red-zone LP64 `libgcc` for that build. Applications use x32.
 
 ## Verification
+
+Run `bash tests/host.sh` to check host setup and rejection of failed or
+corrupt downloads without building a compiler. GitHub Actions builds all
+three SDKs on Linux and macOS and runs the smoke tests for each target.
 
 The SDK smoke tests cover the three application ABIs, m68k PRG+ELF,
 fastcall library selection and GOT/PLT relocations, and x86-64 LP64 and
