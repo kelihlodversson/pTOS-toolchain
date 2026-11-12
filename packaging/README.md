@@ -88,8 +88,13 @@ A separate fresh runner installs all three `.deb` files together and runs the
 full SDK smoke tests through `/usr/bin`. This tests package completeness,
 coexistence, compiler/sysroot paths and dependency installation without access
 to the original build prefixes. Only after this job passes does a job with
-`contents: write` upload the three packages and a combined `SHA256SUMS` to the
-published release. Reruns replace assets of the same name.
+`contents: write` upload the three packages to the published release. The
+workflow also builds macOS Homebrew bottles through the reusable Homebrew
+workflow. The publication job waits for bottle pouring, smoke tests and strict
+linkage checks as well as Debian verification, and uploads both package types
+with one combined `SHA256SUMS`. Bottle JSON metadata is included for activation
+in the tap; see [Homebrew maintenance](../homebrew/README.md). Reruns replace
+assets of the same name.
 
 Each installed package includes `/usr/share/doc/<package>/build-info.json`
 with the toolchain commit, target, GCC/Binutils recipes, archive checksums and
@@ -98,10 +103,11 @@ script are installed alongside it. Source archives come from the recorded GNU
 URLs and libcmini commit; local patches and build scripts are in the recorded
 toolchain commit's archive.
 
-For a trial build, use **Actions → Debian SDK packages → Run workflow** and
+For a trial build, use **Actions → SDK release packages → Run workflow** and
 enter a Debian package version such as `0.0.0~ci` or `1.1.0~rc1`. This builds
-and verifies all three packages and keeps them as workflow artifacts, without
-uploading to a release. Download the three artifacts and install their `.deb`
+and verifies all three Debian packages and macOS bottles and keeps them as
+workflow artifacts, without uploading to a release. Download the Debian
+artifacts and install their `.deb`
 files with `sudo apt-get install ./ptos-sdk-*.deb`.
 
 For local assembly after a default SDK build on a Debian/Ubuntu host:

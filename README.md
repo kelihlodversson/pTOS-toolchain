@@ -82,6 +82,26 @@ With the source archives already cached, run
 checksums, patch application and pTOS source preparation for every supported
 release and target. This checks source preparation; it does not compile the toolchains.
 
+### CI coverage
+
+The Build SDK workflow runs lightweight host/download checks and offline version
+tests in a small Ubuntu job. macOS checks run inside the compiler and Homebrew
+jobs when those jobs are needed. Full compiler
+builds for all three targets run when SDK inputs change, including build scripts,
+version recipes, patches, sysroot files and SDK smoke tests. Homebrew-only,
+Debian-packaging-only and documentation changes skip these compiler builds.
+Changes to the build workflow or its path classifier, and unknown paths, default
+to full builds. Manual dispatch always builds the requested GCC/Binutils pair.
+Ubuntu builds use one parallel job per target. macOS uses one job that builds
+and tests all three targets sequentially, freeing each target's build tree
+after its tests to limit disk usage.
+
+Homebrew changes build and test all three formulae and bottles sequentially in
+one macOS job, including simultaneous installation checks. They use
+the formulae's pinned SDK sources, so they do not replace compiler tests of the
+current checkout. Releases build Debian packages and Homebrew bottles through
+the release workflow without an additional plain SDK build matrix.
+
 ### macOS
 
 The repository also provides a Homebrew tap with one formula per target:
@@ -94,8 +114,10 @@ brew install kelihlodversson/ptos-toolchain/ptos-x86_64
 ```
 
 Each formula builds GCC 16.2.0, Binutils 2.45 and the libcmini SDK from
-checksum-pinned sources. The formulae currently build from source; no bottles
-are published. The target-prefixed commands are linked into Homebrew's `bin`
+checksum-pinned sources. The release workflow also publishes tested macOS
+bottles and their metadata alongside the Debian packages. Maintainers activate
+bottles by merging the release metadata into the formulae; until then,
+installation builds from source. The target-prefixed commands are linked into Homebrew's `bin`
 directory, and the three SDKs can be installed together. Run `brew test
 ptos-arm` (or the other formula name) to run the installed SDK's ABI smoke
 tests. See [Homebrew maintenance](homebrew/README.md) for local development.

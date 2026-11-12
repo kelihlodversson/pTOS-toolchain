@@ -1,4 +1,4 @@
-name: Debian SDK packages
+name: SDK release packages
 
 on:
   release:
@@ -13,6 +13,10 @@ on:
   pull_request:
     paths:
       - '.github/workflows/release-deb.yml'
+      - '.github/workflows/homebrew.yml'
+      - 'Formula/**'
+      - 'lib/ptos_toolchain_formula.rb'
+      - 'tests/test_bottles.py'
       - 'packaging/**'
       - 'tests/test_deb.py'
       - 'versions.json'
@@ -21,6 +25,10 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/release-deb.yml'
+      - '.github/workflows/homebrew.yml'
+      - 'Formula/**'
+      - 'lib/ptos_toolchain_formula.rb'
+      - 'tests/test_bottles.py'
       - 'packaging/**'
       - 'tests/test_deb.py'
       - 'versions.json'
@@ -30,8 +38,8 @@ permissions:
   contents: read
 
 concurrency:
-  group: deb-${{ github.event.release.tag_name || github.ref }}
-  cancel-in-progress: false
+  group: sdk-release-${{ github.event_name }}-${{ github.event.pull_request.number || github.event.release.tag_name || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
   test:
@@ -47,7 +55,9 @@ jobs:
           sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
           sudo apt-get -o Acquire::Retries=3 install -y dpkg-dev binutils
       - name: Test package assembly and coexistence
-        run: python3 tests/test_deb.py
+        run: |
+          python3 tests/test_deb.py
+          python3 tests/test_bottles.py
 
   build:
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
@@ -135,24 +145,39 @@ jobs:
             test "$("$target-gcc" -print-sysroot)" = "/opt/ptos/$arch/$target/sysroot"
           done
 
+  bottles:
+    if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
+    needs: test
+    uses: ./.github/workflows/homebrew.yml
+    with:
+      release_tag: ${{ github.event.release.tag_name || '' }}
+
   publish:
     if: github.event_name == 'release'
-    needs: verify
+    needs: [verify, bottles]
     runs-on: ubuntu-24.04
     permissions:
       contents: write
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
         with:
           pattern: deb-*
           merge-multiple: true
           path: dist
-      - name: Attach tested packages to the release
+      - uses: actions/download-artifact@v4
+        with:
+          pattern: bottles-*
+          merge-multiple: true
+          path: dist
+      - name: Attach tested packages and bottles to the release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
           test "$(find dist -maxdepth 1 -name '*.deb' | wc -l)" -eq 3
-          (cd dist && sha256sum *.deb > SHA256SUMS)
-          gh release upload "$RELEASE_TAG" dist/*.deb dist/SHA256SUMS --clobber
+          python3 packaging/prepare-bottles.py dist "$GH_REPO" "$RELEASE_TAG"
+          (cd dist && sha256sum *.deb *.bottle*.tar.gz *.bottle.json > SHA256SUMS)
+          gh release upload "$RELEASE_TAG" dist/*.deb dist/*.bottle*.tar.gz \
+            dist/*.bottle.json dist/SHA256SUMS --clobber

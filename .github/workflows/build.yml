@@ -45,19 +45,67 @@ on:
           - '2.44'
           - '2.45'
 
+permissions:
+  contents: read
+
+# Only PR runs supersede one another; other events keep their own run group.
+concurrency:
+  group: sdk-build-${{ github.event_name }}-${{ github.event.pull_request.number || github.run_id }}
+  cancel-in-progress: ${{ github.event_name == 'pull_request' }}
+
 jobs:
+  changes:
+    name: Detect SDK changes
+    runs-on: ubuntu-latest
+    outputs:
+      build: ${{ steps.changes.outputs.build }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - name: Classify changed paths
+        id: changes
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+        run: |
+          python3 .github/scripts/sdk_changes.py --event "$GITHUB_EVENT_NAME" \
+            --base "$BASE_SHA" --head "$HEAD_SHA" >> "$GITHUB_OUTPUT"
+
+  host:
+    name: Host checks / Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - name: Check host setup and download failures
+        run: /bin/bash tests/host.sh
+      - name: Check version selection and CI change filters
+        run: |
+          python3 tests/test_versions.py
+          python3 tests/test_ci_changes.py
+
   build:
-    name: ${{ matrix.os }} / ${{ matrix.arch }} / GCC ${{ inputs.gcc_version || 'latest' }} / Binutils ${{ inputs.binutils_version || 'latest' }}
+    needs: [changes, host]
+    if: needs.changes.outputs.build == 'true'
+    name: ${{ matrix.os }} / ${{ matrix.targets }} / GCC ${{ inputs.gcc_version || 'latest' }} / Binutils ${{ inputs.binutils_version || 'latest' }}
     env:
       GCC_VERSION: ${{ inputs.gcc_version || 'latest' }}
       BINUTILS_VERSION: ${{ inputs.binutils_version || 'latest' }}
     strategy:
       fail-fast: false
       matrix:
-        os: [ubuntu-latest, macos-latest]
-        arch: [m68k, arm, x86_64]
+        include:
+          - os: ubuntu-latest
+            targets: m68k
+          - os: ubuntu-latest
+            targets: arm
+          - os: ubuntu-latest
+            targets: x86_64
+          - os: macos-latest
+            targets: m68k arm x86_64
     runs-on: ${{ matrix.os }}
-    timeout-minutes: 90
+    timeout-minutes: 240
     steps:
       - uses: actions/checkout@v4
       - name: Validate requested versions
@@ -79,18 +127,30 @@ jobs:
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: brew install make gmp mpfr libmpc python xz
+      - name: Check macOS host setup
+        if: runner.os == 'macOS'
+        run: |
+          /bin/bash tests/host.sh
+          python3 tests/test_versions.py
+          python3 tests/test_ci_changes.py
       - name: Install Python dependencies
         run: |
           python3 -m venv .work/venv
           .work/venv/bin/python -m pip install kconfiglib
           echo "$PWD/.work/venv/bin" >> "$GITHUB_PATH"
-      - name: Check host setup and download failures
-        run: /bin/bash tests/host.sh
       - name: Build toolchain and C SDK
         env:
           JOBS: '3'
+          TARGETS: ${{ matrix.targets }}
         run: |
-          /bin/bash build.sh '${{ matrix.arch }}' "$RUNNER_TEMP/ptos" \
-            --gcc "$GCC_VERSION" --binutils "$BINUTILS_VERSION"
-      - name: Verify SDK
-        run: /bin/bash tests/smoke.sh "$RUNNER_TEMP/ptos" '${{ matrix.arch }}'
+          export PTOS_WORKDIR="$RUNNER_TEMP/ptos-work"
+          for arch in $TARGETS; do
+            echo "::group::Build and test $arch"
+            prefix="$RUNNER_TEMP/ptos/$arch"
+            /bin/bash build.sh "$arch" "$prefix" \
+              --gcc "$GCC_VERSION" --binutils "$BINUTILS_VERSION"
+            /bin/bash tests/smoke.sh "$prefix" "$arch"
+            # Retain the shared source cache, but free each target's build tree.
+            rm -rf "$PTOS_WORKDIR/$arch"
+            echo "::endgroup::"
+          done
