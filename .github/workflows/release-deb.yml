@@ -17,6 +17,7 @@ on:
       - 'Formula/**'
       - 'lib/ptos_toolchain_formula.rb'
       - 'tests/test_bottles.py'
+      - 'tests/test_bottle_activation.py'
       - 'packaging/**'
       - 'tests/test_deb.py'
       - 'versions.json'
@@ -29,6 +30,7 @@ on:
       - 'Formula/**'
       - 'lib/ptos_toolchain_formula.rb'
       - 'tests/test_bottles.py'
+      - 'tests/test_bottle_activation.py'
       - 'packaging/**'
       - 'tests/test_deb.py'
       - 'versions.json'
@@ -58,6 +60,7 @@ jobs:
         run: |
           python3 tests/test_deb.py
           python3 tests/test_bottles.py
+          python3 tests/test_bottle_activation.py
 
   build:
     if: github.event_name == 'release' || github.event_name == 'workflow_dispatch'
@@ -153,6 +156,8 @@ jobs:
       release_tag: ${{ github.event.release.tag_name || '' }}
 
   publish:
+    outputs:
+      release_sha: ${{ steps.release.outputs.sha }}
     if: github.event_name == 'release'
     needs: [verify, bottles]
     runs-on: ubuntu-24.04
@@ -171,6 +176,7 @@ jobs:
           merge-multiple: true
           path: dist
       - name: Attach tested packages and bottles to the release
+        id: release
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
@@ -181,3 +187,63 @@ jobs:
           (cd dist && sha256sum *.deb *.bottle*.tar.gz *.bottle.json > SHA256SUMS)
           gh release upload "$RELEASE_TAG" dist/*.deb dist/*.bottle*.tar.gz \
             dist/*.bottle.json dist/SHA256SUMS --clobber
+          echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+
+  activate-bottles:
+    if: github.event_name == 'release'
+    needs: publish
+    runs-on: ubuntu-24.04
+    permissions:
+      contents: write
+      pull-requests: write
+      actions: write
+    env:
+      GH_TOKEN: ${{ github.token }}
+      GH_REPO: ${{ github.repository }}
+      RELEASE_TAG: ${{ github.event.release.tag_name }}
+      RELEASE_SHA: ${{ needs.publish.outputs.release_sha }}
+      BOTTLE_BRANCH: automation/bottles-${{ github.event.release.id }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          fetch-depth: 0
+      - name: Download published metadata and update matching recipes
+        run: |
+          metadata="$RUNNER_TEMP/bottle-metadata"
+          mkdir -p "$metadata"
+          gh release download "$RELEASE_TAG" --pattern '*.bottle.json' --dir "$metadata"
+          python3 packaging/activate-bottles.py "$metadata" "$GH_REPO" "$RELEASE_TAG" "$RELEASE_SHA"
+          git diff --check
+      - name: Create or update the activation PR
+        id: pr
+        run: |
+          if git diff --quiet -- Formula; then
+            echo "changed=false" >> "$GITHUB_OUTPUT"
+            exit 0
+          fi
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git switch -c "$BOTTLE_BRANCH"
+          git add Formula
+          git commit -m "Activate Homebrew bottles for $RELEASE_TAG"
+          # This release-specific branch is owned by the automation. Lease it
+          # before replacing it on a release rerun.
+          if git ls-remote --exit-code --heads origin "$BOTTLE_BRANCH"; then
+            git fetch origin "$BOTTLE_BRANCH:refs/remotes/origin/$BOTTLE_BRANCH"
+          fi
+          git push --force-with-lease origin "$BOTTLE_BRANCH"
+          body="$RUNNER_TEMP/bottle-pr.md"
+          printf 'Activate the tested bottles published in release %s.\n\nThe recipe files still match the release build. Preserve the recorded Cellar restrictions and SHA-256 checksums.\n\nThe Homebrew workflow is dispatched to install the published bottles and run SDK smoke tests and strict linkage checks.\n' "$RELEASE_TAG" > "$body"
+          url=$(gh pr list --head "$BOTTLE_BRANCH" --base main --state open --json url --jq '.[0].url // empty')
+          if [[ -n $url ]]; then
+            gh pr edit "$url" --title "Activate Homebrew bottles for $RELEASE_TAG" --body-file "$body"
+          else
+            gh pr create --head "$BOTTLE_BRANCH" --base main \
+              --title "Activate Homebrew bottles for $RELEASE_TAG" --body-file "$body"
+          fi
+          echo "changed=true" >> "$GITHUB_OUTPUT"
+      - name: Verify published bottles on the activation branch
+        if: steps.pr.outputs.changed == 'true'
+        run: |
+          gh workflow run homebrew.yml --ref "$BOTTLE_BRANCH" -f verify_published_bottles=true

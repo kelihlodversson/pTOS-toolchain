@@ -13,6 +13,11 @@ on:
       - "lib/ptos_toolchain_formula.rb"
       - ".github/workflows/homebrew.yml"
   workflow_dispatch:
+    inputs:
+      verify_published_bottles:
+        description: Install and test published bottles instead of rebuilding
+        default: false
+        type: boolean
   workflow_call:
     inputs:
       release_tag:
@@ -32,7 +37,7 @@ concurrency:
 jobs:
   install:
     runs-on: macos-latest
-    name: Build and test all Homebrew bottles
+    name: ${{ inputs.verify_published_bottles && 'Verify published Homebrew bottles' || 'Build and test all Homebrew bottles' }}
     timeout-minutes: 240
     env:
       HOMEBREW_NO_AUTO_UPDATE: "1"
@@ -55,18 +60,27 @@ jobs:
           /bin/bash tests/host.sh
           python3 tests/test_versions.py
           python3 tests/test_ci_changes.py
-      - name: Build and test source installations
+      - name: Install and test SDKs
+        env:
+          VERIFY_PUBLISHED: ${{ inputs.verify_published_bottles || false }}
         run: |
           for formula in $FORMULAE; do
             echo "::group::Build and test $formula"
             full_name="kelihlodversson/ptos-toolchain/$formula"
             brew style "$full_name"
-            brew install --build-bottle --verbose "$full_name"
+            if [[ $VERIFY_PUBLISHED == true ]]; then
+              brew install --force-bottle --verbose "$full_name"
+              brew info --json=v2 "$full_name" |
+                jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'
+            else
+              brew install --build-bottle --verbose "$full_name"
+            fi
             brew test "$full_name"
             brew linkage --test --strict "$full_name"
             echo "::endgroup::"
           done
       - name: Build bottle and checksum metadata
+        if: ${{ !inputs.verify_published_bottles }}
         env:
           RELEASE_TAG: ${{ inputs.release_tag }}
         run: |
@@ -81,6 +95,7 @@ jobs:
             brew bottle "${args[@]}" "kelihlodversson/ptos-toolchain/$formula"
           done
       - name: Reinstall from bottle
+        if: ${{ !inputs.verify_published_bottles }}
         shell: bash
         env:
           # Homebrew 7 requires developer mode to install our locally built bottle.
@@ -112,6 +127,7 @@ jobs:
             brew linkage --test --strict "kelihlodversson/ptos-toolchain/$formula"
           done
       - name: Upload tested bottle
+        if: ${{ !inputs.verify_published_bottles }}
         uses: actions/upload-artifact@v4
         with:
           name: bottles-${{ runner.os }}-${{ runner.arch }}

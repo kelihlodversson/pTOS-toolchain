@@ -77,7 +77,8 @@ is published. It sets the bottle root URL to that release, then publishes the
 three tested archives and their `.bottle.json` metadata alongside the Debian
 packages. Both Debian verification and every bottle test must pass before the
 shared publication job runs. `SHA256SUMS` covers the Debian packages, bottle
-archives and JSON metadata. Only the publication job has `contents: write`.
+archives and JSON metadata. Publication and activation use narrowly scoped
+write permissions; build jobs retain read-only repository access.
 Manual dispatch builds both package types as artifacts without release uploads.
 
 Homebrew's local bottle names use `--` between the formula name and version,
@@ -88,8 +89,31 @@ Cellar restrictions and checksums from `brew bottle` are retained unchanged.
 
 ### Activate published bottles
 
-Publication does not edit the tap automatically. After a release build succeeds,
-download that release's metadata and merge the bottle blocks in a follow-up PR:
+After publication, the release workflow automatically creates or updates an
+activation PR against `main`. It downloads the published JSON metadata, checks
+that all three formula recipes and the shared helper still match the release
+commit, and adds or replaces their `bottle do` blocks. Existing bottle blocks
+are excluded from the recipe comparison so retries are idempotent. Version,
+release URL, checksum, rebuild and Cellar values are validated before any
+formula is changed. If recipes have advanced, activation fails with a rebuild
+message instead of attaching outdated binaries to newer sources.
+
+Each release owns an `automation/bottles-<release-id>` branch. Reruns update its
+open PR with a leased push; an already activated release produces no changes.
+The workflow never merges the activation PR. Only its activation job receives
+`contents: write`, `pull-requests: write` and `actions: write`.
+
+Repository Settings → Actions → General must allow GitHub Actions to create
+and approve pull requests. The job uses the built-in `GITHUB_TOKEN`, with no
+personal token or additional secret. Since bot-created PR workflows may require
+approval, the activation job explicitly dispatches the Homebrew workflow on
+its branch with `verify_published_bottles=true`. This mode downloads the public
+release bottles, verifies that they were poured, and runs all three SDK smoke
+tests and strict linkage checks together, without compiling or rebottling.
+The exception for explicit workflow dispatch is documented in
+[GitHub's workflow triggering guide](https://docs.github.com/en/actions/how-tos/write-workflows/choose-when-workflows-run/trigger-a-workflow).
+
+For manual recovery, download the metadata and merge the blocks in the tap:
 
 ```sh
 tag=v1.0.0 # Select the release to activate.
