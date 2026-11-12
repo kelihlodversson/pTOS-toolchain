@@ -17,6 +17,7 @@ NON_SDK_PATHS = (
     ".github/workflows/homebrew.yml",
     ".github/workflows/release-deb.yml",
     "tests/test_bottles.py",
+    "tests/test_bottle_activation.py",
     "tests/test_deb.py",
 )
 
