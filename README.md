@@ -25,7 +25,9 @@ Publishing a GitHub release builds `amd64` host packages for all three targets:
 `ptos-sdk-m68k`, `ptos-sdk-arm` and `ptos-sdk-x86-64`. Each contains GCC,
 Binutils, libgcc, libcmini and startup objects. Packages are built on Ubuntu
 24.04 and tested together on a fresh runner before being attached to the
-release with `SHA256SUMS`.
+release with `SHA256SUMS`. The same signed release packages are installation-tested
+on Ubuntu 24.04 and 26.04 amd64; official builds remain pinned to 24.04 to preserve
+the older host-library baseline. See the [host support matrix](packaging/README.md#host-support-and-runtime-compatibility).
 
 Download the required `.deb` from a published release and install it with:
 
@@ -85,14 +87,14 @@ release and target. This checks source preparation; it does not compile the tool
 ### CI coverage
 
 The Build SDK workflow runs lightweight host/download checks and offline version
-tests in a small Ubuntu job. macOS checks run inside the compiler and Homebrew
+tests on explicit Ubuntu 24.04 and 26.04 runners. macOS checks run inside the compiler and Homebrew
 jobs when those jobs are needed. Full compiler
 builds for all three targets run when SDK inputs change, including build scripts,
 version recipes, patches, sysroot files and SDK smoke tests. Homebrew-only,
 Debian-packaging-only and documentation changes skip these compiler builds.
 Changes to the build workflow or its path classifier, and unknown paths, default
 to full builds. Manual dispatch always builds the requested GCC/Binutils pair.
-Ubuntu builds use one parallel job per target. macOS uses one job that builds
+Ubuntu builds use explicit 24.04 and 26.04 matrices, with one parallel job per target on each host. macOS uses one job that builds
 and tests all three targets sequentially, freeing each target's build tree
 after its tests to limit disk usage.
 
@@ -239,11 +241,12 @@ and 16.2.0. The GCC 16.2 port also fixes volatile MMIO access width and ROM
 byte-access alignment. See [patches/README.md](patches/README.md) for patch
 provenance, local changes and validation details.
 
-## Install the SDK with APT (Ubuntu 24.04+, amd64)
+<a id="install-the-sdk-with-apt-ubuntu-2404-amd64"></a>
 
-The APT service requires the infrastructure bootstrap described in
-[APT maintenance](packaging/apt-repository.md). These commands become usable
-once that bootstrap has passed the public installation test. GitHub Pages hosts
+## Install the SDK with APT (Ubuntu 24.04 and 26.04, amd64)
+
+The signed APT service at `https://apt.ptos.dev` is live. See
+[APT maintenance](packaging/apt-repository.md) for operational details. GitHub Pages hosts
 a bounded set of recent stable versions; GitHub Releases archive every version.
 
 ```sh

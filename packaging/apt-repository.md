@@ -2,7 +2,8 @@
 
 ## Status and architecture
 
-The service is pending review, merge and bootstrap. GitHub Releases permanently
+The service is live; bootstrap and an ordinary repeat deployment of v0.1.0
+passed on 2026-11-13. GitHub Releases permanently
 archive Debian packages; GitHub Pages hosts a bounded, complete static APT site
 from this repository through GitHub Actions. The endpoint is `https://apt.ptos.dev`.
 No binary packages are committed to Git. Publication needs only GITHUB_TOKEN
@@ -90,10 +91,10 @@ been generated or exported during this change.
    rerun a failed verification job after certificate setup. Never bypass TLS checks.
    Confirm the domain appears in this repository's Pages settings and the root
    index identifies the pTOS SDK APT service, rather than the main website.
-7. The verify job runs on a fresh Ubuntu 24.04 runner, verifies public HEAD/GET
+7. The verify job runs on Ubuntu 24.04 and verifies public HEAD/GET
    responses, checks every deployed object's SHA256, verifies InRelease,
-   Release.gpg and the history signature, then installs all three exact SDK
-   versions with `signed-by`. Installed smoke tests verify target names, compiler
+   Release.gpg and the history signature. The reusable installation workflow then installs all three exact SDK
+   versions with `signed-by` on fresh Ubuntu 24.04 and 26.04 runners. Installed smoke tests verify target names, compiler
    prefixes and sysroot coexistence. Repeat the deployment without bootstrap and
    require the same checks to pass before declaring production readiness.
 
@@ -209,4 +210,4 @@ signing and signed-by acceptance, complete Pages generation and repeat generatio
 retention, ordering, grace preservation, size failures, checksum/identity validation,
 immutable conflicts and package index references. Public verification requires
 no particular CDN headers. Production readiness requires the actual public Ubuntu
-installation to pass; fixture success alone does not satisfy that requirement.
+installation tests to pass; fixture success alone does not satisfy that requirement.

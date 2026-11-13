@@ -21,6 +21,7 @@ on:
       - '.github/workflows/publish-apt.yml'
       - 'packaging/**'
       - 'tests/test_apt.py'
+      - 'tests/test_runtime.py'
   push:
     branches: [main]
     paths:
@@ -30,6 +31,7 @@ on:
       - '.github/workflows/publish-apt.yml'
       - 'packaging/**'
       - 'tests/test_apt.py'
+      - 'tests/test_runtime.py'
 
 permissions:
   contents: read
@@ -53,4 +55,8 @@ jobs:
       - name: Audit installed package dependencies and native ELF symbol requirements
         run: |
           sudo apt-get install -y binutils
-          python3 packaging/audit-runtime.py
+          python3 packaging/audit-runtime.py | tee "$RUNNER_TEMP/ptos-runtime.txt"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: runtime-${{ matrix.os }}
+          path: ${{ runner.temp }}/ptos-runtime.txt
