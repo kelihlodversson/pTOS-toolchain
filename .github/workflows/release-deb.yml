@@ -13,6 +13,8 @@ on:
   pull_request:
     paths:
       - '.github/workflows/release-deb.yml'
+      - '.github/workflows/publish-apt.yml'
+      - 'tests/test_apt.py'
       - '.github/workflows/homebrew.yml'
       - 'Formula/**'
       - 'lib/ptos_toolchain_formula.rb'
@@ -26,6 +28,8 @@ on:
     branches: [main]
     paths:
       - '.github/workflows/release-deb.yml'
+      - '.github/workflows/publish-apt.yml'
+      - 'tests/test_apt.py'
       - '.github/workflows/homebrew.yml'
       - 'Formula/**'
       - 'lib/ptos_toolchain_formula.rb'
@@ -55,10 +59,11 @@ jobs:
             https://archive.ubuntu.com/ubuntu 2 \
             https://security.ubuntu.com/ubuntu 3 | sudo tee /etc/apt/apt-mirrors.txt
           sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
-          sudo apt-get -o Acquire::Retries=3 install -y dpkg-dev binutils
+          sudo apt-get -o Acquire::Retries=3 install -y dpkg-dev binutils apt-utils gnupg
       - name: Test package assembly and coexistence
         run: |
           python3 tests/test_deb.py
+          python3 tests/test_apt.py
           python3 tests/test_bottles.py
           python3 tests/test_bottle_activation.py
 
@@ -247,3 +252,15 @@ jobs:
         if: steps.pr.outputs.changed == 'true'
         run: |
           gh workflow run homebrew.yml --ref "$BOTTLE_BRANCH" -f verify_published_bottles=true
+
+  publish-apt:
+    if: github.event_name == 'release' && !github.event.release.prerelease && !github.event.release.draft
+    needs: publish
+    uses: ./.github/workflows/publish-apt.yml
+    with:
+      release_tag: ${{ github.event.release.tag_name }}
+    secrets:
+      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+      APT_SIGNING_KEY_B64: ${{ secrets.APT_SIGNING_KEY_B64 }}
+      APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}

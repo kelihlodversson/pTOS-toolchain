@@ -131,3 +131,11 @@ check; full release builds run on publication or manual dispatch.
 [Local package validation](../validation/debian-packages.md) also assembled
 packages from all three existing GCC 16.2 SDKs and passed their full smoke tests
 after extraction and removal of the original test prefixes.
+
+## Signed APT publication
+
+After the existing release publication succeeds, official releases also call
+[Publish APT repository](../.github/workflows/publish-apt.yml). This reuses the
+verified GitHub Release assets and does not compile SDKs. See
+[APT repository operations](apt-repository.md) for infrastructure bootstrap,
+credentials, signing, manual publication, recovery, caching and key rotation.

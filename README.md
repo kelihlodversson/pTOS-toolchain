@@ -238,3 +238,23 @@ Local additions port the MiNT patches to GCC 12.5.0, 13.5.0, 14.4.0, 15.3.0
 and 16.2.0. The GCC 16.2 port also fixes volatile MMIO access width and ROM
 byte-access alignment. See [patches/README.md](patches/README.md) for patch
 provenance, local changes and validation details.
+
+## Install the SDK with APT (Ubuntu 24.04+, amd64)
+
+The APT service requires the infrastructure bootstrap described in
+[APT maintenance](packaging/apt-repository.md). These commands become usable
+once that bootstrap has passed the public installation test.
+
+```sh
+curl -fsSL https://apt.ptos.dev/ptos-archive-keyring.gpg |
+  sudo tee /usr/share/keyrings/ptos-archive-keyring.gpg >/dev/null
+echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/ptos-archive-keyring.gpg] https://apt.ptos.dev stable main' |
+  sudo tee /etc/apt/sources.list.d/ptos.list
+sudo apt update
+sudo apt install ptos-sdk-m68k ptos-sdk-arm ptos-sdk-x86-64
+```
+
+Install only the target you need with `sudo apt install ptos-sdk-m68k`,
+`sudo apt install ptos-sdk-arm`, or `sudo apt install ptos-sdk-x86-64`.
+All three packages run on an amd64 Linux host and can coexist. Their compiler
+prefixes and installation directories are listed in [packaging](packaging/README.md).

@@ -1,0 +1,68 @@
+name: Publish APT repository
+
+on:
+  workflow_call:
+    inputs:
+      release_tag:
+        required: true
+        type: string
+    secrets:
+      R2_ACCESS_KEY_ID:
+        required: true
+      R2_SECRET_ACCESS_KEY:
+        required: true
+      APT_SIGNING_KEY_B64:
+        required: true
+      APT_SIGNING_KEY_PASSPHRASE:
+        required: false
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Existing official release tag (no rebuild)
+        required: true
+        type: string
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ptos-apt-stable
+  cancel-in-progress: false
+
+jobs:
+  publish:
+    if: >-
+      github.repository == 'kelihlodversson/pTOS-toolchain' &&
+      (github.event_name == 'release' ||
+       (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@v4
+      - name: Install repository tools
+        run: |
+          sudo apt-get -o Acquire::Retries=3 update
+          sudo apt-get -o Acquire::Retries=3 install -y dpkg-dev apt-utils gnupg gpgv
+          command -v aws
+      - name: Publish verified release assets
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
+          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
+          AWS_EC2_METADATA_DISABLED: 'true'
+          AWS_REQUEST_CHECKSUM_CALCULATION: when_required
+          AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
+          R2_ACCOUNT_ID: ${{ vars.R2_ACCOUNT_ID }}
+          R2_BUCKET_NAME: ${{ vars.R2_BUCKET_NAME }}
+          R2_ENDPOINT_URL: ${{ vars.R2_ENDPOINT_URL }}
+          APT_REPOSITORY_URL: ${{ vars.APT_REPOSITORY_URL }}
+          APT_SIGNING_KEY_B64: ${{ secrets.APT_SIGNING_KEY_B64 }}
+          APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
+        run: python3 packaging/publish-apt.py
+      - name: Install and smoke test public SDKs on Ubuntu 24.04
+        env:
+          APT_REPOSITORY_URL: ${{ vars.APT_REPOSITORY_URL }}
+          RELEASE_TAG: ${{ inputs.release_tag }}
+        run: bash packaging/test-apt.sh
