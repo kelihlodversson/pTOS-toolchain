@@ -64,6 +64,9 @@ class DebianPackages(unittest.TestCase):
                 self.assertEqual((installed / f'opt/ptos/{arch}/bin/{target}-gcc').stat().st_mode & 0o777, 0o755)
                 info = json.loads((installed / f'usr/share/doc/ptos-sdk-{arch.replace("_", "-")}/build-info.json').read_text())
                 self.assertEqual(info['gcc']['version'], gcc)
+                docs = installed / f'usr/share/doc/ptos-sdk-{arch.replace("_", "-")}'
+                for name in ('m68k_auto_inc_dec.py', 'm68k-auto-inc-dec.c', 'm68k-auto-inc-dec-runtime.c'):
+                    self.assertEqual((docs / name).read_bytes(), (PROJECT / 'tests' / name).read_bytes())
             self.assertEqual(len(packages), 3)
             for arch, target in TARGETS.items():
                 self.assertTrue((installed / f'opt/ptos/{arch}/bin/{target}-gcc').is_file())

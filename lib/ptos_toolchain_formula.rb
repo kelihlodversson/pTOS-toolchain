@@ -74,6 +74,9 @@ module PtosToolchainFormula
     system "/bin/bash", "build.sh", arch, prefix,
            "--gcc", "16.2.0", "--binutils", "2.45"
     (pkgshare/"tests").install "tests/smoke.sh"
+    (pkgshare/"tests").install "tests/m68k_auto_inc_dec.py",
+                               "tests/m68k-auto-inc-dec.c",
+                               "tests/m68k-auto-inc-dec-runtime.c"
     # GCC and Binutils install common manuals. Keep them in a formula-specific
     # directory so the SDKs can be linked side by side.
     pkgshare.install info if info.exist?
