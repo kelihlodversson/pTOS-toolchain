@@ -105,8 +105,11 @@ jobs:
           path: ${{ runner.temp }}/apt-verification
       - name: Verify public HTTPS content and signatures after propagation
         run: python3 packaging/verify-apt.py "$RUNNER_TEMP/apt-verification/apt-verification.json"
-      - name: Install and smoke test public SDKs on clean Ubuntu 24.04
-        env:
-          APT_REPOSITORY_URL: https://apt.ptos.dev
-          RELEASE_TAG: ${{ inputs.release_tag }}
-        run: bash packaging/test-apt.sh
+
+  install:
+    needs: verify
+    permissions:
+      contents: read
+    uses: ./.github/workflows/test-apt.yml
+    with:
+      release_tag: ${{ inputs.release_tag }}

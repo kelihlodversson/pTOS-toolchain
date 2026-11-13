@@ -14,6 +14,7 @@ on:
     paths:
       - '.github/workflows/release-deb.yml'
       - '.github/workflows/publish-apt.yml'
+      - '.github/workflows/test-apt.yml'
       - 'tests/test_apt.py'
       - '.github/workflows/homebrew.yml'
       - 'Formula/**'
@@ -29,6 +30,7 @@ on:
     paths:
       - '.github/workflows/release-deb.yml'
       - '.github/workflows/publish-apt.yml'
+      - '.github/workflows/test-apt.yml'
       - 'tests/test_apt.py'
       - '.github/workflows/homebrew.yml'
       - 'Formula/**'
@@ -49,7 +51,12 @@ concurrency:
 
 jobs:
   test:
-    runs-on: ubuntu-24.04
+    name: Packaging fixtures / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - name: Install packaging test dependencies
