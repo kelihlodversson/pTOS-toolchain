@@ -7,8 +7,8 @@ class PtosArm < Formula
   homepage "https://github.com/kelihlodversson/pTOS-toolchain"
 
   bottle do
-    root_url "https://github.com/kelihlodversson/pTOS-toolchain/releases/download/v0.1.0"
-    sha256 cellar: "/opt/homebrew/Cellar", arm64_tahoe: "85e184814777e2a32fd783ed541fa08c1e32ece8703748531f3fb045cea7f5fb"
+    root_url "https://github.com/kelihlodversson/pTOS-toolchain/releases/download/v0.2.0"
+    sha256 cellar: "/opt/homebrew/Cellar", arm64_tahoe: "15ba233799a2bb8f378c818447cc8aeb790567912b9da6e362c4ca6d80278c83"
   end
 
   def install
