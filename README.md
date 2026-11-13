@@ -277,6 +277,18 @@ fastcall library selection and GOT/PLT relocations, and x86-64 LP64 and
 EFI linking. The x32 shared-library test also checks stack permissions and
 GNU RELRO against pTOS's runtime loader requirements.
 
+The m68k copy-loop regression checks source auto-increment/decrement
+dependencies at `-Os` and `-O2` for 68000, 68020 and 68040, with each
+available calling convention. Linux CI also runs the copies under
+`qemu-m68k`. To run that check with an installed SDK:
+
+```sh
+python3 tests/m68k_auto_inc_dec.py m68k-unknown-ptos-prgelf-gcc --runner qemu-m68k
+```
+
+See the [copy-loop validation report](validation/m68k-auto-inc-dec.md) for
+the GCC 16 backend fix and version coverage.
+
 Runtime validation results and exact test settings are recorded in the
 [GCC 12–15 report](validation/gcc-12-15.md) and
 [GCC 16.2 report](validation/gcc-16.2.md), including QEMU regression tests
