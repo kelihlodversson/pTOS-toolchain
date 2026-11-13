@@ -53,6 +53,7 @@ jobs:
           RELEASE_TAG: ${{ inputs.release_tag || 'v0.1.0' }}
         run: bash packaging/test-apt.sh
       - name: Audit installed package dependencies and native ELF symbol requirements
+        shell: bash
         run: |
           sudo apt-get install -y binutils
           python3 packaging/audit-runtime.py | tee "$RUNNER_TEMP/ptos-runtime.txt"
