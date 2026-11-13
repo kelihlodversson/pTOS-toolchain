@@ -5,6 +5,7 @@ import importlib.util
 import os
 from pathlib import Path
 import subprocess
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -16,6 +17,57 @@ spec.loader.exec_module(apt)
 
 
 class AptRepository(unittest.TestCase):
+    def test_install_selects_only_an_available_exact_version_metapackage(self):
+        # apt-cache show can succeed without returning the requested version.
+        # Exercise the whole installation script without touching host APT.
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            commands = root / 'bin'
+            commands.mkdir()
+            dispatcher = commands / 'fixture'
+            dispatcher.write_text(f'#!{sys.executable}\n' + '''
+import os
+from pathlib import Path
+import sys
+
+command = Path(sys.argv[0]).name
+args = sys.argv[1:]
+if command == 'curl':
+    Path(args[args.index('-o') + 1]).touch()
+elif command == 'apt-cache':
+    if args[0] == 'madison':
+        version = os.environ['META_VERSION'] if args[1] == 'ptos-toolchain' else '0.1.0'
+        if version:
+            print(f'{args[1]} | {version} | fixture stable/main amd64 Packages')
+    # Deliberately return success and no output for `show`.
+elif command == 'sudo':
+    if args[0] == 'tee':
+        sys.stdin.read()
+    elif args[:3] == ['apt-get', 'install', '-y']:
+        Path(os.environ['INSTALL_LOG']).write_text('\\n'.join(args[3:]))
+elif command == 'bash':
+    if args[0] == 'packaging/release-version.sh':
+        print('0.1.0')
+    elif args != ['packaging/test-installed.sh', '0.1.0']:
+        sys.exit(1)
+else:
+    sys.exit(1)
+''')
+            dispatcher.chmod(0o755)
+            for name in ('sudo', 'curl', 'apt-cache', 'bash'):
+                (commands / name).symlink_to(dispatcher)
+            for meta in ('', '0.2.0', '0.1.0'):
+                with self.subTest(metapackage_version=meta):
+                    log = root / 'installed'
+                    env = dict(os.environ, PATH=f'{commands}:{os.environ["PATH"]}',
+                               APT_REPOSITORY_URL='https://fixture.invalid', RELEASE_TAG='v0.1.0',
+                               META_VERSION=meta, INSTALL_LOG=str(log))
+                    subprocess.run(['/bin/bash', 'packaging/test-apt.sh'], cwd=PROJECT,
+                                   env=env, check=True, capture_output=True, text=True)
+                    expected = (['ptos-toolchain=0.1.0'] if meta == '0.1.0' else
+                                ['ptos-sdk-m68k=0.1.0', 'ptos-sdk-arm=0.1.0', 'ptos-sdk-x86-64=0.1.0'])
+                    self.assertEqual(log.read_text().splitlines(), expected)
+
     def package(self, root, name, version, payload='hello'):
         stage = root / 'stage'
         (stage / 'DEBIAN').mkdir(parents=True, exist_ok=True)

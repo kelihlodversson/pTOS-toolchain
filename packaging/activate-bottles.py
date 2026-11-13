@@ -77,7 +77,8 @@ def activate(repository, metadata, github_repo, tag, release_sha):
                 raise ValueError("Multiple bottle blocks")
             source = BLOCK.sub(lambda _: block, source, count=1)
         else:
-            anchor = re.search(r'^  homepage "[^"\n]+"\n', source, re.MULTILINE)
+            anchor = (re.search(r'^  revision \d+\n', source, re.MULTILINE)
+                      or re.search(r'^  homepage "[^"\n]+"\n', source, re.MULTILINE))
             if not anchor:
                 raise ValueError(f"Cannot find bottle insertion point in {name}")
             source = source[:anchor.end()] + "\n" + block + source[anchor.end():]

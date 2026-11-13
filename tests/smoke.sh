@@ -4,6 +4,7 @@ export LC_ALL=C
 
 [[ $# == 1 || $# == 2 ]] || { echo "Usage: $0 <install-prefix> [all|m68k|arm|x86_64]" >&2; exit 2; }
 bin=$(cd -- "$1/bin" && pwd)
+test_dir=$(cd -- "$(dirname -- "$0")" && pwd)
 arch=${2:-all}
 case $arch in all|m68k|arm|x86_64) ;; *) exit 2 ;; esac
 
@@ -49,6 +50,7 @@ check_target() {
 
 if [[ $arch == all || $arch == m68k ]]; then
     target="$bin/m68k-unknown-ptos-prgelf"
+    python3 "$test_dir/m68k_auto_inc_dec.py" "$target-gcc"
     # CrossMiNT's GCC 12 patch predates the fastcall compiler option and
     # multilibs. Later supported tracks must provide both.
     fastcall=true

@@ -16,6 +16,8 @@ PROJECT = Path(__file__).resolve().parents[1]
 PREPARE_FILES = {
     "config.sub", "bfd/config.bfd", "gas/configure.tgt", "ld/configure.tgt",
     "ld/emulparams/m68kelf.sh", "gcc/config.gcc", "libgcc/config.host",
+    "gcc/config/m68k/m68k.cc", "gcc/config/m68k/m68k-protos.h",
+    "gcc/config/m68k/m68k.md",
 }
 TARGETS = {
     "m68k": "m68k-unknown-ptos-prgelf",

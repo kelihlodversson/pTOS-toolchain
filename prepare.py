@@ -2,6 +2,7 @@
 """Register the pTOS targets in the pinned GCC and Binutils releases."""
 
 import argparse
+import re
 from pathlib import Path
 
 
@@ -79,8 +80,53 @@ x86_64-*-ptos-elfx32)\ttarg_emul=elf32_x86_64
 x86_64-*-elf* | x86_64-*-rtems*""")
 
 
+def fix_m68k_move_dependencies(root):
+    # RTL evaluates the SET source before its destination.  MOVE evaluates
+    # the destination address after updating a source address register.
+    replace(root, "gcc/config/m68k/m68k-protos.h",
+            "extern const char *output_move_simode (rtx *);",
+            "extern bool m68k_move_operands_p (rtx, rtx);\n"
+            "extern const char *output_move_simode (rtx *);")
+    marker = "\nconst char *\noutput_move_simode (rtx *operands)\n"
+    replace(root, "gcc/config/m68k/m68k.cc", marker, """
+/* Reject a memory MOVE whose source updates a register used to address
+   the destination.  Combining such operands changes the destination EA.  */
+bool
+m68k_move_operands_p (rtx dest, rtx src)
+{
+  if (MEM_P (dest) && MEM_P (src))
+    {
+      rtx addr = XEXP (src, 0);
+      if ((GET_CODE (addr) == POST_INC || GET_CODE (addr) == PRE_DEC)
+          && reg_overlap_mentioned_p (XEXP (addr, 0), XEXP (dest, 0)))
+        return false;
+    }
+  return true;
+}
+""" + marker)
+    md = root / "gcc/config/m68k/m68k.md"
+    chunks = re.split(r"(?=^\(define_)", md.read_text(), flags=re.M)
+    count = 0
+    for index, chunk in enumerate(chunks):
+        if (chunk.startswith("(define_insn ") and re.search(
+                r'\[\(set \(match_operand:(SI|HI|QI|SF) 0 "nonimmediate_operand"[^)]*\)'
+                r'\s*\(match_operand:\1 1 "(?:general_src_operand|general_operand)"',
+                chunk, re.S)):
+            chunks[index], replacements = re.subn(
+                r'\n  "([^"\n]*)"\n',
+                r'\n  "\1 && m68k_move_operands_p (operands[0], operands[1])"\n',
+                chunk, count=1)
+            if replacements != 1:
+                raise ValueError("missing m68k MOVE condition")
+            count += 1
+    if count != 10:
+        raise ValueError(f"expected ten m68k MOVE patterns, found {count}")
+    md.write_text("".join(chunks))
+
+
 def prepare_gcc(root, arch):
     if arch == "m68k":
+        fix_m68k_move_dependencies(root)
         # Retain CrossMiNT's C ABI, including fastcall and the CPU multilibs.
         replace(root, "gcc/config.gcc", "m68k-*-mintelf*)\n", """\
 m68k-*-ptos-prgelf)

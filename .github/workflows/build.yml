@@ -88,6 +88,7 @@ jobs:
         run: |
           python3 tests/test_versions.py
           python3 tests/test_ci_changes.py
+          python3 tests/test_m68k_auto_inc_dec.py
 
   build:
     needs: [changes, host]
@@ -133,7 +134,7 @@ jobs:
             https://security.ubuntu.com/ubuntu 3 \
             | sudo tee /etc/apt/apt-mirrors.txt
           sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
-          sudo apt-get -o Acquire::Retries=3 install -y build-essential libgmp-dev libmpfr-dev libmpc-dev bison flex m4 xz-utils python3-venv
+          sudo apt-get -o Acquire::Retries=3 install -y build-essential libgmp-dev libmpfr-dev libmpc-dev bison flex m4 xz-utils python3-venv qemu-user
       - name: Install macOS dependencies
         if: runner.os == 'macOS'
         run: brew install make gmp mpfr libmpc python xz
@@ -143,6 +144,7 @@ jobs:
           /bin/bash tests/host.sh
           python3 tests/test_versions.py
           python3 tests/test_ci_changes.py
+          python3 tests/test_m68k_auto_inc_dec.py
       - name: Install Python dependencies
         run: |
           python3 -m venv .work/venv
@@ -160,6 +162,10 @@ jobs:
             /bin/bash build.sh "$arch" "$prefix" \
               --gcc "$GCC_VERSION" --binutils "$BINUTILS_VERSION"
             /bin/bash tests/smoke.sh "$prefix" "$arch"
+            if [[ $arch == m68k && "$RUNNER_OS" == Linux ]]; then
+              python3 tests/m68k_auto_inc_dec.py \
+                "$prefix/bin/m68k-unknown-ptos-prgelf-gcc" --runner qemu-m68k
+            fi
             # Retain the shared source cache, but free each target's build tree.
             rm -rf "$PTOS_WORKDIR/$arch"
             echo "::endgroup::"

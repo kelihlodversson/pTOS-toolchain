@@ -23,7 +23,7 @@ for arch in m68k arm x86_64; do
   apt-cache madison "$package" | awk -v expected="$version" '$3 == expected { found=1 } END { exit !found }'
   packages+=("$package=$version")
 done
-if apt-cache show "ptos-toolchain=$version" >/dev/null 2>&1; then
+if apt-cache madison ptos-toolchain | awk -v expected="$version" '$3 == expected { found=1 } END { exit !found }'; then
   # New releases: APT must resolve all three exact-version SDK dependencies.
   packages=("ptos-toolchain=$version")
 else

@@ -71,6 +71,26 @@ class BottleActivationTests(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "recipes changed"):
             self.run_activation()
 
+    def test_activates_new_formula_revision_before_bottle_block(self):
+        for name in ('ptos-arm', 'ptos-m68k', 'ptos-x86_64'):
+            formula = self.root / f'Formula/{name}.rb'
+            formula.write_text(formula.read_text().replace(
+                '  homepage "https://example.org"\n',
+                '  homepage "https://example.org"\n  revision 1\n'))
+            path = self.metadata / f'{name}.bottle.json'
+            data = json.loads(path.read_text())
+            next(iter(data.values()))['formula']['pkg_version'] = '16.2.0_1'
+            path.write_text(json.dumps(data))
+        self.git('add', 'Formula')
+        self.git('-c', 'user.name=Test', '-c', 'user.email=test@local',
+                 'commit', '-qm', 'New SDK revision')
+        self.sha = self.git('rev-parse', 'HEAD')
+        self.run_activation()
+        first = (self.root / 'Formula/ptos-m68k.rb').read_text()
+        self.assertLess(first.index('  revision 1'), first.index('  bottle do'))
+        self.run_activation()
+        self.assertEqual(first, (self.root / 'Formula/ptos-m68k.rb').read_text())
+
     def test_rejects_wrong_release_without_writing_formulae(self):
         self.change_metadata(lambda entry: entry["bottle"].update(root_url="https://wrong.example"))
         with self.assertRaisesRegex(ValueError, "URL"):

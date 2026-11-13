@@ -35,6 +35,14 @@ https://raw.githubusercontent.com/th-otto/crossmint/53ff5e25af1cd679bb60d46ab4e8
 
 ## Local ports
 
+`prepare.py` also applies the m68k MOVE dependency fix for
+[issue #15](https://github.com/kelihlodversson/pTOS-toolchain/issues/15)
+to every supported GCC recipe. Integer and single-precision MOVE patterns
+reject a source pre-decrement or post-increment register that also occurs
+in the destination address. This prevents late combining from changing
+the destination effective address while retaining valid auto-inc-dec
+instructions. See the [validation report](../validation/m68k-auto-inc-dec.md).
+
 The patches at this directory's root extend the archived patches to newer
 GNU releases. Their archived source patches remain unchanged. All five ports
 are selectable with `--gcc` and in the manual CI dropdown; GCC 16.2.0 remains

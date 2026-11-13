@@ -4,9 +4,12 @@ The tap lives in this repository. `Formula/ptos-m68k.rb`, `ptos-arm.rb` and
 `ptos-x86_64.rb` use the shared implementation in
 `lib/ptos_toolchain_formula.rb`. No separate tap repository is needed.
 
-The first formula release uses GCC 16.2.0 and Binutils 2.45. Its SDK source
-is pinned to commit `bb00f4c276504cc80cc20fd2e9235621c6f9e3ba`, which includes
-the GCC 16 MiNT port and runtime fixes. Formula changes do not implicitly
+The formulae use GCC 16.2.0 and Binutils 2.45, with formula revision 1.
+Their SDK source is pinned to commit `58963ae7a363a47e706e96766c3a7fef84ed0771`,
+which includes the m68k MOVE dependency fix and bundled regression inputs.
+The previous revision's bottle references are removed; the release workflow
+builds and tests new bottles before proposing their activation.
+Formula changes do not implicitly
 change the SDK sources. Update the source commit, its archive checksum,
 resource checksums and explicit build versions together when releasing a
 new SDK; use a formula revision for changes within the same GCC version.
