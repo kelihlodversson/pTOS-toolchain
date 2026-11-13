@@ -35,7 +35,41 @@ concurrency:
   cancel-in-progress: ${{ github.event_name == 'pull_request' }}
 
 jobs:
+  changes:
+    runs-on: ubuntu-24.04
+    outputs:
+      sdk: ${{ steps.paths.outputs.sdk }}
+      convenience: ${{ steps.paths.outputs.convenience }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - id: paths
+        env:
+          BASE_SHA: ${{ github.event.pull_request.base.sha || github.event.before }}
+          HEAD_SHA: ${{ github.event.pull_request.head.sha || github.sha }}
+          VERIFY_PUBLISHED: ${{ inputs.verify_published_bottles || false }}
+        run: |
+          python3 - <<'PYTHON'
+          import os, subprocess
+          sdk_paths = {'Formula/ptos-arm.rb', 'Formula/ptos-m68k.rb',
+                       'Formula/ptos-x86_64.rb', 'lib/ptos_toolchain_formula.rb'}
+          event, base = os.environ['GITHUB_EVENT_NAME'], os.environ.get('BASE_SHA', '')
+          if event in ('release', 'workflow_dispatch') or not base or set(base) == {'0'}:
+              sdk = True
+              convenience = event == 'workflow_dispatch' and os.environ['VERIFY_PUBLISHED'] == 'true'
+          else:
+              refs = [base + '...' + os.environ['HEAD_SHA']] if event == 'pull_request' else [base, os.environ['HEAD_SHA']]
+              paths = set(subprocess.check_output(['git', 'diff', '--name-only', *refs], text=True).splitlines())
+              sdk = bool(paths & (sdk_paths | {'.github/workflows/homebrew.yml'}))
+              convenience = not bool(paths & sdk_paths)
+          with open(os.environ['GITHUB_OUTPUT'], 'a') as output:
+              print(f'sdk={str(sdk).lower()}', file=output)
+              print(f'convenience={str(convenience).lower()}', file=output)
+          PYTHON
   install:
+    needs: changes
+    if: needs.changes.outputs.sdk == 'true'
     runs-on: macos-latest
     name: ${{ inputs.verify_published_bottles && 'Verify published Homebrew bottles' || 'Build and test all Homebrew bottles' }}
     timeout-minutes: 240
@@ -126,6 +160,13 @@ jobs:
             brew test "kelihlodversson/ptos-toolchain/$formula"
             brew linkage --test --strict "kelihlodversson/ptos-toolchain/$formula"
           done
+      - name: Test all-target selection against the tested SDK bottles
+        run: |
+          if brew command trust >/dev/null 2>&1; then
+            brew trust --formula kelihlodversson/ptos-toolchain/ptos-toolchain
+          fi
+          brew install kelihlodversson/ptos-toolchain/ptos-toolchain
+          brew test kelihlodversson/ptos-toolchain/ptos-toolchain
       - name: Upload tested bottle
         if: ${{ !inputs.verify_published_bottles }}
         uses: actions/upload-artifact@v4
@@ -136,3 +177,49 @@ jobs:
             bottles/*.bottle.json
           if-no-files-found: error
           retention-days: 14
+
+  toolchain:
+    needs: changes
+    if: needs.changes.outputs.convenience == 'true'
+    name: Install all-target formula with published SDK bottles
+    runs-on: macos-latest
+    timeout-minutes: 30
+    env:
+      HOMEBREW_NO_AUTO_UPDATE: '1'
+      HOMEBREW_NO_INSTALL_CLEANUP: '1'
+      HOMEBREW_NO_BOTTLE_SOURCE_FALLBACK: '1'
+    steps:
+      - uses: actions/checkout@v4
+      - name: Register and trust the checkout tap
+        run: |
+          brew tap kelihlodversson/ptos-toolchain "$GITHUB_WORKSPACE"
+          if brew command trust >/dev/null 2>&1; then
+            for formula in ptos-toolchain ptos-m68k ptos-arm ptos-x86_64; do
+              brew trust --formula "kelihlodversson/ptos-toolchain/$formula"
+            done
+          fi
+      - name: Audit formula and runtime dependencies
+        shell: bash
+        run: |
+          formula=kelihlodversson/ptos-toolchain/ptos-toolchain
+          brew style "$formula"
+          brew audit --strict "$formula"
+          brew deps --direct "$formula" | sort > "$RUNNER_TEMP/actual-deps"
+          printf '%s\n' kelihlodversson/ptos-toolchain/ptos-arm \
+            kelihlodversson/ptos-toolchain/ptos-m68k \
+            kelihlodversson/ptos-toolchain/ptos-x86_64 | sort > "$RUNNER_TEMP/expected-deps"
+          diff -u "$RUNNER_TEMP/expected-deps" "$RUNNER_TEMP/actual-deps"
+      - name: Install only the convenience formula on a clean runner
+        run: brew install --verbose kelihlodversson/ptos-toolchain/ptos-toolchain
+      - name: Verify dependency bottles, short-name resolution and compiler smoke tests
+        shell: bash
+        run: |
+          for formula in ptos-m68k ptos-arm ptos-x86_64; do
+            brew info --json=v2 "kelihlodversson/ptos-toolchain/$formula" |
+              jq -e '.formulae[0].installed | length == 1 and .[0].poured_from_bottle == true'
+            brew test "kelihlodversson/ptos-toolchain/$formula"
+            brew linkage --test --strict "kelihlodversson/ptos-toolchain/$formula"
+          done
+          brew info --json=v2 ptos-toolchain |
+            jq -e '.formulae[0].full_name == "kelihlodversson/ptos-toolchain/ptos-toolchain"'
+          brew test kelihlodversson/ptos-toolchain/ptos-toolchain

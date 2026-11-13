@@ -139,3 +139,41 @@ its bottle metadata is updated together.
 [Local Apple Silicon validation](../validation/homebrew-macos.md)
 also verified simultaneous installation and relinking of all three SDKs.
 Repeat that coexistence check when changing shared installation paths.
+
+### All-target convenience formula
+
+`Formula/ptos-toolchain.rb` selects the three existing SDK formulae through normal
+Homebrew runtime dependencies. It fetches the same immutable, checksum-pinned
+source archive as the initial SDK formulae, with an explicit convenience-package
+version, and installs only its small `versions.json` provenance manifest. It does
+not compile GCC/Binutils or contain another SDK payload. Matching SDK bottles are
+used normally; unsupported hosts can still need source builds of the SDK dependencies.
+
+Install it after tapping this repository with its explicit URL:
+
+```sh
+brew tap kelihlodversson/ptos-toolchain https://github.com/kelihlodversson/pTOS-toolchain.git
+brew install kelihlodversson/ptos-toolchain/ptos-toolchain
+```
+
+The fully qualified command is the documented interface. CI also checks whether
+the short name resolves to this tap, but documentation does not rely on users
+having an otherwise unambiguous tap configuration.
+
+Unlike Debian's metapackage, Homebrew runtime dependencies are **not pinned to an
+SDK release version**. They follow the current three SDK formulae in the tap;
+the convenience formula's `0.1.0` identifies its own manifest/selection recipe,
+not an enforced three-SDK release lock. Keep the three SDK recipes synchronized
+through the existing shared helper and bottle activation process. Update the
+convenience source commit, SHA256 and version together when changing its provenance
+manifest or selection recipe. Do not claim exact release alignment for this formula.
+
+A clean macOS CI job installs only the convenience formula, verifies the direct
+dependency graph, confirms that all three SDKs were poured from published bottles,
+and runs their smoke/linkage tests and the convenience formula's own test. It also
+runs `brew style` and `brew audit --strict`. The existing SDK bottle job still
+builds, verifies and publishes just the three SDK bottles, then tests the convenience
+formula against those local tested SDKs. Convenience-only changes need no SDK
+rebuild; SDK recipe changes continue through the existing source/bottle tests.
+The convenience formula has no bottle activation metadata and does not participate
+in `prepare-bottles.py` or `activate-bottles.py`.

@@ -187,3 +187,40 @@ After the existing release publication succeeds, official releases also call
 verified GitHub Release assets and does not compile SDKs. See
 [APT repository operations](apt-repository.md) for infrastructure bootstrap,
 signing secrets, retention, manual publication, recovery and key rotation.
+
+## All-target metapackage
+
+`ptos-toolchain` is a dependency-only `amd64` package. Its Debian version is the
+release tag's normalized version, and it requires each `ptos-sdk-*` package at
+exactly that version. It contains only a README and copyright information; the
+SDK binaries remain in their existing packages. Individual SDK installation
+continues to work independently. Build it without compiling anything:
+
+```sh
+python3 packaging/package-toolchain.py 0.2.0 dist
+```
+
+The release workflow assembles it in a lightweight job alongside the three SDK
+builds. A clean verification runner installs **only** the metapackage from a
+signed temporary repository and lets APT resolve all SDK dependencies. It checks
+the installed versions, automatic dependency marks, target commands, sysroots,
+smoke tests and runtime compatibility before publication. `SHA256SUMS` and release
+uploads contain four .deb files for new releases; Homebrew still publishes only
+the three existing SDK bottles.
+
+Historical releases containing only the three SDK assets remain valid. In
+particular, **v0.1.0 and its checksums/assets must not be modified** to retrofit a
+metapackage. The first official release made with this workflow introduces the
+new package. Existing v0.1.0 users can install its three SDKs directly until that
+release is published. There is no production backfill step.
+
+The APT publisher accepts either exactly the three SDKs, or those SDKs plus the
+metapackage. It verifies every .deb checksum and identity, and checks the
+metapackage's exact-version dependencies. It indexes included files only and
+retains mixed historical/current versions under the existing size/grace policy.
+Public APT tests request only `ptos-toolchain=VERSION` when present and retain the
+three-SDK path for historical releases. PR tests separately generate an ephemeral,
+signed CI repository from the existing verified release assets plus the new
+metapackage, so clean Ubuntu 24.04/26.04 dependency installation can be tested
+without altering production or recompiling SDKs. These fixture signatures never
+use production signing secrets.

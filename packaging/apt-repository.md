@@ -211,3 +211,20 @@ retention, ordering, grace preservation, size failures, checksum/identity valida
 immutable conflicts and package index references. Public verification requires
 no particular CDN headers. Production readiness requires the actual public Ubuntu
 installation tests to pass; fixture success alone does not satisfy that requirement.
+
+## All-target package introduction
+
+New releases produced after the all-target convenience change include
+`ptos-toolchain_VERSION_amd64.deb` in addition to the three SDK packages. The
+metapackage requires all SDKs at exactly VERSION; it is covered by SHA256SUMS,
+immutable identity validation and the normal Pages index/retention/grace policy.
+The publisher also accepts historical three-package releases. Never mutate
+v0.1.0 to add an asset; introduce the package through the next official release.
+Until that release exists, `apt install ptos-toolchain` is not available from the
+production repository; installing its three SDKs directly remains supported.
+
+Publication verifies dependency installation by requesting only the metapackage
+when the selected version includes it. CI also tests the producer against real
+existing SDK binaries in a separate ephemeral signed repository, using a test key.
+This is intentionally distinct from the public production installation test;
+fixture success must not be reported as public metapackage availability.

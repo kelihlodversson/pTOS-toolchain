@@ -18,7 +18,8 @@ import subprocess
 import sys
 import tempfile
 
-PACKAGES = {'ptos-sdk-m68k', 'ptos-sdk-arm', 'ptos-sdk-x86-64'}
+sys.path.insert(0, str(Path(__file__).resolve().parent))
+from debian_packages import SDK_PACKAGES as PACKAGES, ALL_PACKAGES, META_PACKAGE, validate_metapackage
 PROJECT = Path(__file__).resolve().parents[1]
 
 
@@ -39,7 +40,7 @@ def identity(path):
     fields = dict(line.split(': ', 1) for line in values.splitlines())
     result = tuple(fields[k] for k in ('Package', 'Version', 'Architecture'))
     name, version, arch = result
-    if name not in PACKAGES or arch != 'amd64':
+    if name not in ALL_PACKAGES or arch != 'amd64':
         raise ValueError(f'Unexpected package identity: {result}')
     if path.name != f'{name}_{version}_{arch}.deb':
         raise ValueError(f'Noncanonical package filename: {path.name}')
@@ -54,8 +55,8 @@ def verify_assets(directory, version):
             raise ValueError('Invalid or duplicate SHA256SUMS entry')
         checksums[match[2]] = match[1]
     files = sorted(directory.glob('*.deb'))
-    if len(files) != 3:
-        raise ValueError('Expected exactly three Debian assets')
+    if len(files) not in (3, 4):
+        raise ValueError('Expected three historical SDK assets or four assets including ptos-toolchain')
     identities = set()
     for path in files:
         if checksums.get(path.name) != digest(path):
@@ -63,9 +64,11 @@ def verify_assets(directory, version):
         name, actual, arch = identity(path)
         if actual != version:
             raise ValueError(f'Expected version {version}, got {actual}')
+        if name == META_PACKAGE:
+            validate_metapackage(path, version)
         identities.add(name)
-    if identities != PACKAGES:
-        raise ValueError('Release must contain all three SDKs')
+    if identities not in (PACKAGES, ALL_PACKAGES):
+        raise ValueError('Release must contain all three SDKs, with only the optional ptos-toolchain metapackage')
     return files
 
 

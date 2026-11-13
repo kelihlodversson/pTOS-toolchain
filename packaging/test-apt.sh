@@ -23,16 +23,11 @@ for arch in m68k arm x86_64; do
   apt-cache madison "$package" | awk -v expected="$version" '$3 == expected { found=1 } END { exit !found }'
   packages+=("$package=$version")
 done
+if apt-cache show "ptos-toolchain=$version" >/dev/null 2>&1; then
+  # New releases: APT must resolve all three exact-version SDK dependencies.
+  packages=("ptos-toolchain=$version")
+else
+  echo "Legacy three-package release $version: installing SDKs directly"
+fi
 sudo apt-get install -y "${packages[@]}"
-for arch in m68k arm x86_64; do
-  package=ptos-sdk-${arch//_/-}
-  test "$(dpkg-query -W -f='${Version}' "$package")" = "$version"
-  bash "/usr/share/doc/$package/smoke.sh" /usr "$arch"
-  case $arch in
-    m68k) target=m68k-unknown-ptos-prgelf ;;
-    arm) target=arm-unknown-ptos-elf ;;
-    x86_64) target=x86_64-unknown-ptos-elfx32 ;;
-  esac
-  test "$("$target-gcc" -dumpmachine)" = "$target"
-  test "$("$target-gcc" -print-sysroot)" = "/opt/ptos/$arch/$target/sysroot"
-done
+bash packaging/test-installed.sh "$version"

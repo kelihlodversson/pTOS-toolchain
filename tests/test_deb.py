@@ -82,5 +82,94 @@ class DebianPackages(unittest.TestCase):
         subprocess.run(['dpkg', '--compare-versions', '1.1.0~rc1', 'lt', '1.1.0'], check=True)
 
 
+class AllTargetMetapackage(unittest.TestCase):
+    def build(self, root, version='0.2.0'):
+        subprocess.run(['python3', str(PROJECT / 'packaging/package-toolchain.py'), version, str(root)], check=True,
+                       stdout=subprocess.DEVNULL)
+        return root / f'ptos-toolchain_{version}_amd64.deb'
+
+    def test_control_payload_reproducibility_and_coexistence(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            package = self.build(root / 'one')
+            other = self.build(root / 'two')
+            self.assertEqual(package.read_bytes(), other.read_bytes())
+            fields = subprocess.check_output(['dpkg-deb', '-f', str(package)], text=True)
+            for text in ['Package: ptos-toolchain', 'Version: 0.2.0', 'Architecture: amd64', 'Section: devel']:
+                self.assertIn(text, fields)
+            depends = subprocess.check_output(['dpkg-deb', '-f', str(package), 'Depends'], text=True).strip()
+            self.assertEqual(depends, 'ptos-sdk-arm (= 0.2.0), ptos-sdk-m68k (= 0.2.0), ptos-sdk-x86-64 (= 0.2.0)')
+            installed = root / 'installed'
+            subprocess.run(['dpkg-deb', '-x', str(package), str(installed)], check=True)
+            files = [p for p in installed.rglob('*') if p.is_file()]
+            self.assertEqual({p.name for p in files}, {'README', 'copyright'})
+            self.assertTrue(all(p.is_relative_to(installed / 'usr/share/doc/ptos-toolchain') for p in files))
+            self.assertLess(sum(p.stat().st_size for p in files), 8192)
+            self.assertFalse((installed / 'usr/bin').exists())
+            self.assertFalse((installed / 'opt').exists())
+            # Extracting the tiny package must not overwrite any SDK files.
+            (installed / 'opt/ptos/m68k').mkdir(parents=True)
+            sentinel = installed / 'opt/ptos/m68k/compiler'
+            sentinel.write_text('SDK remains intact')
+            subprocess.run(['dpkg-deb', '-x', str(package), str(installed)], check=True)
+            self.assertEqual(sentinel.read_text(), 'SDK remains intact')
+
+    def test_invalid_version(self):
+        result = subprocess.run(['python3', str(PROJECT / 'packaging/package-toolchain.py'),
+                                 'invalid version', '/tmp/unused-ptos-meta'], capture_output=True, text=True)
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('invalid Debian package version', result.stderr)
+
+    def test_four_asset_validation_and_historical_three_asset_compatibility(self):
+        import importlib.util
+        spec = importlib.util.spec_from_file_location('publisher', PROJECT / 'packaging/publish-apt.py')
+        publisher = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(publisher)
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            files = []
+            for name in sorted(publisher.PACKAGES):
+                stage = root / name
+                (stage / 'DEBIAN').mkdir(parents=True)
+                (stage / 'DEBIAN').chmod(0o755)
+                (stage / 'DEBIAN/control').write_text(f'Package: {name}\nVersion: 0.2.0\nArchitecture: amd64\nMaintainer: Test <test@example.org>\nDescription: fixture\n')
+                package = root / f'{name}_0.2.0_amd64.deb'
+                subprocess.run(['dpkg-deb', '--root-owner-group', '--build', str(stage), str(package)], check=True, stdout=subprocess.DEVNULL)
+                files.append(package)
+            def checksums():
+                (root / 'SHA256SUMS').write_text(''.join(f'{publisher.digest(p)}  {p.name}\n' for p in files))
+            checksums()
+            self.assertEqual(len(publisher.verify_assets(root, '0.2.0')), 3)
+            files.append(self.build(root))
+            checksums()
+            self.assertEqual(len(publisher.verify_assets(root, '0.2.0')), 4)
+            repository = root / 'repo'
+            publisher.merge(repository / 'pool/main', files)
+            publisher.build_indexes(repository)
+            publisher.validate_index_references(repository)
+            index = (repository / publisher.BINARY / 'Packages').read_text()
+            self.assertEqual(index.count('Package: '), 4)
+            self.assertIn('Filename: pool/main/ptos-toolchain_0.2.0_amd64.deb', index)
+            self.assertIn('ptos-sdk-arm (= 0.2.0)', index)
+            files[-1].write_bytes(b'bad checksum')
+            with self.assertRaisesRegex(ValueError, 'Checksum mismatch'):
+                publisher.verify_assets(root, '0.2.0')
+
+    def test_metapackage_rejects_relaxed_dependency_versions(self):
+        import sys
+        sys.path.insert(0, str(PROJECT / 'packaging'))
+        from debian_packages import validate_metapackage
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            package = self.build(root)
+            extracted = root / 'stage'
+            subprocess.run(['dpkg-deb', '-R', str(package), str(extracted)], check=True)
+            control = extracted / 'DEBIAN/control'
+            control.write_text(control.read_text().replace('(= 0.2.0)', '(>= 0.2.0)'))
+            subprocess.run(['dpkg-deb', '--root-owner-group', '--build', str(extracted), str(package)], check=True, stdout=subprocess.DEVNULL)
+            with self.assertRaisesRegex(ValueError, 'exact release version'):
+                validate_metapackage(package, '0.2.0')
+
+
 if __name__ == '__main__':
     unittest.main()
