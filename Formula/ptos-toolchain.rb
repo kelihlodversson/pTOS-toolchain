@@ -20,8 +20,8 @@ class PtosToolchain < Formula
       ENV.delete key
     end
     {
-      "ptos-m68k" => ["m68k", "m68k-unknown-ptos-prgelf"],
-      "ptos-arm" => ["arm", "arm-unknown-ptos-elf"],
+      "ptos-m68k"   => ["m68k", "m68k-unknown-ptos-prgelf"],
+      "ptos-arm"    => ["arm", "arm-unknown-ptos-elf"],
       "ptos-x86_64" => ["x86_64", "x86_64-unknown-ptos-elfx32"],
     }.each do |name, (arch, target)|
       sdk = Formula["kelihlodversson/ptos-toolchain/#{name}"]
