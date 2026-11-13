@@ -56,7 +56,7 @@ concurrency:
 jobs:
   changes:
     name: Detect SDK changes
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-24.04
     outputs:
       build: ${{ steps.changes.outputs.build }}
     steps:
@@ -73,8 +73,12 @@ jobs:
             --base "$BASE_SHA" --head "$HEAD_SHA" >> "$GITHUB_OUTPUT"
 
   host:
-    name: Host checks / Ubuntu
-    runs-on: ubuntu-latest
+    name: Host checks / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+    runs-on: ${{ matrix.os }}
     timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
@@ -96,11 +100,17 @@ jobs:
       fail-fast: false
       matrix:
         include:
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             targets: m68k
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
             targets: arm
-          - os: ubuntu-latest
+          - os: ubuntu-24.04
+            targets: x86_64
+          - os: ubuntu-26.04
+            targets: m68k
+          - os: ubuntu-26.04
+            targets: arm
+          - os: ubuntu-26.04
             targets: x86_64
           - os: macos-latest
             targets: m68k arm x86_64
