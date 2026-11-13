@@ -1,10 +1,84 @@
 # pTOS toolchain
 
-This C SDK builds pTOS programs and freestanding kernels. It builds native
-GCC and GNU Binutils targets, together with `libgcc`, libcmini headers and
-archives, and pTOS program startup objects. The default is the newest configured
-GCC and Binutils release (GCC 16.2.0 and Binutils 2.45). Downloaded source
-archives are verified with SHA-256.
+Host-side cross-compilers and C SDKs for building pTOS applications and kernels.
+These packages run on your development computer; they do not install or run the
+pTOS operating system.
+
+## Getting started
+
+<a id="install-the-sdk-with-apt-ubuntu-2404-amd64"></a>
+<a id="install-the-sdk-with-apt-ubuntu-2404-and-2604-amd64"></a>
+
+### Ubuntu 24.04 and 26.04 (amd64)
+
+Add the signed APT source once:
+
+```sh
+curl -fsSL https://apt.ptos.dev/ptos-archive-keyring.gpg |
+  sudo tee /usr/share/keyrings/ptos-archive-keyring.gpg >/dev/null
+echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/ptos-archive-keyring.gpg] https://apt.ptos.dev stable main' |
+  sudo tee /etc/apt/sources.list.d/ptos.list
+sudo apt update
+```
+
+Install all three target SDKs with the metapackage:
+
+```sh
+sudo apt install ptos-toolchain
+```
+
+The metapackage is introduced in releases **after v0.1.0**. While v0.1.0 is the
+only published version, install its three SDK packages directly:
+
+```sh
+sudo apt install ptos-sdk-m68k ptos-sdk-arm ptos-sdk-x86-64
+```
+
+For just one target, use `sudo apt install ptos-sdk-m68k`,
+`sudo apt install ptos-sdk-arm`, or `sudo apt install ptos-sdk-x86-64`.
+All three SDKs can coexist. Other Ubuntu/Debian hosts are not validated; see the
+[host support matrix](packaging/README.md#host-support-and-runtime-compatibility).
+The [direct GitHub Release installation](#debianubuntu-release-packages) remains
+available if you have not configured APT.
+
+### macOS (Homebrew)
+
+Install Homebrew and Apple's Command Line Tools, then:
+
+```sh
+brew tap kelihlodversson/ptos-toolchain https://github.com/kelihlodversson/pTOS-toolchain.git
+brew install kelihlodversson/ptos-toolchain/ptos-toolchain
+```
+
+The convenience formula installs the three existing SDK formulae through runtime
+dependencies, using their published bottles on compatible hosts. Published bottles
+currently cover Apple Silicon on macOS 26 (Tahoe), using `/opt/homebrew`; other
+macOS/CPU combinations may build from source and are not established by those tests.
+For individual targets, install `kelihlodversson/ptos-toolchain/ptos-m68k`,
+`kelihlodversson/ptos-toolchain/ptos-arm`, or
+`kelihlodversson/ptos-toolchain/ptos-x86_64` instead. See
+[Homebrew maintenance](homebrew/README.md) for bottle compatibility and provenance.
+
+### Check the installation
+
+On either host, all-target installations provide:
+
+```sh
+m68k-unknown-ptos-prgelf-gcc -dumpmachine
+arm-unknown-ptos-elf-gcc -dumpmachine
+x86_64-unknown-ptos-elfx32-gcc -dumpmachine
+```
+
+Each prints its target prefix without `-gcc`. Continue with the
+[hello-world compilation examples](#build-a-c-application),
+[build-from-source instructions](#build), or
+[pTOS kernel toolchain setup](#build-the-ptos-kernel).
+
+## SDK targets
+
+The default source recipes are GCC 16.2.0 and Binutils 2.45, together with libgcc,
+libcmini headers/libraries and startup objects. Downloaded sources are checked
+with SHA256.
 
 | Target | Default output | Additional mode |
 | --- | --- | --- |
@@ -104,28 +178,7 @@ the formulae's pinned SDK sources, so they do not replace compiler tests of the
 current checkout. Releases build Debian packages and Homebrew bottles through
 the release workflow without an additional plain SDK build matrix.
 
-### macOS
-
-The repository also provides a Homebrew tap with one formula per target:
-
-```sh
-brew tap kelihlodversson/ptos-toolchain https://github.com/kelihlodversson/pTOS-toolchain.git
-brew install kelihlodversson/ptos-toolchain/ptos-m68k
-brew install kelihlodversson/ptos-toolchain/ptos-arm
-brew install kelihlodversson/ptos-toolchain/ptos-x86_64
-```
-
-Each formula builds GCC 16.2.0, Binutils 2.45 and the libcmini SDK from
-checksum-pinned sources. The release workflow also publishes tested macOS
-bottles and their metadata alongside the Debian packages, then automatically
-opens an activation PR with the formula bottle blocks and tests installation
-from the release. Merge that PR to enable bottles; until then, installation
-builds from source. The target-prefixed commands are linked into Homebrew's `bin`
-directory, and the three SDKs can be installed together. Run `brew test
-ptos-arm` (or the other formula name) to run the installed SDK's ABI smoke
-tests. See [Homebrew maintenance](homebrew/README.md) for local development.
-
-To build directly from this checkout instead of using a formula:
+### Build directly on macOS
 
 Install Apple's Command Line Tools (`xcode-select --install`) and the build
 dependencies with Homebrew:
@@ -240,25 +293,3 @@ Local additions port the MiNT patches to GCC 12.5.0, 13.5.0, 14.4.0, 15.3.0
 and 16.2.0. The GCC 16.2 port also fixes volatile MMIO access width and ROM
 byte-access alignment. See [patches/README.md](patches/README.md) for patch
 provenance, local changes and validation details.
-
-<a id="install-the-sdk-with-apt-ubuntu-2404-amd64"></a>
-
-## Install the SDK with APT (Ubuntu 24.04 and 26.04, amd64)
-
-The signed APT service at `https://apt.ptos.dev` is live. See
-[APT maintenance](packaging/apt-repository.md) for operational details. GitHub Pages hosts
-a bounded set of recent stable versions; GitHub Releases archive every version.
-
-```sh
-curl -fsSL https://apt.ptos.dev/ptos-archive-keyring.gpg |
-  sudo tee /usr/share/keyrings/ptos-archive-keyring.gpg >/dev/null
-echo 'deb [arch=amd64 signed-by=/usr/share/keyrings/ptos-archive-keyring.gpg] https://apt.ptos.dev stable main' |
-  sudo tee /etc/apt/sources.list.d/ptos.list
-sudo apt update
-sudo apt install ptos-sdk-m68k ptos-sdk-arm ptos-sdk-x86-64
-```
-
-Install only the target you need with `sudo apt install ptos-sdk-m68k`,
-`sudo apt install ptos-sdk-arm`, or `sudo apt install ptos-sdk-x86-64`.
-All three packages run on an amd64 Linux host and can coexist. Their compiler
-prefixes and installation directories are listed in [packaging](packaging/README.md).
