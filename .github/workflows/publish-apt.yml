@@ -7,10 +7,6 @@ on:
         required: true
         type: string
     secrets:
-      R2_ACCESS_KEY_ID:
-        required: true
-      R2_SECRET_ACCESS_KEY:
-        required: true
       APT_SIGNING_KEY_B64:
         required: true
       APT_SIGNING_KEY_PASSPHRASE:
@@ -21,6 +17,10 @@ on:
         description: Existing official release tag (no rebuild)
         required: true
         type: string
+      bootstrap:
+        description: First deployment only (allow missing previous signed state)
+        default: false
+        type: boolean
 
 permissions:
   contents: read
@@ -30,39 +30,83 @@ concurrency:
   cancel-in-progress: false
 
 jobs:
-  publish:
+  build:
     if: >-
       github.repository == 'kelihlodversson/pTOS-toolchain' &&
       (github.event_name == 'release' ||
        (github.event_name == 'workflow_dispatch' && github.ref == 'refs/heads/main'))
     runs-on: ubuntu-24.04
     timeout-minutes: 30
+    permissions:
+      contents: read
+      pages: read
+      actions: read
+      deployments: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/configure-pages@v5
       - name: Install repository tools
         run: |
           sudo apt-get -o Acquire::Retries=3 update
           sudo apt-get -o Acquire::Retries=3 install -y dpkg-dev apt-utils gnupg gpgv
-          command -v aws
-      - name: Publish verified release assets
+      - name: Generate complete signed Pages site
         env:
           GH_TOKEN: ${{ github.token }}
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ inputs.release_tag }}
-          AWS_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-          AWS_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
-          AWS_EC2_METADATA_DISABLED: 'true'
-          AWS_REQUEST_CHECKSUM_CALCULATION: when_required
-          AWS_RESPONSE_CHECKSUM_VALIDATION: when_required
-          R2_ACCOUNT_ID: ${{ vars.R2_ACCOUNT_ID }}
-          R2_BUCKET_NAME: ${{ vars.R2_BUCKET_NAME }}
-          R2_ENDPOINT_URL: ${{ vars.R2_ENDPOINT_URL }}
-          APT_REPOSITORY_URL: ${{ vars.APT_REPOSITORY_URL }}
+          APT_BOOTSTRAP: ${{ inputs.bootstrap || false }}
+          APT_RETAIN_VERSIONS: ${{ vars.APT_RETAIN_VERSIONS || '3' }}
+          APT_MAX_BYTES: ${{ vars.APT_MAX_BYTES || '838860800' }}
+          APT_GRACE_SECONDS: ${{ vars.APT_GRACE_SECONDS || '172800' }}
           APT_SIGNING_KEY_B64: ${{ secrets.APT_SIGNING_KEY_B64 }}
           APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
         run: python3 packaging/publish-apt.py
-      - name: Install and smoke test public SDKs on Ubuntu 24.04
+      - uses: actions/upload-pages-artifact@v3
+        with:
+          path: _apt-site
+      - name: Save public verification manifest
+        run: python3 packaging/verify-apt.py --manifest _apt-site > "$RUNNER_TEMP/apt-verification.json"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: apt-verification
+          path: ${{ runner.temp }}/apt-verification.json
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    permissions:
+      pages: write
+      id-token: write
+      contents: read
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy signed APT site
+        id: deployment
+        uses: actions/deploy-pages@v4
+
+  verify:
+    needs: deploy
+    runs-on: ubuntu-24.04
+    timeout-minutes: 40
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+      - uses: actions/download-artifact@v4
+        with:
+          name: apt-verification
+          path: ${{ runner.temp }}/apt-verification
+      - name: Verify public HTTPS content and signatures after propagation
+        run: python3 packaging/verify-apt.py "$RUNNER_TEMP/apt-verification/apt-verification.json"
+      - name: Install and smoke test public SDKs on clean Ubuntu 24.04
         env:
-          APT_REPOSITORY_URL: ${{ vars.APT_REPOSITORY_URL }}
+          APT_REPOSITORY_URL: https://apt.ptos.dev
           RELEASE_TAG: ${{ inputs.release_tag }}
         run: bash packaging/test-apt.sh

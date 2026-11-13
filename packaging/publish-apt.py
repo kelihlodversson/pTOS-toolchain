@@ -2,8 +2,14 @@
 """Publish verified release assets. Run only from the serialized trusted workflow."""
 import base64
 import gzip
+from functools import cmp_to_key
+import time
+import urllib.error
+import urllib.request
 import hashlib
 import json
+import io
+import zipfile
 import os
 from pathlib import Path
 import re
@@ -79,10 +85,11 @@ def merge(pool, assets):
         seen.add(key)
 
 
-def build_indexes(root):
+def build_indexes(root, contents=None):
     binary = root / 'dists/stable/main/binary-amd64'
     binary.mkdir(parents=True, exist_ok=True)
-    contents = run('dpkg-scanpackages', '--multiversion', 'pool', '/dev/null', cwd=root)
+    if contents is None:
+        contents = run('dpkg-scanpackages', '--multiversion', 'pool', '/dev/null', cwd=root)
     (binary / 'Packages').write_bytes(contents)
     (binary / 'Packages.gz').write_bytes(gzip.compress(contents, mtime=0))
     hashes = binary / 'by-hash/SHA256'
@@ -129,89 +136,271 @@ def sign(root, home):
                         *(str(release.parent / p) for p in args)], check=True, env=env)
 
 
+BINARY = 'dists/stable/main/binary-amd64'
+DEFAULT_LIMIT = 800 * 1024 * 1024
+
+
+def stable_releases(releases):
+    """Sort complete, official SDK releases by Debian version, not creation date."""
+    result = []
+    versions = set()
+    for release in releases:
+        tag = release['tag_name']
+        if release['draft'] or release['prerelease'] or not re.fullmatch(r'v?\d+\.\d+\.\d+', tag):
+            continue
+        version = run('bash', str(PROJECT / 'packaging/release-version.sh'), tag, text=True).strip()
+        names = {asset['name'] for asset in release['assets']}
+        expected = {f'{name}_{version}_amd64.deb' for name in PACKAGES} | {'SHA256SUMS'}
+        if not expected <= names:
+            continue  # Another release build may still be uploading assets.
+        if version in versions:
+            raise ValueError(f'Multiple release tags have Debian version {version}')
+        versions.add(version)
+        result.append(dict(release, version=version))
+
+    def compare(a, b):
+        return -1 if subprocess.run(['dpkg', '--compare-versions', a['version'], 'gt', b['version']]).returncode == 0 else 1
+    return sorted(result, key=cmp_to_key(compare))
+
+
+def enforce_size(root, limit):
+    size = sum(p.stat().st_size for p in root.rglob('*') if p.is_file())
+    if size > limit:
+        raise ValueError(f'Pages deployment is {size} bytes, above configured limit {limit}')
+    return size
+
+
+def select_releases(releases, count, budget, pinned):
+    """Keep newest versions, plus grace-period packages; never evict pinned data."""
+    if count < 1 or budget < 1 or budget > DEFAULT_LIMIT:
+        raise ValueError('Retention count must be positive; size limit must be 1..800 MiB')
+    selected = []
+    names = set(pinned)
+    size = sum(pinned.values())
+    for release in releases[:count]:
+        assets = [a for a in release['assets'] if a['name'].endswith('.deb')]
+        added = sum(a['size'] for a in assets if a['name'] not in names)
+        if size + added > budget:
+            if not selected:
+                raise ValueError('Newest release and propagation-grace packages exceed Pages size budget')
+            break
+        selected.append(release)
+        names.update(a['name'] for a in assets)
+        size += added
+    if not selected:
+        raise ValueError('No complete official stable SDK releases available')
+    return selected
+
+
+def remember(ledger, name, sha256):
+    if name in ledger and ledger[name] != sha256:
+        raise ValueError(f'Immutable package conflict: {name}')
+    ledger[name] = sha256
+
+
+def write_pages_root(root):
+    (root / '.nojekyll').touch()
+    (root / 'CNAME').write_text('apt.ptos.dev\n')
+    (root / 'index.html').write_text(
+        '<!doctype html><html lang="en"><meta charset="utf-8"><title>pTOS SDK APT repository</title>'
+        '<h1>pTOS SDK APT repository</h1><p>Ubuntu 24.04+, amd64 hosts.</p>'
+        '<p><a href="ptos-archive-keyring.gpg">Archive signing key</a> · '
+        '<a href="https://github.com/kelihlodversson/pTOS-toolchain#install-the-sdk-with-apt-ubuntu-2404-amd64">'
+        'Installation instructions</a></p>'
+        '<pre>deb [arch=amd64 signed-by=/usr/share/keyrings/ptos-archive-keyring.gpg] '
+        'https://apt.ptos.dev stable main</pre></html>\n')
+
+
+def fetch(url, destination):
+    request = urllib.request.Request(url, headers={'Cache-Control': 'no-cache', 'User-Agent': 'pTOS-APT-publisher'})
+    with urllib.request.urlopen(request, timeout=60) as response:
+        with destination.open('wb') as output:
+            shutil.copyfileobj(response, output)
+
+
+def deployed_state_digest(repo):
+    """Authenticated deployment manifest prevents a stale Pages state rollback.
+
+    Only consider artifacts whose Pages deployment job actually succeeded; a
+    failed public smoke test does not mean the deployment was rolled back.
+    """
+    pages = json.loads(run('gh', 'api', '--paginate', '--slurp',
+                          f'repos/{repo}/actions/artifacts?name=apt-verification&per_page=100'))
+    for artifact in (a for page in pages for a in page['artifacts']):
+        if artifact['expired']:
+            continue
+        workflow_run = json.loads(run('gh', 'api', f'repos/{repo}/actions/runs/{artifact["workflow_run"]["id"]}'))
+        if workflow_run['event'] not in ('release', 'workflow_dispatch') or workflow_run['path'] not in (
+                '.github/workflows/publish-apt.yml', '.github/workflows/release-deb.yml'):
+            continue
+        jobs = json.loads(run('gh', 'api', '--paginate', '--slurp',
+                              f'repos/{repo}/actions/runs/{artifact["workflow_run"]["id"]}/jobs?per_page=100'))
+        if not any(j['conclusion'] == 'success' and
+                   (j['name'] == 'deploy' or j['name'].endswith(' / deploy'))
+                   for page in jobs for j in page['jobs']):
+            continue
+        archive = run('gh', 'api', artifact['archive_download_url'])
+        with zipfile.ZipFile(io.BytesIO(archive)) as zipped:
+            return json.loads(zipped.read('apt-verification.json'))['apt-state.json']
+    return None
+
+
+def previous_state(temp, keyring, url, bootstrap):
+    expected = deployed_state_digest(os.environ['GH_REPO'])
+    if bootstrap:
+        # Do not require a certificate before the first Pages deployment. Prove
+        # through GitHub that this environment has never been deployed instead.
+        pages = json.loads(run('gh', 'api', '--paginate', '--slurp',
+                              f'repos/{os.environ["GH_REPO"]}/deployments?environment=github-pages&per_page=100'))
+        for deployment in (d for page in pages for d in page):
+            statuses = json.loads(run('gh', 'api', deployment['statuses_url']))
+            if any(s['state'] in ('success', 'inactive') for s in statuses):
+                raise ValueError('Bootstrap refused: github-pages has a previous deployment')
+        if expected:
+            raise ValueError('Bootstrap refused: previous Pages verification manifest exists')
+        return {'ledger': {}, 'snapshots': []}
+    state = temp / 'previous.json'
+    signature = temp / 'previous.sig'
+    deadline = time.monotonic() + 1200
+    while True:
+        try:
+            suffix = '?generation=' + str(time.time_ns())
+            fetch(url + '/apt-state.json' + suffix, state)
+            fetch(url + '/apt-state.json.gpg' + suffix, signature)
+            if expected and digest(state) != expected:
+                raise ValueError('Previous Pages state has not propagated')
+            run('gpgv', '--keyring', str(keyring), str(signature), str(state))
+            return json.loads(state.read_text())
+        except (urllib.error.URLError, ValueError, subprocess.CalledProcessError):
+            if time.monotonic() >= deadline:
+                raise ValueError('Cannot verify previous Pages state; restore public state before retrying')
+            print('Waiting for the previous signed Pages state to propagate', flush=True)
+            time.sleep(15)
+
+
+def retained_snapshots(state, now, grace):
+    if grace < 86400:
+        raise ValueError('Propagation grace must be at least 24 hours')
+    snapshots = [s for s in state['snapshots'] if s['last_active'] + grace >= now]
+    # The most recent snapshot is still live, even after months without releases.
+    if state['snapshots']:
+        current = state['snapshots'][-1]
+        current = dict(current, last_active=now)
+        snapshots = [s for s in snapshots if s['id'] != current['id']] + [current]
+    return snapshots
+
+
+def restore_history(root, snapshots):
+    hashes = root / BINARY / 'by-hash/SHA256'
+    hashes.mkdir(parents=True, exist_ok=True)
+    for snapshot in snapshots:
+        for sha256, encoded in snapshot['indexes'].items():
+            value = base64.b64decode(encoded, validate=True)
+            if hashlib.sha256(value).hexdigest() != sha256:
+                raise ValueError('Invalid historical by-hash content')
+            (hashes / sha256).write_bytes(value)
+
+
+def validate_index_references(root):
+    for paragraph in (root / BINARY / 'Packages').read_text().strip().split('\n\n'):
+        if not paragraph:
+            continue
+        fields = dict(line.split(': ', 1) for line in paragraph.splitlines() if ': ' in line and not line.startswith(' '))
+        relative = Path(fields['Filename'])
+        if relative.is_absolute() or '..' in relative.parts or relative.parent != Path('pool/main'):
+            raise ValueError('Unsafe package index reference')
+        path = root / relative
+        if not path.is_file() or path.stat().st_size != int(fields['Size']) or digest(path) != fields['SHA256']:
+            raise ValueError(f'Index references missing or incorrect package: {relative}')
+
+
 def main():
-    required = ['GH_TOKEN', 'GH_REPO', 'RELEASE_TAG', 'AWS_ACCESS_KEY_ID',
-                'AWS_SECRET_ACCESS_KEY', 'R2_ACCOUNT_ID', 'R2_BUCKET_NAME',
-                'APT_REPOSITORY_URL', 'APT_SIGNING_KEY_B64']
+    required = ['GH_TOKEN', 'GH_REPO', 'RELEASE_TAG', 'APT_SIGNING_KEY_B64']
     missing = [name for name in required if not os.environ.get(name)]
     if missing:
         raise ValueError('Missing required secrets/variables: ' + ', '.join(missing))
+    url = os.environ.get('APT_REPOSITORY_URL', 'https://apt.ptos.dev').rstrip('/')
     tag = os.environ['RELEASE_TAG']
-    if not re.fullmatch(r'v?\d+\.\d+\.\d+', tag):
-        raise ValueError('stable requires an official numeric release tag')
-    release = json.loads(run('gh', 'api', f'repos/{os.environ["GH_REPO"]}/releases/tags/{tag}'))
-    if release['draft'] or release['prerelease']:
-        raise ValueError('Drafts and prereleases cannot publish to stable')
-    version = run('bash', str(PROJECT / 'packaging/release-version.sh'), tag, text=True).strip()
-    endpoint = os.environ.get('R2_ENDPOINT_URL') or f'https://{os.environ["R2_ACCOUNT_ID"]}.r2.cloudflarestorage.com'
-    bucket = os.environ['R2_BUCKET_NAME']
-    aws = ['aws', '--endpoint-url', endpoint, '--region', 'auto']
+    pages = json.loads(run('gh', 'api', '--paginate', '--slurp',
+                           f'repos/{os.environ["GH_REPO"]}/releases?per_page=100'))
+    releases = stable_releases([release for page in pages for release in page])
+    if tag not in {r['tag_name'] for r in releases}:
+        raise ValueError('Requested release must be official, stable and contain complete SDK assets')
+    count = int(os.environ.get('APT_RETAIN_VERSIONS', '3'))
+    limit = int(os.environ.get('APT_MAX_BYTES', str(DEFAULT_LIMIT)))
+    grace = int(os.environ.get('APT_GRACE_SECONDS', '172800'))
+    root = Path(os.environ.get('APT_STAGING_DIR', '_apt-site')).resolve()
+    if root.exists():
+        raise ValueError('Staging directory must not already exist')
+    root.mkdir()
     with tempfile.TemporaryDirectory(prefix='ptos-apt-') as temporary:
         temp = Path(temporary)
-        assets = temp / 'assets'
-        assets.mkdir()
-        run('gh', 'release', 'download', tag, '--repo', os.environ['GH_REPO'],
-            '--pattern', '*.deb', '--pattern', 'SHA256SUMS', '--dir', str(assets))
-        files = verify_assets(assets, version)
-        root = temp / 'repository'
-        pool = root / 'pool/main'
-        pool.mkdir(parents=True)
-        # A failed list/download is fatal, never interpreted as an empty archive.
-        subprocess.run([*aws, 's3', 'sync', f's3://{bucket}/pool/', str(root / 'pool')], check=True)
-        merge(pool, files)
-        build_indexes(root)
         home = temp / 'gnupg'
         home.mkdir(mode=0o700)
         try:
+            # Import/export the trusted key before reading previous signed state.
+            env = dict(os.environ, GNUPGHOME=str(home))
+            subprocess.run(['gpg', '--batch', '--import'], input=base64.b64decode(os.environ['APT_SIGNING_KEY_B64'], validate=True),
+                           env=env, check=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            trusted = temp / 'trusted.gpg'
+            trusted.write_bytes(run('gpg', '--batch', '--export', env=env))
+            state = previous_state(temp, trusted, url, os.environ.get('APT_BOOTSTRAP') == 'true')
+            now = int(time.time())
+            snapshots = retained_snapshots(state, now, grace)
+            pinned = {name: entry['size'] for s in snapshots for name, entry in s['packages'].items()}
+            # Reserve 8 MiB for signatures, manifests and retained indexes.
+            selected = select_releases(releases, count, limit - 8 * 1024 * 1024, pinned)
+            if tag not in {r['tag_name'] for r in selected}:
+                raise ValueError('Requested release is outside retention; dispatch a retained release tag')
+            needed_tags = {r['tag_name'] for r in selected} | {e['tag'] for s in snapshots for e in s['packages'].values()}
+            ledger = state['ledger'].copy()
+            entries = {}
+            for release_tag in sorted(needed_tags):
+                release = next((r for r in releases if r['tag_name'] == release_tag), None)
+                if release is None:
+                    raise ValueError(f'Previously published release is missing or no longer official: {release_tag}')
+                assets = temp / release_tag
+                assets.mkdir()
+                run('gh', 'release', 'download', release_tag, '--repo', os.environ['GH_REPO'],
+                    '--pattern', '*.deb', '--pattern', 'SHA256SUMS', '--dir', str(assets))
+                files = verify_assets(assets, release['version'])
+                for path in files:
+                    remember(ledger, path.name, digest(path))
+                    entries[path.name] = {'tag': release_tag, 'size': path.stat().st_size, 'sha256': digest(path)}
+                merge(root / 'pool/main', files)
+            # Current indexes contain retained versions only; grace-period
+            # objects remain in the deployment for old by-hash clients.
+            selected_names = {a['name'] for r in selected for a in r['assets'] if a['name'].endswith('.deb')}
+            index_root = temp / 'current'
+            (index_root / 'pool/main').mkdir(parents=True)
+            for name in selected_names:
+                os.link(root / 'pool/main' / name, index_root / 'pool/main' / name)
+            contents = run('dpkg-scanpackages', '--multiversion', 'pool', '/dev/null', cwd=index_root)
+            restore_history(root, snapshots)
+            build_indexes(root, contents)
+            validate_index_references(root)
+            binary = root / BINARY
+            indexes = {digest(binary / name): base64.b64encode((binary / name).read_bytes()).decode()
+                       for name in ('Packages', 'Packages.gz')}
+            snapshot = {'id': digest(binary / 'Packages'), 'last_active': now, 'indexes': indexes,
+                        'packages': {name: entries[name] for name in selected_names}}
+            snapshots = [s for s in snapshots if s['id'] != snapshot['id']] + [snapshot]
+            (root / 'apt-state.json').write_text(json.dumps({'ledger': ledger, 'snapshots': snapshots}, sort_keys=True))
+            write_pages_root(root)
             sign(root, home)
-            # All immutable data precedes the mutable indexes and signed metadata.
-            for path in sorted(root.rglob('*')):
-                if path.is_file() and ('pool' in path.relative_to(root).parts or 'by-hash' in path.parts):
-                    key = path.relative_to(root).as_posix()
-                    content_type = 'application/vnd.debian.binary-package' if key.endswith('.deb') else 'application/octet-stream'
-                    subprocess.run([*aws, 's3', 'cp', str(path), f's3://{bucket}/{key}',
-                                    '--content-type', content_type, '--cache-control', 'public,max-age=31536000,immutable'], check=True)
-            ordered = ['ptos-archive-keyring.gpg', 'dists/stable/main/binary-amd64/Packages',
-                       'dists/stable/main/binary-amd64/Packages.gz', 'dists/stable/Release',
-                       'dists/stable/Release.gpg', 'dists/stable/InRelease']
-            for key in ordered:
-                content_type = ('application/pgp-keys' if key.endswith('.gpg') and key.startswith('ptos-')
-                                else 'application/gzip' if key.endswith('.gz') else 'text/plain')
-                subprocess.run([*aws, 's3', 'cp', str(root / key), f's3://{bucket}/{key}',
-                                '--content-type', content_type, '--cache-control',
-                                'public,max-age=300' if key.startswith('ptos-') else 'no-store'], check=True)
-            # Verify bytes, signatures and every newly published package via HTTPS.
-            public = temp / 'public'
-            public.mkdir()
-            for key in ordered + [p.relative_to(root).as_posix() for p in
-                                  (root / 'dists/stable/main/binary-amd64/by-hash/SHA256').iterdir()] + [f'pool/main/{p.name}' for p in files]:
-                destination = public / Path(key).name
-                url = os.environ['APT_REPOSITORY_URL'].rstrip('/') + '/' + key
-                run('curl', '--fail', '--silent', '--show-error', '--retry', '5', '--head', url)
-                run('curl', '--fail', '--silent', '--show-error', '--retry', '5', url, '-o', str(destination))
-                if digest(destination) != digest(root / key):
-                    raise ValueError(f'Public HTTPS content mismatch: {key}')
-            # A real GET warms the package cache; subsequent GETs must show
-            # that Cloudflare caches the otherwise non-default .deb extension.
-            url = os.environ['APT_REPOSITORY_URL'].rstrip('/') + '/pool/main/' + files[0].name
-            headers = temp / 'cache-headers'
-            for attempt in range(3):
-                run('curl', '--fail', '--silent', '--show-error', '--dump-header', str(headers),
-                    '--output', '/dev/null', url)
-                if re.search(r'^cf-cache-status:\s*HIT\s*$', headers.read_text(), re.I | re.M):
-                    break
-            else:
-                raise ValueError('Package GETs did not achieve a Cloudflare CDN cache HIT')
-            run('gpgv', '--keyring', str(public / 'ptos-archive-keyring.gpg'), str(public / 'InRelease'))
-            run('gpgv', '--keyring', str(public / 'ptos-archive-keyring.gpg'),
-                str(public / 'Release.gpg'), str(public / 'Release'))
+            subprocess.run(['gpg', '--batch', '--yes', '--pinentry-mode', 'loopback', '--passphrase-fd', '0',
+                            '--output', str(root / 'apt-state.json.gpg'), '--detach-sign', str(root / 'apt-state.json')],
+                           input=(os.environ.get('APT_SIGNING_KEY_PASSPHRASE', '') + '\n').encode(), env=env, check=True)
+            run('gpgv', '--keyring', str(root / 'ptos-archive-keyring.gpg'),
+                str(root / 'apt-state.json.gpg'), str(root / 'apt-state.json'))
+            size = enforce_size(root, limit)
         finally:
             subprocess.run(['gpgconf', '--homedir', str(home), '--kill', 'all'], check=False)
-    print(f'Published and verified {tag} via HTTPS')
+    print(f'Generated signed Pages deployment: {size} bytes; {len(selected)} stable versions')
 
 
 if __name__ == '__main__':
     try:
         main()
-    except (ValueError, subprocess.CalledProcessError) as error:
-        sys.exit(f'APT publication failed: {error}')
+    except (ValueError, subprocess.CalledProcessError, urllib.error.URLError) as error:
+        sys.exit(f'APT generation failed: {error}')

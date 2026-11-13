@@ -243,7 +243,8 @@ provenance, local changes and validation details.
 
 The APT service requires the infrastructure bootstrap described in
 [APT maintenance](packaging/apt-repository.md). These commands become usable
-once that bootstrap has passed the public installation test.
+once that bootstrap has passed the public installation test. GitHub Pages hosts
+a bounded set of recent stable versions; GitHub Releases archive every version.
 
 ```sh
 curl -fsSL https://apt.ptos.dev/ptos-archive-keyring.gpg |

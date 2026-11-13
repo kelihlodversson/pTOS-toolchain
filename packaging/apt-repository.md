@@ -1,167 +1,212 @@
-# APT repository operations
+# Signed APT repository on GitHub Pages
 
-## Bootstrap status
+## Status and architecture
 
-The implementation is ready for review; the public service is **not bootstrapped**.
-On 2026-11-13 Cloudflare returned HTTP 403 / code 10042 when listing R2 buckets:
-`Please enable R2 through the Cloudflare Dashboard.` GitHub CLI authentication
-works, but reading Actions secrets, the secrets public key, and variables, and
-attempting a variable update all returned HTTP 403 `Resource not accessible by
-integration`. No production private key or publisher token was generated because
-secure storage is unavailable. No production secrets or variables were created.
+The service is pending review, merge and bootstrap. GitHub Releases permanently
+archive Debian packages; GitHub Pages hosts a bounded, complete static APT site
+from this repository through GitHub Actions. The endpoint is `https://apt.ptos.dev`.
+No binary packages are committed to Git. Publication needs only GITHUB_TOKEN
+and the repository signing secrets; there are no storage upload credentials.
 
-The existing official `v0.1.0` release contains all three Debian packages and
-`SHA256SUMS`. It must be bootstrapped after the infrastructure and secrets are
-available; there is no need to rebuild or change release assets.
+On 2026-11-13 the Pages API returned 404 and no existing Pages configuration was
+visible in this checkout. Check Settings → Pages before enabling it: an existing
+site in **this** repository would need reconciliation. The separate ptos.dev
+website must not be changed. The three obsolete apt.ptos.dev cache rules have
+been removed and the empty ruleset read back. No production signing key has
+been generated or exported during this change.
 
-## Cloudflare setup
+## One-time setup after review and merge
 
-The existing zone is `ptos.dev` (`d2b816b2ac90f722b3f5aa403463f858`), in
-account `beb5d2d7b0dbb149c063c475b25296e3`. Activate R2 through the dashboard
-first (including its billing onboarding). Create `ptos-apt` with Standard storage.
-Use the R2 Custom Domain API to attach `apt.ptos.dev` with that zone ID,
-`enabled: true`, and minimum TLS 1.2. Let R2 create/manage its DNS record; do not
-add a competing record. Leave the development `r2.dev` endpoint disabled.
-Check the custom domain's certificate and ownership status until both are active.
+1. In `kelihlodversson/pTOS-toolchain` → Settings → Pages, choose **GitHub Actions**
+   as the publishing source. Set the custom domain to **apt.ptos.dev**. With an
+   appropriately authorized CLI, the corresponding API calls are:
 
-Create an account-owned token named `ptos-toolchain-apt-publisher`, if supported,
-with only `Workers R2 Storage Bucket Item Write` (Object Read & Write). Scope
-its resources to
-`com.cloudflare.edge.r2.bucket.beb5d2d7b0dbb149c063c475b25296e3_default_ptos-apt`.
-Use the actual jurisdiction instead of `default` if one was selected. Do not use
-account-wide Storage Write, DNS permissions, or a Global API Key. The S3 access
-key ID is the returned token `id`; the secret is the lowercase hex SHA256 of the
-returned token `value` (no trailing newline). Transfer these directly through stdin
-to `gh secret set --repo kelihlodversson/pTOS-toolchain NAME`; never print them.
-Use a mode-0700 temporary directory, mode-0600 files if necessary, and remove it
-on exit. Verify secret names with `gh secret list` and test S3 list/read/write.
+   ```sh
+   gh api --method POST repos/kelihlodversson/pTOS-toolchain/pages -f build_type=workflow
+   gh api --method PUT repos/kelihlodversson/pTOS-toolchain/pages -f cname=apt.ptos.dev
+   ```
 
-Set repository Actions secrets:
+   Use PUT with `build_type=workflow` instead of POST if a site already exists,
+   after checking that it is safe to repurpose. Do not create a second repository
+   or attach the domain to the separate main website.
+2. At the existing authoritative DNS provider, create only this record:
 
-| Name | Purpose |
-| --- | --- |
-| `R2_ACCESS_KEY_ID` | Bucket-scoped token ID |
-| `R2_SECRET_ACCESS_KEY` | Derived S3 secret |
-| `APT_SIGNING_KEY_B64` | Base64 binary exported secret signing key |
-| `APT_SIGNING_KEY_PASSPHRASE` | Separate key passphrase; optional for unencrypted keys |
+   | Name | Type | Target | Proxy |
+   | --- | --- | --- | --- |
+   | `apt.ptos.dev` | CNAME | `kelihlodversson.github.io` | DNS only / disabled |
 
-Set repository Actions variables with `gh variable set --repo kelihlodversson/pTOS-toolchain`:
+   Cloudflare remains the authoritative DNS provider for ptos.dev; no nameserver
+   migration is required. Do not enable a CDN proxy or add A/AAAA records alongside
+   the CNAME. Check the Pages custom-domain DNS check in this repository and public
+   CNAME resolution. Claim the custom domain in Pages before creating its DNS record.
+3. Inspect existing signing-key custody and repository secrets before replacing
+   anything. GitHub CLI can authenticate, but reading the Actions secrets public
+   key still returns HTTP 403 `Resource not accessible by integration`. If that
+   remains, an administrator must use Settings → Secrets and variables → Actions
+   → Repository secrets to add:
 
-| Name | Value |
-| --- | --- |
-| `R2_ACCOUNT_ID` | `beb5d2d7b0dbb149c063c475b25296e3` |
-| `R2_BUCKET_NAME` | `ptos-apt` |
-| `APT_REPOSITORY_URL` | `https://apt.ptos.dev` |
-| `R2_ENDPOINT_URL` | Optional; defaults to `https://<account>.r2.cloudflarestorage.com` |
+   | Secret | Value |
+   | --- | --- |
+   | `APT_SIGNING_KEY_B64` | Base64 of a binary GPG exported private signing key |
+   | `APT_SIGNING_KEY_PASSPHRASE` | Its passphrase, stored separately |
 
-For jurisdiction-restricted buckets set the corresponding jurisdiction endpoint
-explicitly. The workflow always specifies region `auto`. Upload credentials need
-no Cloudflare administration privileges. Allow this S3 hostname in any local
-managed environment used for recovery.
+   Generate a dedicated RSA4096 signing key with identity
+   `pTOS APT Repository <apt@ptos.dev>` if no appropriate key exists. Use an ephemeral
+   mode-0700 GNUPGHOME, `umask 077`, and GPG's interactive pinentry. Feed the export
+   through base64 directly to `gh secret set APT_SIGNING_KEY_B64 --repo
+   kelihlodversson/pTOS-toolchain` via stdin when the CLI has Secrets write access.
+   Enter the passphrase through the secret UI or `gh secret set`'s secure prompt.
+   Never put it in arguments, chat, logs, artifacts or Git. Keep an encrypted
+   offline key backup and revocation certificate in the operator's secure vault;
+   remove temporary exports and kill GPG agents on exit. The build uses an
+   ephemeral GNUPGHOME, verifies all signatures and removes private material
+   before uploading the public Pages artifact. Missing signing secrets fail closed.
+4. Review the `github-pages` environment. Permit deployment from main, and from
+   official release tags if using environment branch restrictions. Require whatever
+   deployment review policy the maintainers use. Ensure repository Actions policies
+   allow the official Pages actions. Deployment uses the built-in GITHUB_TOKEN with
+   `pages: write` and `id-token: write`; it requires no personal access token.
+5. Bootstrap after merge:
 
-## Signing key custody and rotation
+   ```sh
+   gh workflow run publish-apt.yml --repo kelihlodversson/pTOS-toolchain \
+     --ref main -f release_tag=v0.1.0 -f bootstrap=true
+   ```
 
-Inspect existing signing key custody and secret names before creating a key.
-If none exists, generate a dedicated RSA4096 signing key with identity
-`pTOS APT Repository <apt@ptos.dev>` in a temporary mode-0700 GNUPGHOME.
-Use pinentry or a secure passphrase FD, never command-line passphrases. Export the
-secret key, base64 encode it, and feed it directly to `gh secret set` via stdin.
-Store its passphrase separately. Keep an encrypted offline backup and revocation
-certificate in the operator's secure vault. Do not upload private keys as artifacts,
-commit them, or attach them to a release. Record and independently distribute the
-public fingerprint. The workflow imports into an ephemeral GNUPGHOME, verifies
-both signatures, kills its agents, and removes all temporary files on exit.
+   Bootstrap checks GitHub's deployment history and refuses to reset an environment
+   with a previous successful deployment. It does not require a certificate before
+   the initial deployment. The existing v0.1.0 release is downloaded and verified;
+   no compiler build or release-asset modification occurs.
+6. Wait for GitHub's certificate for **apt.ptos.dev**, enable **Enforce HTTPS** in
+   Settings → Pages, and verify HTTPS enforcement. When the certificate is ready:
 
-For planned rotation, distribute a keyring containing both old and new public
-keys to clients **before** changing the signing secret. The current publisher
-exports only its active signing key: an overlap rollout requires extending its
-keyring export to include both keys, then updating client keyrings. Verify both
-keys' fingerprints independently, update the secrets, republish and test, then
-retire the old key only after clients have received the new one. Purge the key URL
-(or wait its five-minute TTL). Replacing only the signing secret immediately
-breaks existing clients. For compromise, revoke and distribute the new trusted
-key through an independent authenticated channel.
+   ```sh
+   gh api --method PUT repos/kelihlodversson/pTOS-toolchain/pages -F https_enforced=true
+   gh api repos/kelihlodversson/pTOS-toolchain/pages
+   ```
 
-## Publishing and recovery
+   Certificate issuance can require additional time after the first deployment.
+   The verification job allows 30 minutes for HTTPS and deployment propagation;
+   rerun a failed verification job after certificate setup. Never bypass TLS checks.
+   Confirm the domain appears in this repository's Pages settings and the root
+   index identifies the pTOS SDK APT service, rather than the main website.
+7. The verify job runs on a fresh Ubuntu 24.04 runner, verifies public HEAD/GET
+   responses, checks every deployed object's SHA256, verifies InRelease,
+   Release.gpg and the history signature, then installs all three exact SDK
+   versions with `signed-by`. Installed smoke tests verify target names, compiler
+   prefixes and sysroot coexistence. Repeat the deployment without bootstrap and
+   require the same checks to pass before declaring production readiness.
 
-After merging the workflow and setting up the service, run:
+## Retention and storage limits
+
+Optional repository Actions variables (defaults require no variable administration):
+
+| Variable | Default | Meaning |
+| --- | --- | --- |
+| `APT_RETAIN_VERSIONS` | `3` | Maximum current stable versions |
+| `APT_MAX_BYTES` | `838860800` | Complete uncompressed site cap, at most 800 MiB |
+| `APT_GRACE_SECONDS` | `172800` | Previous metadata/package grace, minimum 86400 seconds |
+
+Releases are ordered by Debian version, not publication date. Only official,
+non-draft, non-prerelease numeric tags with complete SDK assets qualify. Every
+selected release's SHA256SUMS and all three package identities are verified.
+The publisher keeps up to the newest three versions within budget, dropping the
+oldest selected versions first if necessary. The newest release must fit. It
+reserves 8 MiB for metadata during selection and checks the entire signed site
+against the configured byte cap before upload. Grace-period data counts toward
+that cap and cannot be evicted to make room. If it does not fit, the deployment
+fails safely; wait for grace to expire or reduce the current retention count.
+GitHub Releases retain **all** historical packages independently of Pages.
+
+Each deployment rebuilds Packages using `dpkg-scanpackages --multiversion` from
+exactly the retained versions. Every Filename, Size and SHA256 is checked against
+an actual file in the deployment. Grace-only package files remain available but
+are absent from the current Packages index. No index points at an absent .deb.
+The actual v0.1.0 packages total about 118 MiB, below the initial cap.
+
+The public signed `apt-state.json` carries the permanent package checksum ledger
+and recent historical index bytes, package references and timestamps. Reusing a
+package name/version/architecture with changed bytes is rejected even after that
+version leaves the current index. Each publication preserves old by-hash objects
+and their package files for at least the configured grace period after their
+snapshot stops being current. The last active snapshot is pinned even if no
+release has occurred for months. An identical redeployment deduplicates snapshots.
+This accommodates Pages' normal caching and deployment propagation; clients
+holding metadata longer than the grace window should run `apt update` again.
+A single Pages deployment switches the whole static site; propagation across edge
+locations is not instantaneous, so APT/HTTPS verification retries transient errors.
+
+Before rebuilding, the publisher verifies the previous state signature using the
+configured signing key. It also compares the state to the verification manifest
+artifact of the latest successful Pages deployment job, when available, so a
+cached older state cannot silently roll back recent publication history. It checks
+deployment success independently of overall workflow success (a smoke test can
+fail after deployment succeeds). Missing, corrupt or mismatched state fails closed
+once retries expire. GitHub artifact read access uses GITHUB_TOKEN `actions: read`;
+bootstrap's deployment-history check uses `deployments: read`. Verification
+artifacts contain only public paths/checksums, never private keys or packages.
+
+## Releases, reruns and recovery
+
+`release-deb.yml` invokes the reusable Pages workflow only after its existing
+successful release publication, and only for official stable releases. The
+existing Debian and Homebrew build/publication jobs are preserved. The publisher
+checks release status again; PRs receive no signing secrets and never deploy.
+Both workflows serialize APT work through `ptos-apt-stable`, without cancellation.
+Manual dispatch runs only on main and downloads existing release assets:
 
 ```sh
 gh workflow run publish-apt.yml --repo kelihlodversson/pTOS-toolchain \
   --ref main -f release_tag=v0.1.0
 ```
 
-Monitor the run to completion. The job downloads release assets, checks every
-Debian package against `SHA256SUMS`, validates the three names/version/amd64,
-reads the entire existing R2 pool, and uses `dpkg-scanpackages --multiversion`.
-This is deliberately simple; bandwidth/work scales with total archive size.
-It refuses conflicting content for an existing package path or identity. Identical
-reruns are safe. The pool is the durable source of truth; there is no manifest to
-lose. Never delete or replace a pool object to resolve a conflict: publish a new
-Debian version and tag instead. Do not use `aws s3 sync --delete`.
+Use a tag inside current retention. Dispatching an older archived tag outside
+retention fails clearly rather than reintroducing it silently. Never modify an
+existing release's package bytes: publish a new Debian version/tag instead.
+Keep published source releases available; missing or reclassified releases needed
+by the grace window are errors. Future release tags must include the merged
+workflow integration. The publisher checks out trusted main for publication logic.
 
-All releases use the same concurrency group, with cancellation disabled. Do not
-run an independent publisher concurrently. Packages and by-hash indexes upload
-before Packages/Release/Release.gpg; InRelease uploads last. Old by-hash objects
-are retained indefinitely, including during recovery. APT clients using InRelease
-and Acquire-By-Hash see a consistent snapshot. Legacy clients fetching separate
-Release and Release.gpg may transiently retry while those two objects are updated.
-A failed job can be rerun: rebuilding indexes from the pool preserves every
-previously uploaded version, including objects from an interrupted upload.
+A failed build leaves the previous Pages deployment intact. If deployment succeeds
+but verification fails, rerun verification after fixing DNS/certificate issues;
+the new site is already deployed. Ordinary reruns are safe and need no bootstrap
+flag. If the state is damaged, restore the previous public Pages artifact and its
+signed state from a known deployment; do not erase the ledger or use bootstrap
+as a routine recovery mechanism. Retain a secure backup of public state/ledger
+alongside the independent private-key backup for disaster recovery. Packages can
+be reconstructed from Releases, but the immutable ledger and recent snapshots
+must also survive. A manually restored deployment should preserve the matching
+public verification manifest artifact.
 
-For recovery, restore the pool from a secure backup if necessary and dispatch an
-existing official release again. A list/download error is fatal, never interpreted
-as an empty repository. Back up pool objects and the signing key separately.
-Repository indexes and signatures can always be regenerated from the pool and key.
+## Key rotation and channels
 
-Future release tags must contain the merged workflow changes. `release-deb.yml`
-waits for its existing successful publish job, then invokes `publish-apt.yml` with
-explicitly named secrets. Existing Debian builds, verification, Homebrew bottles,
-and bottle activation remain in place. Prereleases and drafts never enter stable.
-Manual publication runs only from main. PR jobs run fixtures without production
-credentials. The release API is checked again inside the publisher.
+Distribute a keyring containing both old and new keys to clients before switching
+signers. Extend the public keyring export and previous-state trust bundle to include
+both keys during overlap; the current implementation exports its configured key
+and does not automate rotation. Independently verify fingerprints, update the
+signing secrets, redeploy and test, then retire the old key only after clients
+have received the new one. Keep HTTPS propagation/caching in mind when distributing
+keyrings. Replacing just the signing secret breaks existing clients and verification
+of previous state. For compromise, revoke and distribute the new trust anchor
+through an independent authenticated channel.
 
-## CDN and HTTP validation
+Future testing channels need separate `dists/testing` metadata, retention and
+publication policy, sharing package objects where practical within the same site
+size budget. Prereleases must never enter stable automatically.
 
-Three host-scoped Cache Rules were created and read back on 2026-11-13 in ruleset
-`57eed9fe04454f1e8a6a388158e8eb8c`:
+## Validation commands
 
-- `/pool/` and `/by-hash/` paths: explicitly cache eligible, 2592000-second edge TTL.
-- `/dists/` excluding by-hash: bypass cache.
-- `/ptos-archive-keyring.gpg`: cache eligible, 300-second edge TTL.
+```sh
+python3 tests/test_deb.py
+python3 tests/test_apt.py
+python3 tests/test_bottles.py
+python3 tests/test_bottle_activation.py
+actionlint .github/workflows/publish-apt.yml .github/workflows/release-deb.yml
+```
 
-All match `http.host eq "apt.ptos.dev"`; other hosts are unaffected.
-Object headers use one-year immutable caching for pool/by-hash, `no-store` for
-mutable metadata, and five minutes for the key. Package Content-Type is
-`application/vnd.debian.binary-package`; gzip indexes use `application/gzip`.
-Never purge/overwrite immutable objects as a routine release step. Purge only
-specific mutable URLs/key if changing an older cache policy. Do not purge the
-whole ptos.dev zone. Do not enable browser challenges for this host; inspect
-existing WAF/bot settings and verify requests from an ordinary APT User-Agent.
-
-The publishing script performs public HTTPS HEAD and GET checks, compares package,
-index, key and signature bytes, verifies by-hash URLs and GPG signatures. The next
-step uses the fresh Ubuntu 24.04 runner to install the key with `signed-by`, run
-`apt-get update`, select exact versions, install all three SDKs and run the installed
-smoke scripts and compiler-prefix/sysroot checks. No `trusted=yes` or unauthenticated
-installation is used. Check repeated real package GET responses for
-`CF-Cache-Status: HIT` after a warmup (same CDN location), HTTPS certificates and
-public DNS separately when bootstrapping. Cache hits and public installation have
-not yet been verified because R2 is not enabled.
-
-## Additional versions and channels
-
-Publish a new official release with a new Debian version. All versions remain in
-Packages; APT selects the newest Debian version. Pin an older version with
-`apt install package=version`. No existing package name/version/architecture may
-change contents. Testing channels should use separate `dists/testing` metadata,
-channel-specific publication rules and concurrency design, while sharing immutable
-pool objects. Do not route prereleases into stable or merely rename the codename.
-
-## Validation
-
-`python3 tests/test_apt.py` tests multiple versions, reruns, conflicts, SHA256
-rejection, missing credentials, real GPG signing/tampering and APT signed-by
-acceptance against an isolated fixture repository. It requires dpkg-dev,
-apt-utils, gnupg, gpgv and apt. Existing Debian and Homebrew fixture tests remain
-part of release CI. Public installation is covered by `packaging/test-apt.sh`.
+APT fixtures require dpkg-dev, apt-utils, gnupg, gpgv and apt. They exercise real
+signing and signed-by acceptance, complete Pages generation and repeat generation,
+retention, ordering, grace preservation, size failures, checksum/identity validation,
+immutable conflicts and package index references. Public verification requires
+no particular CDN headers. Production readiness requires the actual public Ubuntu
+installation to pass; fixture success alone does not satisfy that requirement.

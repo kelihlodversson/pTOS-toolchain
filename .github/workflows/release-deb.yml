@@ -256,11 +256,15 @@ jobs:
   publish-apt:
     if: github.event_name == 'release' && !github.event.release.prerelease && !github.event.release.draft
     needs: publish
+    permissions:
+      contents: read
+      pages: write
+      id-token: write
+      actions: read
+      deployments: read
     uses: ./.github/workflows/publish-apt.yml
     with:
       release_tag: ${{ github.event.release.tag_name }}
     secrets:
-      R2_ACCESS_KEY_ID: ${{ secrets.R2_ACCESS_KEY_ID }}
-      R2_SECRET_ACCESS_KEY: ${{ secrets.R2_SECRET_ACCESS_KEY }}
       APT_SIGNING_KEY_B64: ${{ secrets.APT_SIGNING_KEY_B64 }}
       APT_SIGNING_KEY_PASSPHRASE: ${{ secrets.APT_SIGNING_KEY_PASSPHRASE }}
