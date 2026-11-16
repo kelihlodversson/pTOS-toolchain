@@ -81,8 +81,14 @@ each in its own mode.
   all 12.
 - The replaced `reload1.cc` text matches all 17 supported recipes, 12.2.0
   through 16.2.0, and no CrossMiNT patch changes that file.
-- Checker unit tests, host checks, version-selection and CI change-filter
-  tests pass.
+- On pTOS `4079d20` (`virt-m68k-aspace_defconfig`), every object was built
+  with the fixed compiler and pTOS's `-fno-late-combine-instructions`
+  workaround for `pclone.o` was removed. The QEMU regression passed 29 of
+  29 suites and all five shutdown checks. Of the 251 objects, only
+  `pclone.o` disassembles differently from the SDK 1.0.0 build. In it, the
+  `Fseek` offset now gets `clr.l` and the mode a separate `clr.w`.
+- Checker unit tests, host checks, version-selection, CI change-filter,
+  Debian packaging and bottle tests pass.
 
 The regression is part of SDK smoke testing. Linux build CI also runs the
 runtime check under `qemu-m68k`. To run it against an SDK:
