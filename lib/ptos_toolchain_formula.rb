@@ -5,9 +5,9 @@
 module PtosToolchainFormula
   def self.included(formula)
     formula.class_eval do
-      url "https://github.com/kelihlodversson/pTOS-toolchain/archive/58963ae7a363a47e706e96766c3a7fef84ed0771.tar.gz"
+      url "https://github.com/kelihlodversson/pTOS-toolchain/archive/37da5a245e0a324990c501ca3f42550f2fff06c6.tar.gz"
       version "16.2.0"
-      sha256 "46db04d27e7df543238c7ecdbcc15695498eb61c4607ce4c33ad126ea91f02b7"
+      sha256 "36fd5083abe1ed222e96522027172343f78e59987a34edfd5f5f0737526dafd9"
       license all_of: ["GPL-3.0-or-later", "LGPL-2.1-or-later"]
 
       depends_on "bison" => :build
