@@ -124,9 +124,27 @@ m68k_move_operands_p (rtx dest, rtx src)
     md.write_text("".join(chunks))
 
 
+def fix_reload_value_sharing_modes(root):
+    # rtx_equal_p ignores the mode of a VOIDmode constant.  A narrower SET
+    # of a register leaves the rest undefined, so an HImode reload of zero
+    # cannot share a register with an SImode reload of zero.  Only m68k
+    # still uses reload; ARM and x86-64 use LRA.
+    replace(root, "gcc/reload1.cc", """\
+	  if (true_regnum (reg) != start_regno)
+	    other_input = NULL_RTX;
+""", """\
+	  if (true_regnum (reg) != start_regno
+	      /* Equal constants loaded in different modes are different
+		 values: the narrower load clobbers the rest of the wider.  */
+	      || rld[i].mode != rld[reloadnum].mode)
+	    other_input = NULL_RTX;
+""")
+
+
 def prepare_gcc(root, arch):
     if arch == "m68k":
         fix_m68k_move_dependencies(root)
+        fix_reload_value_sharing_modes(root)
         # Retain CrossMiNT's C ABI, including fastcall and the CPU multilibs.
         replace(root, "gcc/config.gcc", "m68k-*-mintelf*)\n", """\
 m68k-*-ptos-prgelf)

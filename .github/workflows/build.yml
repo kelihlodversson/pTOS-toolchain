@@ -89,6 +89,7 @@ jobs:
           python3 tests/test_versions.py
           python3 tests/test_ci_changes.py
           python3 tests/test_m68k_auto_inc_dec.py
+          python3 tests/test_m68k_reload_const_modes.py
 
   build:
     needs: [changes, host]
@@ -145,6 +146,7 @@ jobs:
           python3 tests/test_versions.py
           python3 tests/test_ci_changes.py
           python3 tests/test_m68k_auto_inc_dec.py
+          python3 tests/test_m68k_reload_const_modes.py
       - name: Install Python dependencies
         run: |
           python3 -m venv .work/venv
@@ -164,6 +166,8 @@ jobs:
             /bin/bash tests/smoke.sh "$prefix" "$arch"
             if [[ $arch == m68k && "$RUNNER_OS" == Linux ]]; then
               python3 tests/m68k_auto_inc_dec.py \
+                "$prefix/bin/m68k-unknown-ptos-prgelf-gcc" --runner qemu-m68k
+              python3 tests/m68k_reload_const_modes.py \
                 "$prefix/bin/m68k-unknown-ptos-prgelf-gcc" --runner qemu-m68k
             fi
             # Retain the shared source cache, but free each target's build tree.

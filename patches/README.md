@@ -43,6 +43,14 @@ in the destination address. This prevents late combining from changing
 the destination effective address while retaining valid auto-inc-dec
 instructions. See the [validation report](../validation/m68k-auto-inc-dec.md).
 
+It also applies the reload register-sharing fix for
+[issue #18](https://github.com/kelihlodversson/pTOS-toolchain/issues/18)
+to every supported GCC recipe. Two input reloads of an equal constant may
+share a hard register only when they use the same mode, because a narrower
+load leaves the rest of the register undefined. m68k is the only SDK target
+still using reload. See the
+[validation report](../validation/m68k-reload-const-modes.md).
+
 The patches at this directory's root extend the archived patches to newer
 GNU releases. Their archived source patches remain unchanged. All five ports
 are selectable with `--gcc` and in the manual CI dropdown; GCC 16.2.0 remains
