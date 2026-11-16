@@ -78,25 +78,25 @@ archived files.
 
 | pTOS patch | Archived CrossMiNT source patch |
 | --- | --- |
-| [binutils-2.39-mint.patch](binutils-2.39-mint.patch) | [binutils-2.39-mint-20230206.patch](binutils/binutils-2.39-mint-20230206.patch) |
-| [binutils-2.40-mint.patch](binutils-2.40-mint.patch) | [binutils-2.40-mint-20230224.patch](binutils/binutils-2.40-mint-20230224.patch) |
-| [binutils-2.41-mint.patch](binutils-2.41-mint.patch) | [binutils-2.41-mint-20230926.patch](binutils/binutils-2.41-mint-20230926.patch) |
-| [binutils-2.42-mint.patch](binutils-2.42-mint.patch) | [binutils-2.42-mint-20240309.patch](binutils/binutils-2.42-mint-20240309.patch) |
-| [binutils-2.43-mint.patch](binutils-2.43-mint.patch) | [binutils-2.43-mint-20240808.patch](binutils/binutils-2.43-mint-20240808.patch) |
-| [binutils-2.44-mint.patch](binutils-2.44-mint.patch) | [binutils-2.44-mint-20250415.patch](binutils/binutils-2.44-mint-20250415.patch) |
-| [binutils-2.45-mint.patch](binutils-2.45-mint.patch) | [binutils-2.45-mint-20250812.patch](binutils/binutils-2.45-mint-20250812.patch) |
-| [gcc-12.2.0-mint.patch](gcc-12.2.0-mint.patch) | [gcc-12.2.0-mint-20230210.patch](gcc/gcc-12.2.0-mint-20230210.patch) |
-| [gcc-12.3.0-mint.patch](gcc-12.3.0-mint.patch) | [gcc-12.3.0-mint-20240501.patch](gcc/gcc-12.3.0-mint-20240501.patch) |
-| [gcc-12.4.0-mint.patch](gcc-12.4.0-mint.patch) | [gcc-12.4.0-mint-20240810.patch](gcc/gcc-12.4.0-mint-20240810.patch) |
-| [gcc-13.1.0-mint.patch](gcc-13.1.0-mint.patch) | [gcc-13.1.0-mint-20230719.patch](gcc/gcc-13.1.0-mint-20230719.patch) |
-| [gcc-13.2.0-mint.patch](gcc-13.2.0-mint.patch) | [gcc-13.2.0-mint-20240501.patch](gcc/gcc-13.2.0-mint-20240501.patch) |
-| [gcc-13.3.0-mint.patch](gcc-13.3.0-mint.patch) | [gcc-13.3.0-mint-20240530.patch](gcc/gcc-13.3.0-mint-20240530.patch) |
-| [gcc-13.4.0-mint.patch](gcc-13.4.0-mint.patch) | [gcc-13.4.0-mint-20250702.patch](gcc/gcc-13.4.0-mint-20250702.patch) |
-| [gcc-14.1.0-mint.patch](gcc-14.1.0-mint.patch) | [gcc-14.1.0-mint-20240531.patch](gcc/gcc-14.1.0-mint-20240531.patch) |
-| [gcc-14.2.0-mint.patch](gcc-14.2.0-mint.patch) | [gcc-14.2.0-mint-20240809.patch](gcc/gcc-14.2.0-mint-20240809.patch) |
-| [gcc-14.3.0-mint.patch](gcc-14.3.0-mint.patch) | [gcc-14.3.0-mint-20250702.patch](gcc/gcc-14.3.0-mint-20250702.patch) |
-| [gcc-15.1.0-mint.patch](gcc-15.1.0-mint.patch) | [gcc-15.1.0-mint-20250702.patch](gcc/gcc-15.1.0-mint-20250702.patch) |
-| [gcc-15.2.0-mint.patch](gcc-15.2.0-mint.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
+| [binutils-2.39-ptos.patch](binutils-2.39-ptos.patch) | [binutils-2.39-mint-20230206.patch](binutils/binutils-2.39-mint-20230206.patch) |
+| [binutils-2.40-ptos.patch](binutils-2.40-ptos.patch) | [binutils-2.40-mint-20230224.patch](binutils/binutils-2.40-mint-20230224.patch) |
+| [binutils-2.41-ptos.patch](binutils-2.41-ptos.patch) | [binutils-2.41-mint-20230926.patch](binutils/binutils-2.41-mint-20230926.patch) |
+| [binutils-2.42-ptos.patch](binutils-2.42-ptos.patch) | [binutils-2.42-mint-20240309.patch](binutils/binutils-2.42-mint-20240309.patch) |
+| [binutils-2.43-ptos.patch](binutils-2.43-ptos.patch) | [binutils-2.43-mint-20240808.patch](binutils/binutils-2.43-mint-20240808.patch) |
+| [binutils-2.44-ptos.patch](binutils-2.44-ptos.patch) | [binutils-2.44-mint-20250415.patch](binutils/binutils-2.44-mint-20250415.patch) |
+| [binutils-2.45-ptos.patch](binutils-2.45-ptos.patch) | [binutils-2.45-mint-20250812.patch](binutils/binutils-2.45-mint-20250812.patch) |
+| [gcc-12.2.0-ptos.patch](gcc-12.2.0-ptos.patch) | [gcc-12.2.0-mint-20230210.patch](gcc/gcc-12.2.0-mint-20230210.patch) |
+| [gcc-12.3.0-ptos.patch](gcc-12.3.0-ptos.patch) | [gcc-12.3.0-mint-20240501.patch](gcc/gcc-12.3.0-mint-20240501.patch) |
+| [gcc-12.4.0-ptos.patch](gcc-12.4.0-ptos.patch) | [gcc-12.4.0-mint-20240810.patch](gcc/gcc-12.4.0-mint-20240810.patch) |
+| [gcc-13.1.0-ptos.patch](gcc-13.1.0-ptos.patch) | [gcc-13.1.0-mint-20230719.patch](gcc/gcc-13.1.0-mint-20230719.patch) |
+| [gcc-13.2.0-ptos.patch](gcc-13.2.0-ptos.patch) | [gcc-13.2.0-mint-20240501.patch](gcc/gcc-13.2.0-mint-20240501.patch) |
+| [gcc-13.3.0-ptos.patch](gcc-13.3.0-ptos.patch) | [gcc-13.3.0-mint-20240530.patch](gcc/gcc-13.3.0-mint-20240530.patch) |
+| [gcc-13.4.0-ptos.patch](gcc-13.4.0-ptos.patch) | [gcc-13.4.0-mint-20250702.patch](gcc/gcc-13.4.0-mint-20250702.patch) |
+| [gcc-14.1.0-ptos.patch](gcc-14.1.0-ptos.patch) | [gcc-14.1.0-mint-20240531.patch](gcc/gcc-14.1.0-mint-20240531.patch) |
+| [gcc-14.2.0-ptos.patch](gcc-14.2.0-ptos.patch) | [gcc-14.2.0-mint-20240809.patch](gcc/gcc-14.2.0-mint-20240809.patch) |
+| [gcc-14.3.0-ptos.patch](gcc-14.3.0-ptos.patch) | [gcc-14.3.0-mint-20250702.patch](gcc/gcc-14.3.0-mint-20250702.patch) |
+| [gcc-15.1.0-ptos.patch](gcc-15.1.0-ptos.patch) | [gcc-15.1.0-mint-20250702.patch](gcc/gcc-15.1.0-mint-20250702.patch) |
+| [gcc-15.2.0-ptos.patch](gcc-15.2.0-ptos.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
 
 ### Ports to newer releases
 
@@ -108,11 +108,11 @@ five ports are selectable with `--gcc` and in the manual CI dropdown; GCC
 
 | Local patch | Archived CrossMiNT source patch |
 | --- | --- |
-| [gcc-12.5.0-mint.patch](gcc-12.5.0-mint.patch) | [gcc-12.4.0-mint-20240810.patch](gcc/gcc-12.4.0-mint-20240810.patch) |
-| [gcc-13.5.0-mint.patch](gcc-13.5.0-mint.patch) | [gcc-13.4.0-mint-20250702.patch](gcc/gcc-13.4.0-mint-20250702.patch) |
-| [gcc-14.4.0-mint.patch](gcc-14.4.0-mint.patch) | [gcc-14.3.0-mint-20250702.patch](gcc/gcc-14.3.0-mint-20250702.patch) |
-| [gcc-15.3.0-mint.patch](gcc-15.3.0-mint.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
-| [gcc-16.2.0-mint.patch](gcc-16.2.0-mint.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
+| [gcc-12.5.0-ptos.patch](gcc-12.5.0-ptos.patch) | [gcc-12.4.0-mint-20240810.patch](gcc/gcc-12.4.0-mint-20240810.patch) |
+| [gcc-13.5.0-ptos.patch](gcc-13.5.0-ptos.patch) | [gcc-13.4.0-mint-20250702.patch](gcc/gcc-13.4.0-mint-20250702.patch) |
+| [gcc-14.4.0-ptos.patch](gcc-14.4.0-ptos.patch) | [gcc-14.3.0-mint-20250702.patch](gcc/gcc-14.3.0-mint-20250702.patch) |
+| [gcc-15.3.0-ptos.patch](gcc-15.3.0-ptos.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
+| [gcc-16.2.0-ptos.patch](gcc-16.2.0-ptos.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
 
 ### GCC 12–15 bugfix releases
 
