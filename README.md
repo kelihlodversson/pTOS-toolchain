@@ -289,6 +289,17 @@ python3 tests/m68k_auto_inc_dec.py m68k-unknown-ptos-prgelf-gcc --runner qemu-m6
 See the [copy-loop validation report](validation/m68k-auto-inc-dec.md) for
 the GCC 16 backend fix and version coverage.
 
+The m68k reload regression checks that an inline asm with an SImode and an
+HImode input both equal to zero does not get a word-sized clear for its
+longword input, using the same CPU, optimization and ABI matrix. Linux CI
+also runs it under `qemu-m68k` with stale upper halves in every register:
+
+```sh
+python3 tests/m68k_reload_const_modes.py m68k-unknown-ptos-prgelf-gcc --runner qemu-m68k
+```
+
+See the [reload validation report](validation/m68k-reload-const-modes.md).
+
 Runtime validation results and exact test settings are recorded in the
 [GCC 12–15 report](validation/gcc-12-15.md) and
 [GCC 16.2 report](validation/gcc-16.2.md), including QEMU regression tests

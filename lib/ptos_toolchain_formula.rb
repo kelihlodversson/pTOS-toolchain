@@ -76,7 +76,10 @@ module PtosToolchainFormula
     (pkgshare/"tests").install "tests/smoke.sh"
     (pkgshare/"tests").install "tests/m68k_auto_inc_dec.py",
                                "tests/m68k-auto-inc-dec.c",
-                               "tests/m68k-auto-inc-dec-runtime.c"
+                               "tests/m68k-auto-inc-dec-runtime.c",
+                               "tests/m68k_reload_const_modes.py",
+                               "tests/m68k-reload-const-modes.c",
+                               "tests/m68k-reload-const-modes-runtime.c"
     # GCC and Binutils install common manuals. Keep them in a formula-specific
     # directory so the SDKs can be linked side by side.
     pkgshare.install info if info.exist?
