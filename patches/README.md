@@ -1,4 +1,4 @@
-# CrossMiNT patches and local ports
+# CrossMiNT patches and pTOS patches
 
 The build uses the local patch paths in [versions.json](../versions.json).
 Patch contents and history are tracked in Git, and patches are applied directly
@@ -16,10 +16,12 @@ retrieved on 2026-11-11. This was also the upstream `master` revision at retriev
 Original filenames, patch contents, copyright notices and license notices are preserved.
 
 For each archived release supported by the build, the newest patch snapshot
-at that revision is selected. Multiple dated patches for one version are
-alternatives, not a patch series. Patches for older releases and the separate
-fastcall and segment-alignment patches are retained for reference. The build
-supports GCC 12 and newer.
+at that revision is the base of its pTOS patch in this directory (see
+[pTOS patches](#ptos-patches)); the build never applies an archived file
+directly. Multiple dated patches for one version are alternatives, not a
+patch series. Patches for older releases and the separate fastcall and
+segment-alignment patches are retained for reference. The build supports
+GCC 12 and newer.
 
 | Component | Archived release versions |
 | --- | --- |
@@ -33,28 +35,76 @@ For example, its source URL is:
 https://raw.githubusercontent.com/th-otto/crossmint/53ff5e25af1cd679bb60d46ab4e808d559ae5af2/patches/<component>/<filename>
 ```
 
-## Local ports
+## pTOS patches
 
-`prepare.py` also applies the m68k MOVE dependency fix for
+Every m68k recipe in `versions.json` selects a patch at this directory's root,
+and that patch holds all of the m68k-only source changes for its release.
+`build.sh` applies it to m68k builds only. `prepare.py` then adds the ARM and
+x86-64 targets and the parts shared by all three: the `config.sub` names, the
+common `config.gcc` block and the generated `gcc/config/ptos.h`, including each
+architecture's driver specs.
+
+Each root patch ends with a pTOS section, marked by a paragraph that names
+pTOS-toolchain#21, which:
+
+- registers `m68k-unknown-ptos-prgelf`: in BFD, GAS and LD for binutils, with
+  pTOS programs' text starting at 0x400000; in `config.gcc` and libgcc's
+  `config.host` for GCC, with the `m68k/ptos.opt` option file;
+- for binutils, uses the host libc symbol versions through a one-line
+  `include/libcwrap.h`;
+- for GCC, carries the two m68k code generation fixes below.
+
+The MOVE dependency fix for
 [issue #15](https://github.com/kelihlodversson/pTOS-toolchain/issues/15)
-to every supported GCC recipe. Integer and single-precision MOVE patterns
-reject a source pre-decrement or post-increment register that also occurs
-in the destination address. This prevents late combining from changing
-the destination effective address while retaining valid auto-inc-dec
-instructions. See the [validation report](../validation/m68k-auto-inc-dec.md).
+makes integer and single-precision MOVE patterns reject a source pre-decrement
+or post-increment register that also occurs in the destination address. This
+prevents late combining from changing the destination effective address while
+retaining valid auto-inc-dec instructions. See the
+[validation report](../validation/m68k-auto-inc-dec.md).
 
-It also applies the reload register-sharing fix for
+The reload register-sharing fix for
 [issue #18](https://github.com/kelihlodversson/pTOS-toolchain/issues/18)
-to every supported GCC recipe. Two input reloads of an equal constant may
-share a hard register only when they use the same mode, because a narrower
-load leaves the rest of the register undefined. m68k is the only SDK target
-still using reload. See the
+lets two input reloads of an equal constant share a hard register only when
+they use the same mode, because a narrower load leaves the rest of the
+register undefined. m68k is the only SDK target still using reload. See the
 [validation report](../validation/m68k-reload-const-modes.md).
 
-The patches at this directory's root extend the archived patches to newer
-GNU releases. Their archived source patches remain unchanged. All five ports
-are selectable with `--gcc` and in the manual CI dropdown; GCC 16.2.0 remains
-the default.
+For releases that CrossMiNT covers, the root patch is a copy of the archived
+patch with the pTOS section appended; diffing the two shows only that section.
+The binutils 2.40–2.45 copies also make the archived patch create the
+one-line `include/libcwrap.h` directly instead of CrossMiNT's glibc
+symbol-version header, which pTOS replaced. Edit these copies, never the
+archived files.
+
+| pTOS patch | Archived CrossMiNT source patch |
+| --- | --- |
+| [binutils-2.39-mint.patch](binutils-2.39-mint.patch) | [binutils-2.39-mint-20230206.patch](binutils/binutils-2.39-mint-20230206.patch) |
+| [binutils-2.40-mint.patch](binutils-2.40-mint.patch) | [binutils-2.40-mint-20230224.patch](binutils/binutils-2.40-mint-20230224.patch) |
+| [binutils-2.41-mint.patch](binutils-2.41-mint.patch) | [binutils-2.41-mint-20230926.patch](binutils/binutils-2.41-mint-20230926.patch) |
+| [binutils-2.42-mint.patch](binutils-2.42-mint.patch) | [binutils-2.42-mint-20240309.patch](binutils/binutils-2.42-mint-20240309.patch) |
+| [binutils-2.43-mint.patch](binutils-2.43-mint.patch) | [binutils-2.43-mint-20240808.patch](binutils/binutils-2.43-mint-20240808.patch) |
+| [binutils-2.44-mint.patch](binutils-2.44-mint.patch) | [binutils-2.44-mint-20250415.patch](binutils/binutils-2.44-mint-20250415.patch) |
+| [binutils-2.45-mint.patch](binutils-2.45-mint.patch) | [binutils-2.45-mint-20250812.patch](binutils/binutils-2.45-mint-20250812.patch) |
+| [gcc-12.2.0-mint.patch](gcc-12.2.0-mint.patch) | [gcc-12.2.0-mint-20230210.patch](gcc/gcc-12.2.0-mint-20230210.patch) |
+| [gcc-12.3.0-mint.patch](gcc-12.3.0-mint.patch) | [gcc-12.3.0-mint-20240501.patch](gcc/gcc-12.3.0-mint-20240501.patch) |
+| [gcc-12.4.0-mint.patch](gcc-12.4.0-mint.patch) | [gcc-12.4.0-mint-20240810.patch](gcc/gcc-12.4.0-mint-20240810.patch) |
+| [gcc-13.1.0-mint.patch](gcc-13.1.0-mint.patch) | [gcc-13.1.0-mint-20230719.patch](gcc/gcc-13.1.0-mint-20230719.patch) |
+| [gcc-13.2.0-mint.patch](gcc-13.2.0-mint.patch) | [gcc-13.2.0-mint-20240501.patch](gcc/gcc-13.2.0-mint-20240501.patch) |
+| [gcc-13.3.0-mint.patch](gcc-13.3.0-mint.patch) | [gcc-13.3.0-mint-20240530.patch](gcc/gcc-13.3.0-mint-20240530.patch) |
+| [gcc-13.4.0-mint.patch](gcc-13.4.0-mint.patch) | [gcc-13.4.0-mint-20250702.patch](gcc/gcc-13.4.0-mint-20250702.patch) |
+| [gcc-14.1.0-mint.patch](gcc-14.1.0-mint.patch) | [gcc-14.1.0-mint-20240531.patch](gcc/gcc-14.1.0-mint-20240531.patch) |
+| [gcc-14.2.0-mint.patch](gcc-14.2.0-mint.patch) | [gcc-14.2.0-mint-20240809.patch](gcc/gcc-14.2.0-mint-20240809.patch) |
+| [gcc-14.3.0-mint.patch](gcc-14.3.0-mint.patch) | [gcc-14.3.0-mint-20250702.patch](gcc/gcc-14.3.0-mint-20250702.patch) |
+| [gcc-15.1.0-mint.patch](gcc-15.1.0-mint.patch) | [gcc-15.1.0-mint-20250702.patch](gcc/gcc-15.1.0-mint-20250702.patch) |
+| [gcc-15.2.0-mint.patch](gcc-15.2.0-mint.patch) | [gcc-15.2.0-mint-20250810.patch](gcc/gcc-15.2.0-mint-20250810.patch) |
+
+### Ports to newer releases
+
+Five GCC patches at this directory's root port the archived patches to newer
+GNU releases. They were pTOS files from the start, so their pTOS section was
+appended in place, and their archived source patches remain unchanged. All
+five ports are selectable with `--gcc` and in the manual CI dropdown; GCC
+16.2.0 remains the default.
 
 | Local patch | Archived CrossMiNT source patch |
 | --- | --- |

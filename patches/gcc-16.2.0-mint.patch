@@ -25078,3 +25078,190 @@ index 6bc5a28..8e4735e 100755
      lt_cv_dlopen="LoadLibrary"
      lt_cv_dlopen_libs=
      ;;
+
+pTOS m68k target and backend fixes (pTOS-toolchain#21), appended to the
+patch above, whose content is otherwise unchanged. prepare.py used to make
+these edits. Registers m68k-unknown-ptos-prgelf in config.gcc and
+libgcc and adds m68k/ptos.opt. Includes the MOVE operand-dependency fix
+(pTOS-toolchain#15) and the reload constant-mode fix (pTOS-toolchain#18).
+
+--- a/gcc/config/m68k/m68k-protos.h
++++ b/gcc/config/m68k/m68k-protos.h
+@@ -26,6 +26,7 @@
+ extern void split_di (rtx[], int, rtx[], rtx[]);
+ 
+ extern bool valid_mov3q_const (HOST_WIDE_INT);
++extern bool m68k_move_operands_p (rtx, rtx);
+ extern const char *output_move_simode (rtx *);
+ extern const char *output_move_himode (rtx *);
+ extern const char *output_move_qimode (rtx *);
+--- a/gcc/config/m68k/m68k.cc
++++ b/gcc/config/m68k/m68k.cc
+@@ -3758,6 +3758,21 @@
+   return "move%.l %1,%0";
+ }
+ 
++/* Reject a memory MOVE whose source updates a register used to address
++   the destination.  Combining such operands changes the destination EA.  */
++bool
++m68k_move_operands_p (rtx dest, rtx src)
++{
++  if (MEM_P (dest) && MEM_P (src))
++    {
++      rtx addr = XEXP (src, 0);
++      if ((GET_CODE (addr) == POST_INC || GET_CODE (addr) == PRE_DEC)
++          && reg_overlap_mentioned_p (XEXP (addr, 0), XEXP (dest, 0)))
++        return false;
++    }
++  return true;
++}
++
+ const char *
+ output_move_simode (rtx *operands)
+ {
+--- a/gcc/config/m68k/m68k.md
++++ b/gcc/config/m68k/m68k.md
+@@ -997,7 +997,7 @@
+   ;; We don't allow f-regs since fixed point cannot go in them.
+   [(set (match_operand:SI 0 "nonimmediate_operand" "=g,d,a<")
+         (match_operand:SI 1 "general_src_operand" "damSnT,n,i"))]
+-  "!TARGET_COLDFIRE && reload_completed"
++  "!TARGET_COLDFIRE && reload_completed && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   return output_move_simode (operands);
+ }
+@@ -1010,7 +1010,7 @@
+   [(set (match_operand:SI 0 "nonimmediate_operand" "=g,d,a<")
+         (match_operand:SI 1 "general_src_operand" "damSKT,n,i"))]
+ 
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   return output_move_simode (operands);
+ }
+@@ -1020,7 +1020,7 @@
+ (define_insn "*movsi_cf"
+   [(set (match_operand:SI 0 "nonimmediate_operand" "=g,d, d, d, d, d, a,Ap,  a,  r<Q>,g,    U")
+ 	(match_operand:SI 1 "general_operand"      " R,CQ,CW,CZ,CS,Ci,J,J Cs,Cs, g,   Rr<Q>,U"))]
+-  "TARGET_COLDFIRE"
++  "TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   switch (which_alternative)
+     {
+@@ -1089,7 +1089,7 @@
+ (define_insn ""
+   [(set (match_operand:HI 0 "nonimmediate_operand" "=g")
+         (match_operand:HI 1 "general_src_operand" "gS"))]
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_himode (operands);"
+   [(set (attr "flags_valid")
+ 	(if_then_else (match_operand 0 "address_reg_operand")
+@@ -1099,7 +1099,7 @@
+ (define_insn ""
+   [(set (match_operand:HI 0 "nonimmediate_operand" "=r<Q>,g,U")
+ 	(match_operand:HI 1 "general_operand" "g,r<Q>,U"))]
+-  "TARGET_COLDFIRE"
++  "TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_himode (operands);"
+   [(set (attr "flags_valid")
+ 	(if_then_else (match_operand 0 "address_reg_operand")
+@@ -1135,14 +1135,14 @@
+ (define_insn ""
+   [(set (match_operand:QI 0 "nonimmediate_operand" "=d,*a,m")
+ 	(match_operand:QI 1 "general_src_operand" "dmSi*a,di*a,dmSi"))]
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_qimode (operands);"
+   [(set_attr "flags_valid" "set")])
+ 
+ (define_insn ""
+   [(set (match_operand:QI 0 "nonimmediate_operand" "=d<Q>,dm,U,d*a")
+ 	(match_operand:QI 1 "general_src_operand" "dmi,d<Q>,U,di*a"))]
+-  "TARGET_COLDFIRE"
++  "TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_qimode (operands);"
+   [(set_attr "flags_valid" "set")])
+ 
+@@ -1214,7 +1214,7 @@
+ (define_insn ""
+   [(set (match_operand:SF 0 "nonimmediate_operand" "=rmf")
+ 	(match_operand:SF 1 "general_operand" "rmfF"))]
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   if (FP_REG_P (operands[0]))
+     {
+@@ -1257,7 +1257,7 @@
+ (define_insn "movsf_cf_soft"
+   [(set (match_operand:SF 0 "nonimmediate_operand" "=r<Q>,g,U")
+ 	(match_operand:SF 1 "general_operand" "g,r<Q>,U"))]
+-  "TARGET_COLDFIRE && !TARGET_COLDFIRE_FPU"
++  "TARGET_COLDFIRE && !TARGET_COLDFIRE_FPU && m68k_move_operands_p (operands[0], operands[1])"
+   "move%.l %1,%0"
+   [(set_attr "type" "move_l")])
+ 
+@@ -1268,7 +1268,7 @@
+ ,m")
+         (match_operand:SF 1 "general_operand"      " f,     r<Q>U,f,rm,F,F,   m
+ ,f"))]
+-  "TARGET_COLDFIRE_FPU"
++  "TARGET_COLDFIRE_FPU && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   if (which_alternative == 4 || which_alternative == 5) {
+     rtx xoperands[2];
+--- a/gcc/reload1.cc
++++ b/gcc/reload1.cc
+@@ -5800,7 +5800,10 @@
+ 	  /* If the other reload loads the same input value, that
+ 	     will not cause a conflict only if it's loading it into
+ 	     the same register.  */
+-	  if (true_regnum (reg) != start_regno)
++	  if (true_regnum (reg) != start_regno
++	      /* Equal constants loaded in different modes are different
++		 values: the narrower load clobbers the rest of the wider.  */
++	      || rld[i].mode != rld[reloadnum].mode)
+ 	    other_input = NULL_RTX;
+ 	  if (! other_input || ! rtx_equal_p (other_input, value)
+ 	      || rld[i].out || out)
+--- a/gcc/config.gcc
++++ b/gcc/config.gcc
+@@ -2520,6 +2520,15 @@
+ 	tm_defines="${tm_defines} MOTOROLA=1"
+ 	tmake_file="${tmake_file} m68k/t-floatlib m68k/t-linux m68k/t-mlibs"
+ 	;;
++m68k-*-ptos-prgelf)
++    default_m68k_cpu=68000
++    default_cf_cpu=5475
++    tm_file="${tm_file} dbxelf.h elfos.h m68k/mint.h m68k/mint-stdint.h"
++    tm_defines="${tm_defines} MOTOROLA=1"
++    tmake_file="m68k/t-floatlib m68k/t-mint"
++    extra_options="${extra_options} m68k/ptos.opt"
++    gcc_cv_initfini_array=yes
++    ;;
+ m68k-*-mintelf*)
+ 	default_m68k_cpu=68000
+ 	default_cf_cpu=5475
+--- a/libgcc/config.host
++++ b/libgcc/config.host
+@@ -1018,7 +1018,7 @@
+ m32rle-*-elf*)
+ 	tmake_file=t-fdpbit
+ 	;;
+-m68k-*-elf* | fido-*-elf)
++m68k-*-ptos-prgelf | m68k-*-elf* | fido-*-elf)
+ 	tmake_file="$tmake_file m68k/t-floatlib"
+ 	;;
+ m68k*-*-netbsdelf*)
+--- /dev/null
++++ b/gcc/config/m68k/ptos.opt
+@@ -0,0 +1,5 @@
++
++mmintelf
++Target RejectNegative
++Link a MiNT PRG+ELF executable.
++
+--- /dev/null
++++ b/gcc/config/m68k/ptos.opt.urls
+@@ -0,0 +1 @@
++; pTOS: the ptos.opt option has no documentation URL.

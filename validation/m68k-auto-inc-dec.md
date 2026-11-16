@@ -15,7 +15,8 @@ transformation followed by a memory-to-memory combination. The later
 that MOVE after register allocation. The m68k instruction recognizer
 previously accepted the resulting dependency.
 
-`prepare.py` now adds `m68k_move_operands_p` to the backend and checks it
+Each m68k GCC patch in `patches/` adds `m68k_move_operands_p` to the backend
+(`prepare.py` did until #21) and checks it
 in the ten QI, HI, SI and SF MOVE patterns, including ColdFire variants.
 It rejects memory-to-memory moves when a source PRE_DEC or POST_INC
 updates a register used in the destination address. The ordinary

@@ -51,8 +51,9 @@ because `rtx_equal_p` compares their modes.
 
 ## Fix
 
-`prepare.py` adds one condition to `reload_reg_free_for_value_p` in
-`gcc/reload1.cc`. Another reload's input counts as the same value only if
+Each m68k GCC patch in `patches/` adds one condition to
+`reload_reg_free_for_value_p` in `gcc/reload1.cc` (`prepare.py` did until
+#21). Another reload's input counts as the same value only if
 both reloads use the same mode. Otherwise the two reloads conflict as usual
 and get separate registers. The change makes reload choose registers more
 conservatively, and it never turns a previously valid allocation into an

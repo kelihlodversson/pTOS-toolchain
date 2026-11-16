@@ -1,8 +1,12 @@
 #!/usr/bin/env python3
-"""Register the pTOS targets in the pinned GCC and Binutils releases."""
+"""Register the pTOS targets in the pinned GCC and Binutils releases.
+
+The m68k patches selected by versions.json carry every m68k-only source
+change. This script adds the ARM and x86-64 targets and the parts shared by
+all three: config.sub, the common config.gcc block and the generated ptos.h.
+"""
 
 import argparse
-import re
 from pathlib import Path
 
 
@@ -27,34 +31,10 @@ esac
 
 
 def prepare_binutils(root, arch):
+    # The m68k target registration is part of each m68k patch in patches/.
     if arch == "m68k":
-        # The CrossMiNT patch references its a.out BFD backend from the
-        # common relocation code, even in an ELF-only linker.
-        replace(root, "bfd/config.bfd", "  m68*-*-mintelf*)\n", """\
-  m68k-*-ptos-prgelf)
-    targ_defvec=m68k_elf32_vec
-    targ_selvecs="m68k_elf32_atariprg_vec m68k_aout_mintprg_vec"
-    ;;
-  m68*-*-mintelf*)
-""")
-        # Use the host libc ABI. CrossMiNT's Linux binary distribution pins
-        # glibc symbol versions that are unsuitable for newer host headers.
-        (root / "include/libcwrap.h").write_text("/* Use host libc symbol versions. */\n")
-        replace(root, "gas/configure.tgt", "  m68k-*-elf*)", "  m68k-*-ptos-prgelf | m68k-*-elf*)")
-        replace(root, "ld/configure.tgt", "m68*-*-mintelf*)", """\
-m68k-*-ptos-prgelf)\ttarg_emul=m68kelf
-\t\t\ttarg_extra_emuls=m68kmintelf
-\t\t\t;;
-m68*-*-mintelf*)""")
-        # Use ordinary ELF GAS. The patched tc-m68k.c handles the ABI flags
-        # and ELF relocations; the Atari program header is a linker choice.
-        replace(root, "ld/emulparams/m68kelf.sh", "TEXT_START_ADDR=0x80000000\n", """\
-TEXT_START_ADDR=0x80000000
-case $target in
-  m68k-*-ptos-prgelf) TEXT_START_ADDR=0x400000 ;;
-esac
-""")
-    elif arch == "arm":
+        return
+    if arch == "arm":
         replace(root, "bfd/config.bfd", "  arm-*-elf | arm*-*-freebsd*",
                 "  arm-*-ptos-elf | arm-*-elf | arm*-*-freebsd*")
         replace(root, "gas/configure.tgt", "  arm-*-eabi* | arm-*-rtems*",
@@ -80,96 +60,11 @@ x86_64-*-ptos-elfx32)\ttarg_emul=elf32_x86_64
 x86_64-*-elf* | x86_64-*-rtems*""")
 
 
-def fix_m68k_move_dependencies(root):
-    # RTL evaluates the SET source before its destination.  MOVE evaluates
-    # the destination address after updating a source address register.
-    replace(root, "gcc/config/m68k/m68k-protos.h",
-            "extern const char *output_move_simode (rtx *);",
-            "extern bool m68k_move_operands_p (rtx, rtx);\n"
-            "extern const char *output_move_simode (rtx *);")
-    marker = "\nconst char *\noutput_move_simode (rtx *operands)\n"
-    replace(root, "gcc/config/m68k/m68k.cc", marker, """
-/* Reject a memory MOVE whose source updates a register used to address
-   the destination.  Combining such operands changes the destination EA.  */
-bool
-m68k_move_operands_p (rtx dest, rtx src)
-{
-  if (MEM_P (dest) && MEM_P (src))
-    {
-      rtx addr = XEXP (src, 0);
-      if ((GET_CODE (addr) == POST_INC || GET_CODE (addr) == PRE_DEC)
-          && reg_overlap_mentioned_p (XEXP (addr, 0), XEXP (dest, 0)))
-        return false;
-    }
-  return true;
-}
-""" + marker)
-    md = root / "gcc/config/m68k/m68k.md"
-    chunks = re.split(r"(?=^\(define_)", md.read_text(), flags=re.M)
-    count = 0
-    for index, chunk in enumerate(chunks):
-        if (chunk.startswith("(define_insn ") and re.search(
-                r'\[\(set \(match_operand:(SI|HI|QI|SF) 0 "nonimmediate_operand"[^)]*\)'
-                r'\s*\(match_operand:\1 1 "(?:general_src_operand|general_operand)"',
-                chunk, re.S)):
-            chunks[index], replacements = re.subn(
-                r'\n  "([^"\n]*)"\n',
-                r'\n  "\1 && m68k_move_operands_p (operands[0], operands[1])"\n',
-                chunk, count=1)
-            if replacements != 1:
-                raise ValueError("missing m68k MOVE condition")
-            count += 1
-    if count != 10:
-        raise ValueError(f"expected ten m68k MOVE patterns, found {count}")
-    md.write_text("".join(chunks))
-
-
-def fix_reload_value_sharing_modes(root):
-    # rtx_equal_p ignores the mode of a VOIDmode constant.  A narrower SET
-    # of a register leaves the rest undefined, so an HImode reload of zero
-    # cannot share a register with an SImode reload of zero.  Only m68k
-    # still uses reload; ARM and x86-64 use LRA.
-    replace(root, "gcc/reload1.cc", """\
-	  if (true_regnum (reg) != start_regno)
-	    other_input = NULL_RTX;
-""", """\
-	  if (true_regnum (reg) != start_regno
-	      /* Equal constants loaded in different modes are different
-		 values: the narrower load clobbers the rest of the wider.  */
-	      || rld[i].mode != rld[reloadnum].mode)
-	    other_input = NULL_RTX;
-""")
-
-
 def prepare_gcc(root, arch):
     if arch == "m68k":
-        fix_m68k_move_dependencies(root)
-        fix_reload_value_sharing_modes(root)
-        # Retain CrossMiNT's C ABI, including fastcall and the CPU multilibs.
-        replace(root, "gcc/config.gcc", "m68k-*-mintelf*)\n", """\
-m68k-*-ptos-prgelf)
-    default_m68k_cpu=68000
-    default_cf_cpu=5475
-    tm_file="${tm_file} dbxelf.h elfos.h m68k/mint.h m68k/mint-stdint.h"
-    tm_defines="${tm_defines} MOTOROLA=1"
-    tmake_file="m68k/t-floatlib m68k/t-mint"
-    extra_options="${extra_options} m68k/ptos.opt"
-    gcc_cv_initfini_array=yes
-    ;;
-m68k-*-mintelf*)
-""")
-        replace(root, "libgcc/config.host", "m68k-*-elf* | fido-*-elf)",
-                "m68k-*-ptos-prgelf | m68k-*-elf* | fido-*-elf)")
-        # Keep ELF's normal GOT/PLT code generation available. The MiNT
-        # target's compile-time restriction is specific to its PRG output.
-        options = root / "gcc/config/m68k/ptos.opt"
-        options.write_text("""
-mmintelf
-Target RejectNegative
-Link a MiNT PRG+ELF executable.
-
-""")
-        options.with_suffix(".opt.urls").touch()
+        # The target registration, m68k/ptos.opt and the m68k backend fixes
+        # are part of each m68k patch in patches/. Only the driver specs of
+        # the generated cross-architecture ptos.h are added here.
         target_header = r"""
 #undef TARGET_OS_CPP_BUILTINS
 #define TARGET_OS_CPP_BUILTINS() \
