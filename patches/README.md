@@ -168,6 +168,15 @@ Runtime validation exposed two compiler faults, fixed in this local patch:
   starting three bytes earlier, causing an address error on the 68000. It now
   rejects widening a memory object or changing a volatile access's width.
 
+The LRA experiment in [pTOS#998](https://github.com/kelihlodversson/pTOS/pull/998)
+exposed an address-validation fault. LRA checks address operands with
+`VOIDmode`, whose size is zero. The m68k backend consequently accepted indexed
+displacement 128 on the 68000, although its signed-byte displacement ends at
+127. Treating `VOIDmode` like `BLKmode` for this range check ensures the
+displacement itself fits. The GCC 16.2 smoke tests compile and assemble a
+standalone reproducer with `-mlra` at both boundary values; see the
+[validation report](../validation/m68k-lra-address.md).
+
 The SDK smoke tests cover both reproducers at `-O2` and `-Os`, including both
 calling conventions for the ROM byte-access check. No optimization-disabling
 build flag was needed for the successful runtime runs.

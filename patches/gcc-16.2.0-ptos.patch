@@ -25265,3 +25265,17 @@ libgcc and adds m68k/ptos.opt. Includes the MOVE operand-dependency fix
 +++ b/gcc/config/m68k/ptos.opt.urls
 @@ -0,0 +1 @@
 +; pTOS: the ptos.opt option has no documentation URL.
+
+Fix pTOS#998: LRA checks address operands with VOIDmode.  A zero-sized
+reach admits the first unencodable positive displacement (128 or 32768).
+
+--- a/gcc/config/m68k/m68k.cc
++++ b/gcc/config/m68k/m68k.cc
+@@ -2690,4 +2690,6 @@
+-  if (mode == BLKmode)
++  /* LRA uses VOIDmode for address operands.  Even without a memory
++     access, the displacement itself must fit the addressing mode.  */
++  if (mode == BLKmode || mode == VOIDmode)
+     reach = 1;
+   else
+     reach = GET_MODE_SIZE (mode);
