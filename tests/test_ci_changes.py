@@ -29,7 +29,7 @@ class SdkChangesTests(unittest.TestCase):
         for path in (
             "build.sh", "host.sh", "versions.py", "versions.json", "prepare.py",
             "install-libcmini.sh", "sysroot/locale.h",
-            "patches/gcc-16.2.0-mint.patch", "patches/binutils/fix.patch",
+            "patches/gcc-16.2.0-ptos.patch", "patches/binutils/fix.patch",
             "tests/smoke.sh", ".github/workflows/build.yml",
             ".github/scripts/sdk_changes.py",
         ):

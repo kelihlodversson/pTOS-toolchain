@@ -4,103 +4,103 @@
       "version": "12.2.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-12.2.0/gcc-12.2.0.tar.xz",
       "sha256": "e549cf9cf3594a00e27b6589d4322d70e0720cdd213f39beb4181e06926230ff",
-      "patch": "patches/gcc/gcc-12.2.0-mint-20230210.patch"
+      "patch": "patches/gcc-12.2.0-ptos.patch"
     },
     {
       "version": "12.3.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-12.3.0/gcc-12.3.0.tar.xz",
       "sha256": "949a5d4f99e786421a93b532b22ffab5578de7321369975b91aec97adfda8c3b",
-      "patch": "patches/gcc/gcc-12.3.0-mint-20240501.patch"
+      "patch": "patches/gcc-12.3.0-ptos.patch"
     },
     {
       "version": "12.4.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-12.4.0/gcc-12.4.0.tar.xz",
       "sha256": "704f652604ccbccb14bdabf3478c9511c89788b12cb3bbffded37341916a9175",
-      "patch": "patches/gcc/gcc-12.4.0-mint-20240810.patch"
+      "patch": "patches/gcc-12.4.0-ptos.patch"
     },
     {
       "version": "12.5.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-12.5.0/gcc-12.5.0.tar.xz",
       "sha256": "71cd373d0f04615e66c5b5b14d49c1a4c1a08efa7b30625cd240b11bab4062b3",
-      "patch": "patches/gcc-12.5.0-mint.patch"
+      "patch": "patches/gcc-12.5.0-ptos.patch"
     },
     {
       "version": "13.1.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-13.1.0/gcc-13.1.0.tar.xz",
       "sha256": "61d684f0aa5e76ac6585ad8898a2427aade8979ed5e7f85492286c4dfc13ee86",
-      "patch": "patches/gcc/gcc-13.1.0-mint-20230719.patch"
+      "patch": "patches/gcc-13.1.0-ptos.patch"
     },
     {
       "version": "13.2.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-13.2.0/gcc-13.2.0.tar.xz",
       "sha256": "e275e76442a6067341a27f04c5c6b83d8613144004c0413528863dc6b5c743da",
-      "patch": "patches/gcc/gcc-13.2.0-mint-20240501.patch"
+      "patch": "patches/gcc-13.2.0-ptos.patch"
     },
     {
       "version": "13.3.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-13.3.0/gcc-13.3.0.tar.xz",
       "sha256": "0845e9621c9543a13f484e94584a49ffc0129970e9914624235fc1d061a0c083",
-      "patch": "patches/gcc/gcc-13.3.0-mint-20240530.patch"
+      "patch": "patches/gcc-13.3.0-ptos.patch"
     },
     {
       "version": "13.4.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-13.4.0/gcc-13.4.0.tar.xz",
       "sha256": "9c4ce6dbb040568fdc545588ac03c5cbc95a8dbf0c7aa490170843afb59ca8f5",
-      "patch": "patches/gcc/gcc-13.4.0-mint-20250702.patch"
+      "patch": "patches/gcc-13.4.0-ptos.patch"
     },
     {
       "version": "13.5.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-13.5.0/gcc-13.5.0.tar.xz",
       "sha256": "ec3df0015ed01411f91f9a9cd5b4da3070eb1222b02fadf4133c30c090399855",
-      "patch": "patches/gcc-13.5.0-mint.patch"
+      "patch": "patches/gcc-13.5.0-ptos.patch"
     },
     {
       "version": "14.1.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-14.1.0/gcc-14.1.0.tar.xz",
       "sha256": "e283c654987afe3de9d8080bc0bd79534b5ca0d681a73a11ff2b5d3767426840",
-      "patch": "patches/gcc/gcc-14.1.0-mint-20240531.patch"
+      "patch": "patches/gcc-14.1.0-ptos.patch"
     },
     {
       "version": "14.2.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-14.2.0/gcc-14.2.0.tar.xz",
       "sha256": "a7b39bc69cbf9e25826c5a60ab26477001f7c08d85cec04bc0e29cabed6f3cc9",
-      "patch": "patches/gcc/gcc-14.2.0-mint-20240809.patch"
+      "patch": "patches/gcc-14.2.0-ptos.patch"
     },
     {
       "version": "14.3.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-14.3.0/gcc-14.3.0.tar.xz",
       "sha256": "e0dc77297625631ac8e50fa92fffefe899a4eb702592da5c32ef04e2293aca3a",
-      "patch": "patches/gcc/gcc-14.3.0-mint-20250702.patch"
+      "patch": "patches/gcc-14.3.0-ptos.patch"
     },
     {
       "version": "14.4.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-14.4.0/gcc-14.4.0.tar.xz",
       "sha256": "752b6f567beac83159c77a7680b1316bdd784738bff9a9d070112c09da90f6d9",
-      "patch": "patches/gcc-14.4.0-mint.patch"
+      "patch": "patches/gcc-14.4.0-ptos.patch"
     },
     {
       "version": "15.1.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-15.1.0/gcc-15.1.0.tar.xz",
       "sha256": "e2b09ec21660f01fecffb715e0120265216943f038d0e48a9868713e54f06cea",
-      "patch": "patches/gcc/gcc-15.1.0-mint-20250702.patch"
+      "patch": "patches/gcc-15.1.0-ptos.patch"
     },
     {
       "version": "15.2.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-15.2.0/gcc-15.2.0.tar.xz",
       "sha256": "438fd996826b0c82485a29da03a72d71d6e3541a83ec702df4271f6fe025d24e",
-      "patch": "patches/gcc/gcc-15.2.0-mint-20250810.patch"
+      "patch": "patches/gcc-15.2.0-ptos.patch"
     },
     {
       "version": "15.3.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-15.3.0/gcc-15.3.0.tar.xz",
       "sha256": "fa59c1beef8995f27c4d71c1df227587189315d3e6faff1bb4306e61b0c530eb",
-      "patch": "patches/gcc-15.3.0-mint.patch"
+      "patch": "patches/gcc-15.3.0-ptos.patch"
     },
     {
       "version": "16.2.0",
       "url": "https://ftp.gnu.org/gnu/gcc/gcc-16.2.0/gcc-16.2.0.tar.xz",
       "sha256": "e6738e29597f733270731aa90600f37ffdc045079dfc27ec7e8192cc81085c3e",
-      "patch": "patches/gcc-16.2.0-mint.patch"
+      "patch": "patches/gcc-16.2.0-ptos.patch"
     }
   ],
   "binutils": [
@@ -108,43 +108,43 @@
       "version": "2.39",
       "url": "https://ftp.gnu.org/gnu/binutils/binutils-2.39.tar.xz",
       "sha256": "645c25f563b8adc0a81dbd6a41cffbf4d37083a382e02d5d3df4f65c09516d00",
-      "patch": "patches/binutils/binutils-2.39-mint-20230206.patch"
+      "patch": "patches/binutils-2.39-ptos.patch"
     },
     {
       "version": "2.40",
       "url": "https://ftp.gnu.org/gnu/binutils/binutils-2.40.tar.xz",
       "sha256": "0f8a4c272d7f17f369ded10a4aca28b8e304828e95526da482b0ccc4dfc9d8e1",
-      "patch": "patches/binutils/binutils-2.40-mint-20230224.patch"
+      "patch": "patches/binutils-2.40-ptos.patch"
     },
     {
       "version": "2.41",
       "url": "https://ftp.gnu.org/gnu/binutils/binutils-2.41.tar.xz",
       "sha256": "ae9a5789e23459e59606e6714723f2d3ffc31c03174191ef0d015bdf06007450",
-      "patch": "patches/binutils/binutils-2.41-mint-20230926.patch"
+      "patch": "patches/binutils-2.41-ptos.patch"
     },
     {
       "version": "2.42",
       "url": "https://ftp.gnu.org/gnu/binutils/binutils-2.42.tar.xz",
       "sha256": "f6e4d41fd5fc778b06b7891457b3620da5ecea1006c6a4a41ae998109f85a800",
-      "patch": "patches/binutils/binutils-2.42-mint-20240309.patch"
+      "patch": "patches/binutils-2.42-ptos.patch"
     },
     {
       "version": "2.43",
       "url": "https://ftp.gnu.org/gnu/binutils/binutils-2.43.tar.xz",
       "sha256": "b53606f443ac8f01d1d5fc9c39497f2af322d99e14cea5c0b4b124d630379365",
-      "patch": "patches/binutils/binutils-2.43-mint-20240808.patch"
+      "patch": "patches/binutils-2.43-ptos.patch"
     },
     {
       "version": "2.44",
       "url": "https://ftp.gnu.org/gnu/binutils/binutils-2.44.tar.xz",
       "sha256": "ce2017e059d63e67ddb9240e9d4ec49c2893605035cd60e92ad53177f4377237",
-      "patch": "patches/binutils/binutils-2.44-mint-20250415.patch"
+      "patch": "patches/binutils-2.44-ptos.patch"
     },
     {
       "version": "2.45",
       "url": "https://ftp.gnu.org/gnu/binutils/binutils-2.45.tar.xz",
       "sha256": "c50c0e7f9cb188980e2cc97e4537626b1672441815587f1eab69d2a1bfbef5d2",
-      "patch": "patches/binutils/binutils-2.45-mint-20250812.patch"
+      "patch": "patches/binutils-2.45-ptos.patch"
     }
   ]
 }

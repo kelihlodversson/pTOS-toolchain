@@ -13,11 +13,11 @@ import tarfile
 import tempfile
 
 PROJECT = Path(__file__).resolve().parents[1]
+# Files prepare.py edits for the ARM and x86-64 targets and for all three.
+# The m68k patches name the m68k-only files they change.
 PREPARE_FILES = {
     "config.sub", "bfd/config.bfd", "gas/configure.tgt", "ld/configure.tgt",
-    "ld/emulparams/m68kelf.sh", "gcc/config.gcc", "libgcc/config.host",
-    "gcc/config/m68k/m68k.cc", "gcc/config/m68k/m68k-protos.h",
-    "gcc/config/m68k/m68k.md",
+    "gcc/config.gcc", "libgcc/config.host",
 }
 TARGETS = {
     "m68k": "m68k-unknown-ptos-prgelf",
@@ -31,7 +31,7 @@ def check(cache, component, recipe):
     patch = PROJECT / recipe["patch"]
     with archive.open("rb") as stream:
         assert hashlib.file_digest(stream, "sha256").hexdigest() == recipe["sha256"], archive
-    # Only extract files read by prepare.py or changed by the CrossMiNT patch.
+    # Only extract files read by prepare.py or changed by the m68k patch.
     patch_text = patch.read_text()
     needed = PREPARE_FILES | set(re.findall(r"^--- a/(.*)$", patch_text, re.M))
     needed |= set(re.findall(r"^rename from (.*)$", patch_text, re.M))

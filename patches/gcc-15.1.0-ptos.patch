@@ -1,5 +1,5 @@
 diff --git a/Makefile.in b/Makefile.in
-index b1ed67d..0974411 100644
+index b1ed67d3d4f..09744119e07 100644
 --- a/Makefile.in
 +++ b/Makefile.in
 @@ -13247,14 +13247,14 @@ configure-gmp: stage_current
@@ -362,7 +362,7 @@ index b1ed67d..0974411 100644
  	for flag in $(EXTRA_HOST_FLAGS) AM_CFLAGS="-DNO_ASM"; do \
  	  eval `echo "$$flag" | sed -e "s|^\([^=]*\)=\(.*\)|\1='\2'; export \1|"`; \
 diff --git a/c++tools/server.cc b/c++tools/server.cc
-index 339a887..4477b4e 100644
+index 339a88746cc..4477b4eafc9 100644
 --- a/c++tools/server.cc
 +++ b/c++tools/server.cc
 @@ -879,6 +879,8 @@ static int maybe_parse_socket (std::string &option, module_resolver *r)
@@ -375,7 +375,7 @@ index 339a887..4477b4e 100644
  main (int argc, char *argv[])
  {
 diff --git a/config-ml.in b/config-ml.in
-index 7934a1d..79c3ac1 100644
+index 7934a1ddf4b..79c3ac1262f 100644
 --- a/config-ml.in
 +++ b/config-ml.in
 @@ -346,6 +346,36 @@ m68*-*-*)
@@ -416,7 +416,7 @@ index 7934a1d..79c3ac1 100644
  mips*-*-*)
  	if [ x$enable_single_float = xno ]
 diff --git a/config.guess b/config.guess
-index 1972fda..106b1c4 100755
+index 1972fda8eb0..106b1c4917d 100755
 --- a/config.guess
 +++ b/config.guess
 @@ -466,22 +466,22 @@ case "$UNAME_MACHINE:$UNAME_SYSTEM:$UNAME_RELEASE:$UNAME_VERSION" in
@@ -449,7 +449,7 @@ index 1972fda..106b1c4 100755
      m68k:machten:*:*)
  	echo m68k-apple-machten"$UNAME_RELEASE"
 diff --git a/config.sub b/config.sub
-index 38f3d03..3f5612c 100755
+index 38f3d037a78..3f5612c6f8f 100755
 --- a/config.sub
 +++ b/config.sub
 @@ -1395,6 +1395,12 @@ case $os in
@@ -476,7 +476,7 @@ index 38f3d03..3f5612c 100755
  		os=mint
  		;;
 diff --git a/config/lib-ld.m4 b/config/lib-ld.m4
-index 73cf957..b749946 100644
+index 73cf9571b57..b749946efc0 100644
 --- a/config/lib-ld.m4
 +++ b/config/lib-ld.m4
 @@ -49,7 +49,7 @@ if test "$GCC" = yes; then
@@ -489,7 +489,7 @@ index 73cf957..b749946 100644
      ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
    *)
 diff --git a/config/lthostflags.m4 b/config/lthostflags.m4
-index bc0f59e..253e7aa 100644
+index bc0f59ee79e..253e7aa6b06 100644
 --- a/config/lthostflags.m4
 +++ b/config/lthostflags.m4
 @@ -13,7 +13,7 @@ AC_DEFUN([ACX_LT_HOST_FLAGS], [
@@ -502,7 +502,7 @@ index bc0f59e..253e7aa 100644
      # we must compare to with_cross_host to decide if this is a native
      # or cross-compiler and select where to install dlls appropriately.
 diff --git a/config/mmap.m4 b/config/mmap.m4
-index fba0d9d..5342ed8 100644
+index fba0d9d3657..5342ed8ab2c 100644
 --- a/config/mmap.m4
 +++ b/config/mmap.m4
 @@ -42,7 +42,7 @@ else
@@ -524,7 +524,7 @@ index fba0d9d..5342ed8 100644
       *)
          gcc_cv_func_mmap_anon=yes;;
 diff --git a/config/picflag.m4 b/config/picflag.m4
-index 3f3ac74..b5e2632 100644
+index 3f3ac744c96..b5e263265ed 100644
 --- a/config/picflag.m4
 +++ b/config/picflag.m4
 @@ -25,7 +25,9 @@ case "${$2}" in
@@ -539,7 +539,7 @@ index 3f3ac74..b5e2632 100644
      i[[34567]]86-*-interix[[3-9]]*)
  	# Interix 3.x gcc -fpic/-fPIC options generate broken code.
 diff --git a/configure b/configure
-index ebc4441..17daa12 100755
+index ebc44416b6c..17daa12ce76 100755
 --- a/configure
 +++ b/configure
 @@ -3301,6 +3301,9 @@ if test x$enable_libgomp = x ; then
@@ -585,7 +585,7 @@ index ebc4441..17daa12 100755
    *-mingw*)
    # MinGW can't be handled as Cygwin above since it does not use newlib.
 diff --git a/configure.ac b/configure.ac
-index 730db3c..dd36c3c 100644
+index 730db3c1402..dd36c3c4882 100644
 --- a/configure.ac
 +++ b/configure.ac
 @@ -539,6 +539,9 @@ if test x$enable_libgomp = x ; then
@@ -631,7 +631,7 @@ index 730db3c..dd36c3c 100644
    *-mingw*)
    # MinGW can't be handled as Cygwin above since it does not use newlib.
 diff --git a/fixincludes/configure b/fixincludes/configure
-index 662c94d..789a8bf 100755
+index 662c94dc112..789a8bfccfa 100755
 --- a/fixincludes/configure
 +++ b/fixincludes/configure
 @@ -4819,7 +4819,8 @@ else
@@ -663,7 +663,7 @@ index 662c94d..789a8bf 100755
       *)
          gcc_cv_func_mmap_anon=yes;;
 diff --git a/fixincludes/configure.ac b/fixincludes/configure.ac
-index 4e78511..352cb22 100644
+index 4e78511d20f..352cb22856f 100644
 --- a/fixincludes/configure.ac
 +++ b/fixincludes/configure.ac
 @@ -51,7 +51,8 @@ fi],
@@ -677,7 +677,7 @@ index 4e78511..352cb22 100644
          *-*-*vms*)
  		TARGET=twoprocess
 diff --git a/fixincludes/mkfixinc.sh b/fixincludes/mkfixinc.sh
-index 7112f4d..7bb14a5 100755
+index 7112f4dcd64..7bb14a52400 100755
 --- a/fixincludes/mkfixinc.sh
 +++ b/fixincludes/mkfixinc.sh
 @@ -12,7 +12,8 @@ target=fixinc.sh
@@ -691,7 +691,7 @@ index 7112f4d..7bb14a5 100755
      powerpc-*-eabi*    | \
      powerpc-*-rtems*   | \
 diff --git a/gcc/Makefile.in b/gcc/Makefile.in
-index 55b4cd7..82ecb58 100644
+index 55b4cd7dbed..82ecb5862f9 100644
 --- a/gcc/Makefile.in
 +++ b/gcc/Makefile.in
 @@ -493,7 +493,7 @@ T_STDINT_GCC_H = $(srcdir)/ginclude/stdint-gcc.h
@@ -910,10 +910,10 @@ index 55b4cd7..82ecb58 100644
  # Build the include directories.  The stamp files are stmp-* rather than
  # s-* so that mostlyclean does not force the include directory to
 diff --git a/gcc/ada/Makefile.rtl b/gcc/ada/Makefile.rtl
-index bf3786d..3f5be0c 100644
+index 61600adf1f3..3d4b000d040 100644
 --- a/gcc/ada/Makefile.rtl
 +++ b/gcc/ada/Makefile.rtl
-@@ -2236,7 +2236,7 @@ endif
+@@ -2240,7 +2240,7 @@ endif
  
  # Cygwin/Mingw32
  ifeq ($(SELECTED_PAIRS),PAIRS_NONE)
@@ -922,7 +922,7 @@ index bf3786d..3f5be0c 100644
  
    SELECTED_PAIRS=cygming
  
-@@ -2709,6 +2709,34 @@ ifeq ($(strip $(filter-out m68k% linux%,$(target_cpu) $(target_os))),)
+@@ -2712,6 +2712,34 @@ ifeq ($(strip $(filter-out m68k% linux%,$(target_cpu) $(target_os))),)
  endif
  endif
  
@@ -958,7 +958,7 @@ index bf3786d..3f5be0c 100644
  ifeq ($(SELECTED_PAIRS),PAIRS_NONE)
  ifeq ($(strip $(filter-out sh4% linux%,$(target_cpu) $(target_os))),)
 diff --git a/gcc/ada/adaint.c b/gcc/ada/adaint.c
-index a51bee4..edb1c97 100644
+index 1fcfae165a7..9c943094287 100644
 --- a/gcc/ada/adaint.c
 +++ b/gcc/ada/adaint.c
 @@ -44,14 +44,6 @@
@@ -1010,7 +1010,7 @@ index a51bee4..edb1c97 100644
  
  #ifdef STANDALONE
  #undef PATH_SEPARATOR
-@@ -3315,7 +3320,7 @@ __gnat_copy_attribs (char *from ATTRIBUTE_UNUSED, char *to ATTRIBUTE_UNUSED,
+@@ -3319,7 +3324,7 @@ __gnat_copy_attribs (char *from ATTRIBUTE_UNUSED, char *to ATTRIBUTE_UNUSED,
        return -1;
    }
  
@@ -1020,7 +1020,7 @@ index a51bee4..edb1c97 100644
  
    if (mode != 2) {
 diff --git a/gcc/ada/cstreams.c b/gcc/ada/cstreams.c
-index 50dfa39..ef02110 100644
+index 50dfa396fb8..ef02110540c 100644
 --- a/gcc/ada/cstreams.c
 +++ b/gcc/ada/cstreams.c
 @@ -31,12 +31,6 @@
@@ -1037,7 +1037,7 @@ index 50dfa39..ef02110 100644
  #if defined(__CYGWIN__) && !defined(__CYGWIN32__) && !defined(_GNU_SOURCE)
  #define _GNU_SOURCE
 diff --git a/gcc/ada/errno.c b/gcc/ada/errno.c
-index 182b911..a8ef121 100644
+index 182b911121b..a8ef1216826 100644
 --- a/gcc/ada/errno.c
 +++ b/gcc/ada/errno.c
 @@ -47,7 +47,7 @@ __get_errno(void)
@@ -1050,10 +1050,10 @@ index 182b911..a8ef121 100644
  __set_errno(int err)
  {
 diff --git a/gcc/ada/exp_aggr.adb b/gcc/ada/exp_aggr.adb
-index f35e16b..4429447 100644
+index 7cb26ce1af5..b0d77aab482 100644
 --- a/gcc/ada/exp_aggr.adb
 +++ b/gcc/ada/exp_aggr.adb
-@@ -7207,6 +7207,9 @@ package body Exp_Aggr is
+@@ -7092,6 +7092,9 @@ package body Exp_Aggr is
                         Defining_Identifier => Key_Index,
                         Object_Definition   =>
                           New_Occurrence_Of (Key_Type, Loc)));
@@ -1064,10 +1064,10 @@ index f35e16b..4429447 100644
  
                 Comp := First (Expressions (N));
 diff --git a/gcc/ada/exp_attr.adb b/gcc/ada/exp_attr.adb
-index 66ef191..3065b44 100644
+index b896228a70e..2f65fa6023e 100644
 --- a/gcc/ada/exp_attr.adb
 +++ b/gcc/ada/exp_attr.adb
-@@ -6126,6 +6126,8 @@ package body Exp_Attr is
+@@ -6104,6 +6104,8 @@ package body Exp_Attr is
  
                    C_Type := Root_Type (Underlying_Type (C_Type));
                 end;
@@ -1077,10 +1077,10 @@ index 66ef191..3065b44 100644
  
              --  If Put_Image is disabled, call the "unknown" version
 diff --git a/gcc/ada/exp_ch4.adb b/gcc/ada/exp_ch4.adb
-index 7a000db..92fcaa1 100644
+index 82978c775cf..5b21e0adb5a 100644
 --- a/gcc/ada/exp_ch4.adb
 +++ b/gcc/ada/exp_ch4.adb
-@@ -4383,6 +4383,7 @@ package body Exp_Ch4 is
+@@ -4378,6 +4378,7 @@ package body Exp_Ch4 is
           --  too large, and which in the absence of a check results in
           --  undetected chaos ???
  
@@ -1089,7 +1089,7 @@ index 7a000db..92fcaa1 100644
  
              if not Is_Modular_Integer_Type (Etype (Idx)) then
 diff --git a/gcc/ada/gcc-interface/Make-lang.in b/gcc/ada/gcc-interface/Make-lang.in
-index 964cae8..8c08690 100644
+index 964cae83c55..8c08690ff07 100644
 --- a/gcc/ada/gcc-interface/Make-lang.in
 +++ b/gcc/ada/gcc-interface/Make-lang.in
 @@ -681,6 +681,7 @@ GNATBIND_OBJS = \
@@ -1125,7 +1125,7 @@ index 964cae8..8c08690 100644
  
  #
 diff --git a/gcc/ada/gcc-interface/Makefile.in b/gcc/ada/gcc-interface/Makefile.in
-index d8be9aa..283b7c7 100644
+index 4ffdc1e165d..2e3a0e5cb0a 100644
 --- a/gcc/ada/gcc-interface/Makefile.in
 +++ b/gcc/ada/gcc-interface/Makefile.in
 @@ -104,7 +104,7 @@ INSTALL_DATA_DATE = cp -p
@@ -1270,7 +1270,7 @@ index d8be9aa..283b7c7 100644
  gnatlib-shared-darwin:
 diff --git a/gcc/ada/libcmain.c b/gcc/ada/libcmain.c
 new file mode 100644
-index 0000000..666c4e9
+index 00000000000..666c4e9e478
 --- /dev/null
 +++ b/gcc/ada/libcmain.c
 @@ -0,0 +1,59 @@
@@ -1335,7 +1335,7 @@ index 0000000..666c4e9
 +#endif
 diff --git a/gcc/ada/libgnarl/a-intnam__mint.ads b/gcc/ada/libgnarl/a-intnam__mint.ads
 new file mode 100644
-index 0000000..44a644c
+index 00000000000..44a644c0209
 --- /dev/null
 +++ b/gcc/ada/libgnarl/a-intnam__mint.ads
 @@ -0,0 +1,154 @@
@@ -1495,7 +1495,7 @@ index 0000000..44a644c
 +end Ada.Interrupts.Names;
 diff --git a/gcc/ada/libgnarl/s-mint.ads b/gcc/ada/libgnarl/s-mint.ads
 new file mode 100644
-index 0000000..8676448
+index 00000000000..86764483f4c
 --- /dev/null
 +++ b/gcc/ada/libgnarl/s-mint.ads
 @@ -0,0 +1,118 @@
@@ -1619,7 +1619,7 @@ index 0000000..8676448
 +end System.Mint;
 diff --git a/gcc/ada/libgnarl/s-osinte__mint.ads b/gcc/ada/libgnarl/s-osinte__mint.ads
 new file mode 100644
-index 0000000..5432d6a
+index 00000000000..5432d6a6909
 --- /dev/null
 +++ b/gcc/ada/libgnarl/s-osinte__mint.ads
 @@ -0,0 +1,637 @@
@@ -2261,7 +2261,7 @@ index 0000000..5432d6a
 +
 +end System.OS_Interface;
 diff --git a/gcc/ada/libgnat/a-calend.adb b/gcc/ada/libgnat/a-calend.adb
-index 4f89a40..eac7086 100644
+index 4f89a401a9c..eac70865544 100644
 --- a/gcc/ada/libgnat/a-calend.adb
 +++ b/gcc/ada/libgnat/a-calend.adb
 @@ -1137,8 +1137,12 @@ is
@@ -2279,7 +2279,7 @@ index 4f89a40..eac7086 100644
  
        ---------------------
 diff --git a/gcc/ada/libgnat/g-sechas.ads b/gcc/ada/libgnat/g-sechas.ads
-index 78b42b7..8711cbb 100644
+index 78b42b79656..8711cbbe7e7 100644
 --- a/gcc/ada/libgnat/g-sechas.ads
 +++ b/gcc/ada/libgnat/g-sechas.ads
 @@ -45,7 +45,7 @@ with System;
@@ -2292,7 +2292,7 @@ index 78b42b7..8711cbb 100644
     --  array of words, which may require up to 64 bit alignment.
  
 diff --git a/gcc/ada/libgnat/g-socket.adb b/gcc/ada/libgnat/g-socket.adb
-index 5042dac..3f9e419 100644
+index 5042dacc166..3f9e4194b8f 100644
 --- a/gcc/ada/libgnat/g-socket.adb
 +++ b/gcc/ada/libgnat/g-socket.adb
 @@ -2879,6 +2879,7 @@ package body GNAT.Sockets is
@@ -2304,7 +2304,7 @@ index 5042dac..3f9e419 100644
               or else
             (Val.Tv_Sec = time_t (Max_D)
 diff --git a/gcc/ada/libgnat/g-sothco.ads b/gcc/ada/libgnat/g-sothco.ads
-index cdf0a16..15040f3 100644
+index cdf0a16ef08..15040f39cb8 100644
 --- a/gcc/ada/libgnat/g-sothco.ads
 +++ b/gcc/ada/libgnat/g-sothco.ads
 @@ -214,7 +214,7 @@ package GNAT.Sockets.Thin_Common is
@@ -2326,7 +2326,7 @@ index cdf0a16..15040f3 100644
     --  accessor functions, because 'struct servent' has different layouts on
     --  different platforms.
 diff --git a/gcc/ada/libgnat/i-cexten.ads b/gcc/ada/libgnat/i-cexten.ads
-index a6a6c27..62064fb 100644
+index a6a6c27292a..62064fb76a7 100644
 --- a/gcc/ada/libgnat/i-cexten.ads
 +++ b/gcc/ada/libgnat/i-cexten.ads
 @@ -72,7 +72,7 @@ package Interfaces.C.Extensions is
@@ -2348,7 +2348,7 @@ index a6a6c27..62064fb 100644
     type CFloat_128 is record
        re, im : Float_128;
 diff --git a/gcc/ada/libgnat/s-bitfie.ads b/gcc/ada/libgnat/s-bitfie.ads
-index dabbe53..b4574b3 100644
+index dabbe5371af..b4574b34b96 100644
 --- a/gcc/ada/libgnat/s-bitfie.ads
 +++ b/gcc/ada/libgnat/s-bitfie.ads
 @@ -43,9 +43,9 @@ package System.Bitfields is
@@ -2364,7 +2364,7 @@ index dabbe53..b4574b3 100644
     --  Enabling checks on the instantiation of System.Bitfield_Utils.G makes a
     --  latent visibility bug appear on strict alignment platforms related to
 diff --git a/gcc/ada/libgnat/s-bituti.ads b/gcc/ada/libgnat/s-bituti.ads
-index 8b7729e..2b77ac0 100644
+index 8b7729ed4b2..2b77ac0d064 100644
 --- a/gcc/ada/libgnat/s-bituti.ads
 +++ b/gcc/ada/libgnat/s-bituti.ads
 @@ -85,7 +85,7 @@ package System.Bitfield_Utils is
@@ -2377,7 +2377,7 @@ index 8b7729e..2b77ac0 100644
  
        type Val_Array is array (Positive range <>) of Val;
 diff --git a/gcc/ada/libgnat/s-secsta.ads b/gcc/ada/libgnat/s-secsta.ads
-index c8f9f90..e254907 100644
+index c8f9f903023..e2549077918 100644
 --- a/gcc/ada/libgnat/s-secsta.ads
 +++ b/gcc/ada/libgnat/s-secsta.ads
 @@ -262,7 +262,7 @@ private
@@ -2390,7 +2390,7 @@ index c8f9f90..e254907 100644
  
     --------------
 diff --git a/gcc/ada/libgnat/s-stposu.adb b/gcc/ada/libgnat/s-stposu.adb
-index 5c28f0e..2fe4a1f 100644
+index a77ddb77467..33bddd5008f 100644
 --- a/gcc/ada/libgnat/s-stposu.adb
 +++ b/gcc/ada/libgnat/s-stposu.adb
 @@ -207,6 +207,7 @@ package body System.Storage_Pools.Subpools is
@@ -2403,7 +2403,7 @@ index 5c28f0e..2fe4a1f 100644
        --  Step 3: Allocation of object
 diff --git a/gcc/ada/libgnat/system-mint.ads b/gcc/ada/libgnat/system-mint.ads
 new file mode 100644
-index 0000000..eb28e76
+index 00000000000..eb28e76edf0
 --- /dev/null
 +++ b/gcc/ada/libgnat/system-mint.ads
 @@ -0,0 +1,147 @@
@@ -2555,7 +2555,7 @@ index 0000000..eb28e76
 +
 +end System;
 diff --git a/gcc/ada/output.adb b/gcc/ada/output.adb
-index 2702b3f..bd8d861 100644
+index 2702b3ffb1f..bd8d861d69b 100644
 --- a/gcc/ada/output.adb
 +++ b/gcc/ada/output.adb
 @@ -26,7 +26,7 @@
@@ -2568,7 +2568,7 @@ index 2702b3f..bd8d861 100644
     --  needed for the support of the debug-generated-code option (-gnatD). Note
     --  any attempt to write more output to a line than can fit in the buffer
 diff --git a/gcc/ada/par-ch6.adb b/gcc/ada/par-ch6.adb
-index 55591fd..dbbc1a0 100644
+index 55591fdc033..dbbc1a0b128 100644
 --- a/gcc/ada/par-ch6.adb
 +++ b/gcc/ada/par-ch6.adb
 @@ -1398,6 +1398,7 @@ package body Ch6 is
@@ -2580,7 +2580,7 @@ index 55591fd..dbbc1a0 100644
           begin
              if Token = Tok_Pragma then
 diff --git a/gcc/ada/s-oscons-tmplt.c b/gcc/ada/s-oscons-tmplt.c
-index 97537ef..cd6a5bf 100644
+index 97537ef5e94..cd6a5bf2fb9 100644
 --- a/gcc/ada/s-oscons-tmplt.c
 +++ b/gcc/ada/s-oscons-tmplt.c
 @@ -86,7 +86,7 @@ pragma Style_Checks ("N");
@@ -2644,7 +2644,7 @@ index 97537ef..cd6a5bf 100644
  /*
  
 diff --git a/gcc/ada/scng.adb b/gcc/ada/scng.adb
-index a4304f8..2fc7dac 100644
+index a4304f8e7b2..2fc7dac1342 100644
 --- a/gcc/ada/scng.adb
 +++ b/gcc/ada/scng.adb
 @@ -1085,6 +1085,7 @@ package body Scng is
@@ -2656,10 +2656,10 @@ index a4304f8..2fc7dac 100644
           --  Continuation of interpolated string literal
  
 diff --git a/gcc/ada/sem_ch12.adb b/gcc/ada/sem_ch12.adb
-index b6ddeb8..6e470fe 100644
+index 5768e28e90f..a31ee40b3d9 100644
 --- a/gcc/ada/sem_ch12.adb
 +++ b/gcc/ada/sem_ch12.adb
-@@ -12197,6 +12197,7 @@ package body Sem_Ch12 is
+@@ -12188,6 +12188,7 @@ package body Sem_Ch12 is
           return Decl_Node;
  
        else
@@ -2668,10 +2668,10 @@ index b6ddeb8..6e470fe 100644
        end if;
  
 diff --git a/gcc/ada/sem_disp.adb b/gcc/ada/sem_disp.adb
-index 609874f..c82bc44 100644
+index 4881d6f2f8b..b780e1087e6 100644
 --- a/gcc/ada/sem_disp.adb
 +++ b/gcc/ada/sem_disp.adb
-@@ -664,6 +664,7 @@ package body Sem_Disp is
+@@ -651,6 +651,7 @@ package body Sem_Disp is
                 Wrapper_Found : Boolean := False;
  
              begin
@@ -2680,10 +2680,10 @@ index 609874f..c82bc44 100644
                 while Present (Prim_Elmt) loop
                    Prim := Node (Prim_Elmt);
 diff --git a/gcc/ada/sem_res.adb b/gcc/ada/sem_res.adb
-index 2778f4b..e33d839 100644
+index b73b947c9a2..1a7263fb03f 100644
 --- a/gcc/ada/sem_res.adb
 +++ b/gcc/ada/sem_res.adb
-@@ -11418,6 +11418,7 @@ package body Sem_Res is
+@@ -11422,6 +11422,7 @@ package body Sem_Res is
           --  of the correct name and type.
  
           Found := False;
@@ -2692,7 +2692,7 @@ index 2778f4b..e33d839 100644
  
           Search : while Present (It.Typ) loop
 diff --git a/gcc/ada/sinput.ads b/gcc/ada/sinput.ads
-index 0a9602f..5c461a6 100644
+index 0a9602fd7e2..5c461a6f27d 100644
 --- a/gcc/ada/sinput.ads
 +++ b/gcc/ada/sinput.ads
 @@ -940,7 +940,7 @@ private
@@ -2706,7 +2706,7 @@ index 0a9602f..5c461a6 100644
     procedure Set_Dope
 diff --git a/gcc/ada/stat64.c b/gcc/ada/stat64.c
 new file mode 100644
-index 0000000..415a09b
+index 00000000000..415a09b912c
 --- /dev/null
 +++ b/gcc/ada/stat64.c
 @@ -0,0 +1,66 @@
@@ -2777,7 +2777,7 @@ index 0000000..415a09b
 +}
 +#endif
 diff --git a/gcc/ada/sysdep.c b/gcc/ada/sysdep.c
-index 04ca270..00a5351 100644
+index 04ca270f085..00a53512295 100644
 --- a/gcc/ada/sysdep.c
 +++ b/gcc/ada/sysdep.c
 @@ -847,7 +847,7 @@ __gnat_localtime_tzoff (const OS_Time *timer ATTRIBUTE_UNUSED,
@@ -2790,7 +2790,7 @@ index 04ca270..00a5351 100644
    localtime_r (&time, &tp);
    *off = tp.tm_gmtoff;
 diff --git a/gcc/ada/terminals.c b/gcc/ada/terminals.c
-index 89f8875..e8a2655 100644
+index 89f887556c0..e8a2655706b 100644
 --- a/gcc/ada/terminals.c
 +++ b/gcc/ada/terminals.c
 @@ -34,7 +34,7 @@
@@ -2812,10 +2812,10 @@ index 89f8875..e8a2655 100644
    return 1;
  }
 diff --git a/gcc/c-family/c-common.cc b/gcc/c-family/c-common.cc
-index dc29bb3..84faf2f 100644
+index 587d76461e9..ecaa1c35a8f 100644
 --- a/gcc/c-family/c-common.cc
 +++ b/gcc/c-family/c-common.cc
-@@ -5705,9 +5705,14 @@ check_user_alignment (const_tree align, bool objfile, bool warn_zero)
+@@ -5652,9 +5652,14 @@ check_user_alignment (const_tree align, bool objfile, bool warn_zero)
        unsigned maxalign = MAX_OFILE_ALIGNMENT / BITS_PER_UNIT;
        if (!tree_fits_uhwi_p (align) || tree_to_uhwi (align) > maxalign)
  	{
@@ -2831,7 +2831,7 @@ index dc29bb3..84faf2f 100644
      }
  
 diff --git a/gcc/c/Make-lang.in b/gcc/c/Make-lang.in
-index 2517b64..f37f975 100644
+index 2517b64439f..f37f975cc84 100644
 --- a/gcc/c/Make-lang.in
 +++ b/gcc/c/Make-lang.in
 @@ -85,7 +85,7 @@ cc1-checksum.cc : build/genchecksum$(build_exeext) checksum-options \
@@ -2844,10 +2844,10 @@ index 2517b64..f37f975 100644
  
  components_in_prev = "bfd opcodes binutils fixincludes gas gcc gmp mpfr mpc isl gold intl ld libbacktrace libcpp libcody libdecnumber libiberty libiberty-linker-plugin libiconv zlib lto-plugin libctf libsframe"
 diff --git a/gcc/c/c-decl.cc b/gcc/c/c-decl.cc
-index 368e632..2a47f7d 100644
+index 8c420f22976..20868c2fa60 100644
 --- a/gcc/c/c-decl.cc
 +++ b/gcc/c/c-decl.cc
-@@ -11609,9 +11609,12 @@ check_for_loop_decls (location_t loc, bool turn_off_iso_c99_error)
+@@ -11597,9 +11597,12 @@ check_for_loop_decls (location_t loc, bool turn_off_iso_c99_error)
  	}
        return NULL_TREE;
      }
@@ -2864,10 +2864,10 @@ index 368e632..2a47f7d 100644
    /* C99 subclause 6.8.5 paragraph 3:
  
 diff --git a/gcc/cobol/Make-lang.in b/gcc/cobol/Make-lang.in
-index 0e2a773..2730d47 100644
+index 9b74dd39b57..6589b55c709 100644
 --- a/gcc/cobol/Make-lang.in
 +++ b/gcc/cobol/Make-lang.in
-@@ -265,7 +265,7 @@ cobol.srcextra: cobol/parse.cc cobol/cdf.cc cobol/scan.cc
+@@ -263,7 +263,7 @@ cobol.srcextra: cobol/parse.cc cobol/cdf.cc cobol/scan.cc
  cobol1$(exeext): $(cobol1_OBJS) $(BACKEND) $(LIBDEPS) attribs.o $(cobol.prev)
  	@$(call LINK_PROGRESS,$(INDEX.cobol),start)
  	+$(LLINKER) $(ALL_LINKERFLAGS) $(LDFLAGS) attribs.o -o $@	\
@@ -2876,8 +2876,21 @@ index 0e2a773..2730d47 100644
  	@$(call LINK_PROGRESS,$(INDEX.cobol),end)
  
  cobol.all.cross: gcobol-cross$(exeext)
+diff --git a/gcc/cobol/symbols.cc b/gcc/cobol/symbols.cc
+index ddb8e6828a9..b6e60d4d690 100644
+--- a/gcc/cobol/symbols.cc
++++ b/gcc/cobol/symbols.cc
+@@ -4581,7 +4581,7 @@ cbl_file_t::keys_str() const {
+                  []( const cbl_file_key_t& key ) {
+                    return key.str();
+                  } );
+-  size_t n = 4 * nkey + std::accumulate(ks.begin(), ks.end(), 0,
++  size_t n = 3 + 4 * nkey + std::accumulate(ks.begin(), ks.end(), 0,
+                                         []( int n, const char *s ) {
+                                           return n +  strlen(s);
+                                         } );
 diff --git a/gcc/collect2.cc b/gcc/collect2.cc
-index 268ac37..d157431 100644
+index 268ac378b9c..d1574315e25 100644
 --- a/gcc/collect2.cc
 +++ b/gcc/collect2.cc
 @@ -158,6 +158,16 @@ int do_collecting = 0;
@@ -2907,7 +2920,7 @@ index 268ac37..d157431 100644
  main (int argc, char **argv)
  {
 diff --git a/gcc/common.opt b/gcc/common.opt
-index e3fa0da..9cbbe8f 100644
+index e3fa0dacec4..9cbbe8f57ea 100644
 --- a/gcc/common.opt
 +++ b/gcc/common.opt
 @@ -122,6 +122,12 @@ uint32_t write_symbols = NO_DEBUG
@@ -2950,7 +2963,7 @@ index e3fa0da..9cbbe8f 100644
  gstatement-frontiers
  Common Driver Var(debug_nonbind_markers_p) PerFunction
 diff --git a/gcc/common/config/m68k/m68k-common.cc b/gcc/common/config/m68k/m68k-common.cc
-index dacdbd3..a2e88e3 100644
+index dacdbd372c6..a2e88e3205b 100644
 --- a/gcc/common/config/m68k/m68k-common.cc
 +++ b/gcc/common/config/m68k/m68k-common.cc
 @@ -75,4 +75,26 @@ m68k_handle_option (struct gcc_options *opts,
@@ -2981,7 +2994,7 @@ index dacdbd3..a2e88e3 100644
 +
  struct gcc_targetm_common targetm_common = TARGETM_COMMON_INITIALIZER;
 diff --git a/gcc/config.gcc b/gcc/config.gcc
-index eb09eed..ae84901 100644
+index 40b50dc969e..3eeb5d40c7d 100644
 --- a/gcc/config.gcc
 +++ b/gcc/config.gcc
 @@ -2286,7 +2286,10 @@ i[34567]86-*-mingw* | x86_64-*-mingw*)
@@ -3029,7 +3042,7 @@ index eb09eed..ae84901 100644
  	default_m68k_cpu=68020
  	default_cf_cpu=5206
 diff --git a/gcc/config.host b/gcc/config.host
-index 4c1a5e9..8535678 100644
+index 4c1a5e9910c..853567891d1 100644
 --- a/gcc/config.host
 +++ b/gcc/config.host
 @@ -230,7 +230,7 @@ case ${host} in
@@ -3042,7 +3055,7 @@ index 4c1a5e9..8535678 100644
      host_xmake_file="${host_xmake_file} ${host_xmake_mingw} i386/x-mingw32"
      host_extra_gcc_objs="${host_extra_gcc_objs} ${host_extra_gcc_objs_mingw} driver-mingw32.o"
 diff --git a/gcc/config.in b/gcc/config.in
-index a79c51a..d58bc77 100644
+index a79c51adb2b..d58bc77ba2c 100644
 --- a/gcc/config.in
 +++ b/gcc/config.in
 @@ -477,6 +477,12 @@
@@ -3073,7 +3086,7 @@ index a79c51a..d58bc77 100644
  #undef HAVE_AS_TLS
 diff --git a/gcc/config/dbxelf.h b/gcc/config/dbxelf.h
 new file mode 100644
-index 0000000..4b90e95
+index 00000000000..4b90e95bc74
 --- /dev/null
 +++ b/gcc/config/dbxelf.h
 @@ -0,0 +1,68 @@
@@ -3146,7 +3159,7 @@ index 0000000..4b90e95
 +
 +#endif /* ! GCC_DBX_ELF_H */
 diff --git a/gcc/config/elfos.h b/gcc/config/elfos.h
-index afef227..6170af6 100644
+index afef22721a5..6170af6a9c4 100644
 --- a/gcc/config/elfos.h
 +++ b/gcc/config/elfos.h
 @@ -206,7 +206,13 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -3165,7 +3178,7 @@ index afef227..6170af6 100644
  /* On svr4, we *do* have support for the .init and .fini sections, and we
     can put stuff in there to be executed before and after `main'.  We let
 diff --git a/gcc/config/i386/xm-mingw32.h b/gcc/config/i386/xm-mingw32.h
-index 7b795e5..a02bf3a 100644
+index 7b795e53c2b..a02bf3a92f4 100644
 --- a/gcc/config/i386/xm-mingw32.h
 +++ b/gcc/config/i386/xm-mingw32.h
 @@ -25,9 +25,10 @@ along with GCC; see the file COPYING3.  If not see
@@ -3202,7 +3215,7 @@ index 7b795e5..a02bf3a 100644
 +#define NATIVE_SYSTEM_HEADER_DIR "C:/msys64/mingw32/i686-w64-mingw32/include"
 +#endif
 diff --git a/gcc/config/i386/xmmintrin.h b/gcc/config/i386/xmmintrin.h
-index 6994204..6865575 100644
+index 16f407daaf6..041d1732cba 100644
 --- a/gcc/config/i386/xmmintrin.h
 +++ b/gcc/config/i386/xmmintrin.h
 @@ -67,6 +67,10 @@ _mm_prefetch (const void *__P, enum _mm_hint __I)
@@ -3228,7 +3241,7 @@ index 6994204..6865575 100644
  # include <emmintrin.h>
  
 diff --git a/gcc/config/m68k/linux.h b/gcc/config/m68k/linux.h
-index 0cf5e13..73ab57f 100644
+index 0cf5e136f7a..73ab57f69c3 100644
 --- a/gcc/config/m68k/linux.h
 +++ b/gcc/config/m68k/linux.h
 @@ -146,6 +146,10 @@ along with GCC; see the file COPYING3.  If not see
@@ -3267,7 +3280,7 @@ index 0cf5e13..73ab57f 100644
 -#define TARGET_INIT_LIBFUNCS  m68k_init_sync_libfuncs
 +#define TARGET_INIT_LIBFUNCS  m68k_init_libfuncs
 diff --git a/gcc/config/m68k/m68k-protos.h b/gcc/config/m68k/m68k-protos.h
-index 9cba3be..5c32924 100644
+index 9cba3be80a1..5c32924a58f 100644
 --- a/gcc/config/m68k/m68k-protos.h
 +++ b/gcc/config/m68k/m68k-protos.h
 @@ -79,7 +79,7 @@ extern rtx m68k_legitimize_tls_address (rtx);
@@ -3294,7 +3307,7 @@ index 9cba3be..5c32924 100644
 +enum calling_abi m68k_function_type_abi (const_tree);
 +enum calling_abi m68k_cfun_abi (void);
 diff --git a/gcc/config/m68k/m68k.cc b/gcc/config/m68k/m68k.cc
-index d8fa6e0..874566b 100644
+index d8fa6e00de1..874566b411c 100644
 --- a/gcc/config/m68k/m68k.cc
 +++ b/gcc/config/m68k/m68k.cc
 @@ -67,6 +67,7 @@ along with GCC; see the file COPYING3.  If not see
@@ -4561,7 +4574,7 @@ index d8fa6e0..874566b 100644
 +
  #include "gt-m68k.h"
 diff --git a/gcc/config/m68k/m68k.h b/gcc/config/m68k/m68k.h
-index 05e6ca7..4be98a9 100644
+index 05e6ca70629..4be98a94068 100644
 --- a/gcc/config/m68k/m68k.h
 +++ b/gcc/config/m68k/m68k.h
 @@ -26,6 +26,19 @@ along with GCC; see the file COPYING3.  If not see
@@ -4774,7 +4787,7 @@ index 05e6ca7..4be98a9 100644
 +};
 +#endif
 diff --git a/gcc/config/m68k/m68k.md b/gcc/config/m68k/m68k.md
-index 35bf1c6..7fbc6ff 100644
+index 35bf1c683c5..7fbc6ffaf8c 100644
 --- a/gcc/config/m68k/m68k.md
 +++ b/gcc/config/m68k/m68k.md
 @@ -131,8 +131,11 @@
@@ -4790,7 +4803,7 @@ index 35bf1c6..7fbc6ff 100644
     (A6_REG		14)
     (SP_REG		15)
 diff --git a/gcc/config/m68k/m68k.opt b/gcc/config/m68k/m68k.opt
-index 35f86ba..adaff26 100644
+index 35f86ba11ff..adaff26ef6b 100644
 --- a/gcc/config/m68k/m68k.opt
 +++ b/gcc/config/m68k/m68k.opt
 @@ -163,6 +163,10 @@ mnoshort
@@ -4832,7 +4845,7 @@ index 35f86ba..adaff26 100644
 +Target RejectNegative Joined Var(m68k_rodata_string) Init(0)
 +Put read-only data in SECTION
 diff --git a/gcc/config/m68k/m68kelf.h b/gcc/config/m68k/m68kelf.h
-index 2358b61..863b710 100644
+index 2358b615a90..863b710b1e0 100644
 --- a/gcc/config/m68k/m68kelf.h
 +++ b/gcc/config/m68k/m68kelf.h
 @@ -89,7 +89,7 @@ do {								\
@@ -4845,7 +4858,7 @@ index 2358b61..863b710 100644
  #define M68K_STATIC_CHAIN_REG_NAME REGISTER_PREFIX "a1"
  
 diff --git a/gcc/config/m68k/math-68881.h b/gcc/config/m68k/math-68881.h
-index 6d9f8b2..9fad295 100644
+index 6d9f8b2d4a1..9fad2950508 100644
 --- a/gcc/config/m68k/math-68881.h
 +++ b/gcc/config/m68k/math-68881.h
 @@ -44,6 +44,16 @@
@@ -5142,7 +5155,7 @@ index 6d9f8b2..9fad295 100644
    double temp;
 diff --git a/gcc/config/m68k/mint-stdint.h b/gcc/config/m68k/mint-stdint.h
 new file mode 100644
-index 0000000..89538cc
+index 00000000000..89538ccf0d6
 --- /dev/null
 +++ b/gcc/config/m68k/mint-stdint.h
 @@ -0,0 +1,50 @@
@@ -5198,7 +5211,7 @@ index 0000000..89538cc
 +#define UINTPTR_TYPE "long unsigned int"
 diff --git a/gcc/config/m68k/mint.h b/gcc/config/m68k/mint.h
 new file mode 100644
-index 0000000..d9856f4
+index 00000000000..d9856f4edc9
 --- /dev/null
 +++ b/gcc/config/m68k/mint.h
 @@ -0,0 +1,336 @@
@@ -5539,7 +5552,7 @@ index 0000000..d9856f4
 +#define STACK_CHECK_BUILTIN 1
 +int m68k_emit_stack_check(void);
 diff --git a/gcc/config/m68k/netbsd-elf.h b/gcc/config/m68k/netbsd-elf.h
-index 936512f..cc4ee3d 100644
+index 936512fb758..cc4ee3df474 100644
 --- a/gcc/config/m68k/netbsd-elf.h
 +++ b/gcc/config/m68k/netbsd-elf.h
 @@ -210,7 +210,7 @@ while (0)
@@ -5562,7 +5575,7 @@ index 936512f..cc4ee3d 100644
  /* Define how to find the value returned by a library function
 diff --git a/gcc/config/m68k/t-mint b/gcc/config/m68k/t-mint
 new file mode 100644
-index 0000000..347bf1a
+index 00000000000..347bf1a2331
 --- /dev/null
 +++ b/gcc/config/m68k/t-mint
 @@ -0,0 +1,59 @@
@@ -5627,7 +5640,7 @@ index 0000000..347bf1a
 +MULTILIB_EXCEPTIONS :=
 diff --git a/gcc/config/m68k/xm-mint.h b/gcc/config/m68k/xm-mint.h
 new file mode 100644
-index 0000000..fab05dc
+index 00000000000..fab05dc0e42
 --- /dev/null
 +++ b/gcc/config/m68k/xm-mint.h
 @@ -0,0 +1,3 @@
@@ -5635,7 +5648,7 @@ index 0000000..fab05dc
 +#define HOST_BIT_BUCKET "/dev/null"
 +#define HOST_BIT_BUCKET2 "nul:"
 diff --git a/gcc/configure b/gcc/configure
-index 1696595..10a2bb1 100755
+index 16965953f05..10a2bb16279 100755
 --- a/gcc/configure
 +++ b/gcc/configure
 @@ -5529,7 +5529,7 @@ case "${target}" in
@@ -5940,7 +5953,7 @@ index 1696595..10a2bb1 100755
  rm -f conftest.c conftest.o conftest.a conftest
  { $as_echo "$as_me:${as_lineno-$LINENO}: result: $thin_archive_support" >&5
 diff --git a/gcc/configure.ac b/gcc/configure.ac
-index 9f67e62..352084e 100644
+index 9f67e62950a..352084e0ae4 100644
 --- a/gcc/configure.ac
 +++ b/gcc/configure.ac
 @@ -3647,6 +3647,11 @@ AC_DEFINE_UNQUOTED(HAVE_GAS_SHF_MERGE,
@@ -6003,7 +6016,7 @@ index 9f67e62..352084e 100644
  rm -f conftest.c conftest.o conftest.a conftest
  AC_MSG_RESULT($thin_archive_support)
 diff --git a/gcc/cp/Make-lang.in b/gcc/cp/Make-lang.in
-index 25143c8..73ba5a0 100644
+index 25143c820b0..73ba5a03188 100644
 --- a/gcc/cp/Make-lang.in
 +++ b/gcc/cp/Make-lang.in
 @@ -81,7 +81,7 @@ GXX_OBJS = $(GCC_OBJS) cp/g++spec.o
@@ -6025,7 +6038,7 @@ index 25143c8..73ba5a0 100644
  
  ifeq ($(ENABLE_MAINTAINER_RULES), true)
 diff --git a/gcc/d/Make-lang.in b/gcc/d/Make-lang.in
-index 2d444c9..628ded3 100644
+index 2d444c99953..628ded3d6c5 100644
 --- a/gcc/d/Make-lang.in
 +++ b/gcc/d/Make-lang.in
 @@ -39,7 +39,7 @@ GDC_OBJS = $(GCC_OBJS) d/d-spec.o
@@ -6047,7 +6060,7 @@ index 2d444c9..628ded3 100644
  
  # Documentation.
 diff --git a/gcc/d/d-compiler.cc b/gcc/d/d-compiler.cc
-index e18f5d3..ceebf00 100644
+index e18f5d33e6a..ceebf00e39d 100644
 --- a/gcc/d/d-compiler.cc
 +++ b/gcc/d/d-compiler.cc
 @@ -19,7 +19,7 @@ along with GCC; see the file COPYING3.  If not see
@@ -6059,94 +6072,12 @@ index e18f5d3..ceebf00 100644
  #include "dmd/errors.h"
  #include "dmd/expression.h"
  #include "dmd/identifier.h"
-diff --git a/gcc/d/dmd/compiler.h b/gcc/d/dmd/compiler.h
-deleted file mode 100644
-index ca085c6..0000000
---- a/gcc/d/dmd/compiler.h
-+++ /dev/null
-@@ -1,37 +0,0 @@
--
--/* Compiler implementation of the D programming language
-- * Copyright (C) 1999-2025 by The D Language Foundation, All Rights Reserved
-- * written by Walter Bright
-- * https://www.digitalmars.com
-- * Distributed under the Boost Software License, Version 1.0.
-- * https://www.boost.org/LICENSE_1_0.txt
-- * https://github.com/dlang/dmd/blob/master/src/dmd/compiler.h
-- */
--
--#pragma once
--
--#include "root/array.h"
--#include "root/bitarray.h"
--
--// This file contains a data structure that describes a back-end compiler
--// and implements compiler-specific actions.
--
--class Expression;
--class Module;
--class Type;
--struct Scope;
--struct UnionExp;
--
--extern bool includeImports;
--// array of module patterns used to include/exclude imported modules
--extern Array<const char*> includeModulePatterns;
--extern Array<Module *> compiledImports;
--
--struct Compiler
--{
--    // CTFE support for cross-compilation.
--    static Expression *paintAsType(UnionExp *, Expression *, Type *);
--    // Backend
--    static bool onImport(Module *);
--    static void onParseModule(Module *);
--};
-diff --git a/gcc/d/dmd/dcompiler.h b/gcc/d/dmd/dcompiler.h
-new file mode 100644
-index 0000000..ca085c6
---- /dev/null
-+++ b/gcc/d/dmd/dcompiler.h
-@@ -0,0 +1,37 @@
-+
-+/* Compiler implementation of the D programming language
-+ * Copyright (C) 1999-2025 by The D Language Foundation, All Rights Reserved
-+ * written by Walter Bright
-+ * https://www.digitalmars.com
-+ * Distributed under the Boost Software License, Version 1.0.
-+ * https://www.boost.org/LICENSE_1_0.txt
-+ * https://github.com/dlang/dmd/blob/master/src/dmd/compiler.h
-+ */
-+
-+#pragma once
-+
-+#include "root/array.h"
-+#include "root/bitarray.h"
-+
-+// This file contains a data structure that describes a back-end compiler
-+// and implements compiler-specific actions.
-+
-+class Expression;
-+class Module;
-+class Type;
-+struct Scope;
-+struct UnionExp;
-+
-+extern bool includeImports;
-+// array of module patterns used to include/exclude imported modules
-+extern Array<const char*> includeModulePatterns;
-+extern Array<Module *> compiledImports;
-+
-+struct Compiler
-+{
-+    // CTFE support for cross-compilation.
-+    static Expression *paintAsType(UnionExp *, Expression *, Type *);
-+    // Backend
-+    static bool onImport(Module *);
-+    static void onParseModule(Module *);
-+};
+diff --git a/gcc/d/dmd/compiler.h b/gcc/d/dmd/dcompiler.h
+similarity index 100%
+rename from gcc/d/dmd/compiler.h
+rename to gcc/d/dmd/dcompiler.h
 diff --git a/gcc/d/dmd/globals.h b/gcc/d/dmd/globals.h
-index 62a575e..3bc92c7 100644
+index 62a575e322e..3bc92c740dd 100644
 --- a/gcc/d/dmd/globals.h
 +++ b/gcc/d/dmd/globals.h
 @@ -15,7 +15,7 @@
@@ -6160,7 +6091,7 @@ index 62a575e..3bc92c7 100644
  template <typename TYPE> struct Array;
 diff --git a/gcc/dbxout.cc b/gcc/dbxout.cc
 new file mode 100644
-index 0000000..6900043
+index 00000000000..6900043c90a
 --- /dev/null
 +++ b/gcc/dbxout.cc
 @@ -0,0 +1,3936 @@
@@ -10102,7 +10033,7 @@ index 0000000..6900043
 +#include "gt-dbxout.h"
 diff --git a/gcc/dbxout.h b/gcc/dbxout.h
 new file mode 100644
-index 0000000..2c38e76
+index 00000000000..2c38e76c238
 --- /dev/null
 +++ b/gcc/dbxout.h
 @@ -0,0 +1,60 @@
@@ -10167,7 +10098,7 @@ index 0000000..2c38e76
 +
 +#endif /* GCC_DBXOUT_H */
 diff --git a/gcc/debug.h b/gcc/debug.h
-index 259881a..7778d88 100644
+index 259881a5494..7778d88eaaf 100644
 --- a/gcc/debug.h
 +++ b/gcc/debug.h
 @@ -239,6 +239,7 @@ extern void debug_nothing_tree_charstar_uhwi (tree, const char *,
@@ -10179,7 +10110,7 @@ index 259881a..7778d88 100644
  extern const struct gcc_debug_hooks dwarf2_debug_hooks;
  extern const struct gcc_debug_hooks dwarf2_lineno_debug_hooks;
 diff --git a/gcc/diagnostic-color.cc b/gcc/diagnostic-color.cc
-index b3bd6f9..33373c8 100644
+index b3bd6f997c6..33373c8bb71 100644
 --- a/gcc/diagnostic-color.cc
 +++ b/gcc/diagnostic-color.cc
 @@ -28,6 +28,90 @@
@@ -10274,7 +10205,7 @@ index b3bd6f9..33373c8 100644
  #include "selftest.h"
  
 diff --git a/gcc/explow.cc b/gcc/explow.cc
-index 7799a98..cb64436 100644
+index 7799a98053b..cb64436c34b 100644
 --- a/gcc/explow.cc
 +++ b/gcc/explow.cc
 @@ -1629,7 +1629,12 @@ allocate_dynamic_stack_space (rtx size, unsigned size_align,
@@ -10291,7 +10222,7 @@ index 7799a98..cb64436 100644
  
    suppress_reg_args_size = false;
 diff --git a/gcc/file-find.cc b/gcc/file-find.cc
-index ecdca50..37427ca 100644
+index ecdca50fe5e..37427ca2d99 100644
 --- a/gcc/file-find.cc
 +++ b/gcc/file-find.cc
 @@ -22,6 +22,20 @@ along with GCC; see the file COPYING3.  If not see
@@ -10316,7 +10247,7 @@ index ecdca50..37427ca 100644
  
  void
 diff --git a/gcc/final.cc b/gcc/final.cc
-index 12c6eb0..dc103ea 100644
+index 12c6eb0ac09..dc103eaa9d6 100644
 --- a/gcc/final.cc
 +++ b/gcc/final.cc
 @@ -86,6 +86,10 @@ along with GCC; see the file COPYING3.  If not see
@@ -10388,7 +10319,7 @@ index 12c6eb0..dc103ea 100644
       know for certain that we will be generating an out-of-line copy,
       the first invocation of this routine (rest_of_compilation) will
 diff --git a/gcc/flag-types.h b/gcc/flag-types.h
-index 9a3cc4a..f80286e 100644
+index 9a3cc4a2e16..f80286e754a 100644
 --- a/gcc/flag-types.h
 +++ b/gcc/flag-types.h
 @@ -25,7 +25,8 @@ along with GCC; see the file COPYING3.  If not see
@@ -10411,7 +10342,7 @@ index 9a3cc4a..f80286e 100644
  #define DWARF2_DEBUG  (1U << DINFO_TYPE_DWARF2)
  /* Write VMS debug info (using vmsdbgout.cc).  */
 diff --git a/gcc/fortran/Make-lang.in b/gcc/fortran/Make-lang.in
-index 5b2f921..7b74724 100644
+index 5b2f921bf2e..7b7472440c0 100644
 --- a/gcc/fortran/Make-lang.in
 +++ b/gcc/fortran/Make-lang.in
 @@ -85,7 +85,7 @@ gfortran$(exeext): $(GFORTRAN_D_OBJS) $(EXTRA_GCC_OBJS) libcommon-target.a \
@@ -10433,7 +10364,7 @@ index 5b2f921..7b74724 100644
  
  gt-fortran-trans.h    : s-gtype; @true
 diff --git a/gcc/gcc-ar.cc b/gcc/gcc-ar.cc
-index 2bf727a..48361e0 100644
+index 2bf727a268d..48361e09778 100644
 --- a/gcc/gcc-ar.cc
 +++ b/gcc/gcc-ar.cc
 @@ -122,6 +122,8 @@ setup_prefixes (const char *exec_path)
@@ -10446,7 +10377,7 @@ index 2bf727a..48361e0 100644
  main (int ac, char **av)
  {
 diff --git a/gcc/gcc-main.cc b/gcc/gcc-main.cc
-index 9754b08..0eb4760 100644
+index 9754b0887ee..0eb47604fad 100644
 --- a/gcc/gcc-main.cc
 +++ b/gcc/gcc-main.cc
 @@ -38,6 +38,8 @@ along with GCC; see the file COPYING3.  If not see
@@ -10459,7 +10390,7 @@ index 9754b08..0eb4760 100644
  main (int argc, char **argv)
  {
 diff --git a/gcc/gcc.cc b/gcc/gcc.cc
-index 3b0f946..d8b8b19 100644
+index 4fd87f2c4a1..de763b3ab31 100644
 --- a/gcc/gcc.cc
 +++ b/gcc/gcc.cc
 @@ -54,6 +54,27 @@ compilation is specified by a string called a "spec".  */
@@ -10558,7 +10489,7 @@ index 3b0f946..d8b8b19 100644
  #ifdef HAVE_ZSTD_H
    fnotice (file, " zstd");
 diff --git a/gcc/gcov-dump.cc b/gcc/gcov-dump.cc
-index cc7f8a9..6331604 100644
+index cc7f8a9ebfb..6331604cdd0 100644
 --- a/gcc/gcov-dump.cc
 +++ b/gcc/gcov-dump.cc
 @@ -84,6 +84,8 @@ static const tag_format_t tag_table[] =
@@ -10571,7 +10502,7 @@ index cc7f8a9..6331604 100644
  main (int argc ATTRIBUTE_UNUSED, char **argv)
  {
 diff --git a/gcc/gcov-tool.cc b/gcc/gcov-tool.cc
-index d8f2790..05926d6 100644
+index d8f2790b110..05926d6f026 100644
 --- a/gcc/gcov-tool.cc
 +++ b/gcc/gcov-tool.cc
 @@ -54,7 +54,7 @@ extern void gcov_set_verbose (void);
@@ -10602,7 +10533,7 @@ index d8f2790..05926d6 100644
  
  int
 diff --git a/gcc/gcov.cc b/gcc/gcov.cc
-index e1ad801..241d61a 100644
+index e1ad80162b3..241d61a1ce8 100644
 --- a/gcc/gcov.cc
 +++ b/gcc/gcov.cc
 @@ -1030,6 +1030,8 @@ get_cycles_count (line_info &linfo)
@@ -10615,7 +10546,7 @@ index e1ad801..241d61a 100644
  main (int argc, char **argv)
  {
 diff --git a/gcc/ggc-common.cc b/gcc/ggc-common.cc
-index 426671e..2b67bb2 100644
+index 426671e9564..2b67bb2f0b4 100644
 --- a/gcc/ggc-common.cc
 +++ b/gcc/ggc-common.cc
 @@ -778,6 +778,8 @@ gt_pch_restore (FILE *f)
@@ -10697,7 +10628,7 @@ index 426671e..2b67bb2 100644
      fatal_error (input_location, "cannot read PCH file: %m");
 diff --git a/gcc/glibc.so b/gcc/glibc.so
 new file mode 100644
-index 0000000..408ef8b
+index 00000000000..408ef8ba856
 --- /dev/null
 +++ b/gcc/glibc.so
 @@ -0,0 +1,3 @@
@@ -10705,7 +10636,7 @@ index 0000000..408ef8b
 +OUTPUT_FORMAT(elf64-x86-64)
 +GROUP ( /lib64/libdl.so.2 /lib64/libc.so.6 /usr/lib64/libc_nonshared.a AS_NEEDED ( /lib64/ld-linux-x86-64.so.2 ) )
 diff --git a/gcc/go/gospec.cc b/gcc/go/gospec.cc
-index 2943499..99d4449 100644
+index 2943499edcd..99d44492294 100644
 --- a/gcc/go/gospec.cc
 +++ b/gcc/go/gospec.cc
 @@ -215,6 +215,8 @@ lang_specific_driver (struct cl_decoded_option **in_decoded_options,
@@ -10719,7 +10650,7 @@ index 2943499..99d4449 100644
  	  break;
 diff --git a/gcc/gstab.h b/gcc/gstab.h
 new file mode 100644
-index 0000000..c597d12
+index 00000000000..c597d1200b4
 --- /dev/null
 +++ b/gcc/gstab.h
 @@ -0,0 +1,35 @@
@@ -10759,7 +10690,7 @@ index 0000000..c597d12
 +
 +#endif /* ! GCC_GSTAB_H */
 diff --git a/gcc/incpath.cc b/gcc/incpath.cc
-index c1bbfd3..532806d 100644
+index c1bbfd3872a..532806df72b 100644
 --- a/gcc/incpath.cc
 +++ b/gcc/incpath.cc
 @@ -27,6 +27,12 @@
@@ -10795,7 +10726,7 @@ index c1bbfd3..532806d 100644
  	    }
  	  else if (!p->add_sysroot && relocated
 diff --git a/gcc/input.cc b/gcc/input.cc
-index 085ef1c..a8fdf24 100644
+index fabfbfb6eaa..851529d5f8e 100644
 --- a/gcc/input.cc
 +++ b/gcc/input.cc
 @@ -2673,12 +2673,14 @@ class ebcdic_execution_charset : public lexer_test_options
@@ -10816,7 +10747,7 @@ index 085ef1c..a8fdf24 100644
  	return true;
 diff --git a/gcc/libcmain.h b/gcc/libcmain.h
 new file mode 100644
-index 0000000..311fea9
+index 00000000000..311fea9acca
 --- /dev/null
 +++ b/gcc/libcmain.h
 @@ -0,0 +1,39 @@
@@ -10861,7 +10792,7 @@ index 0000000..311fea9
 +#endif
 diff --git a/gcc/libcwrap.h b/gcc/libcwrap.h
 new file mode 100644
-index 0000000..f4cc6ae
+index 00000000000..f4cc6aea365
 --- /dev/null
 +++ b/gcc/libcwrap.h
 @@ -0,0 +1,1561 @@
@@ -12427,10 +12358,10 @@ index 0000000..f4cc6ae
 +#endif /* __x86_64__ */
 +#endif /* __linux__ */
 diff --git a/gcc/lto-wrapper.cc b/gcc/lto-wrapper.cc
-index f5898e5..ae05a37 100644
+index a980b208783..1d6d5f464f2 100644
 --- a/gcc/lto-wrapper.cc
 +++ b/gcc/lto-wrapper.cc
-@@ -1708,7 +1708,8 @@ run_gcc (unsigned argc, char *argv[])
+@@ -1712,7 +1712,8 @@ run_gcc (unsigned argc, char *argv[])
    if (!dumppfx)
      {
        if (!linker_output
@@ -12440,7 +12371,7 @@ index f5898e5..ae05a37 100644
  	dumppfx = "a.";
        else
  	{
-@@ -2283,6 +2284,8 @@ public:
+@@ -2289,6 +2290,8 @@ public:
  
  /* Entry point.  */
  
@@ -12450,7 +12381,7 @@ index f5898e5..ae05a37 100644
  main (int argc, char *argv[])
  {
 diff --git a/gcc/m2/Make-lang.in b/gcc/m2/Make-lang.in
-index 470825c..ecd7b9b 100644
+index 470825ca2cc..ecd7b9ba06f 100644
 --- a/gcc/m2/Make-lang.in
 +++ b/gcc/m2/Make-lang.in
 @@ -46,6 +46,7 @@ else
@@ -12462,7 +12393,7 @@ index 470825c..ecd7b9b 100644
  endif
  
 diff --git a/gcc/m2/gm2-compiler/M2Quads.mod b/gcc/m2/gm2-compiler/M2Quads.mod
-index 748ce24..6a15555 100644
+index 9bb8c4d35a6..2d862842516 100644
 --- a/gcc/m2/gm2-compiler/M2Quads.mod
 +++ b/gcc/m2/gm2-compiler/M2Quads.mod
 @@ -28,7 +28,7 @@ FROM NameKey IMPORT Name, NulName, MakeKey, GetKey, makekey, KeyToCharStar, Writ
@@ -12474,7 +12405,7 @@ index 748ce24..6a15555 100644
                         finiFunction, linkFunction, PopulateCtorArray,
                         ForeachModuleCallInit, ForeachModuleCallFinish ;
  
-@@ -2775,6 +2775,13 @@ BEGIN
+@@ -2787,6 +2787,13 @@ BEGIN
        BuildProcedureBegin ;
        StartScope (mainFunction) ;
        BuildTry (tokno) ;
@@ -12488,7 +12419,7 @@ index 748ce24..6a15555 100644
        (* _M2_init (argc, argv, envp);  *)
        PushTtok (initFunction, tokno) ;
        PushTtok (RequestSym (tokno, MakeKey ("argc")), tokno) ;
-@@ -12590,9 +12597,9 @@ BEGIN
+@@ -12568,9 +12575,9 @@ BEGIN
     GetConstructorFromFifoQueue (constValue) ;
     IF type # GetSType (constValue)
     THEN
@@ -12501,7 +12432,7 @@ index 748ce24..6a15555 100644
     PushTtok (constValue, cbratokpos) ;
     PushConstructor (type)
 diff --git a/gcc/m2/gm2-compiler/M2Scaffold.def b/gcc/m2/gm2-compiler/M2Scaffold.def
-index 8473303..0a89181 100644
+index 8473303c3de..0a89181f62e 100644
 --- a/gcc/m2/gm2-compiler/M2Scaffold.def
 +++ b/gcc/m2/gm2-compiler/M2Scaffold.def
 @@ -27,6 +27,7 @@ VAR
@@ -12520,7 +12451,7 @@ index 8473303..0a89181 100644
 +
  END M2Scaffold.
 diff --git a/gcc/m2/gm2-compiler/M2Scaffold.mod b/gcc/m2/gm2-compiler/M2Scaffold.mod
-index ff8e20f..60831a6 100644
+index ff8e20f65a3..60831a65542 100644
 --- a/gcc/m2/gm2-compiler/M2Scaffold.mod
 +++ b/gcc/m2/gm2-compiler/M2Scaffold.mod
 @@ -83,7 +83,7 @@ VAR
@@ -12564,7 +12495,7 @@ index ff8e20f..60831a6 100644
     ctorArray := NulSym ;
     ctorGlobals := NIL ;
 diff --git a/gcc/m2/gm2-compiler/M2Students.mod b/gcc/m2/gm2-compiler/M2Students.mod
-index e539eb0..1f70faa 100644
+index e539eb0757a..1f70faa4855 100644
 --- a/gcc/m2/gm2-compiler/M2Students.mod
 +++ b/gcc/m2/gm2-compiler/M2Students.mod
 @@ -105,9 +105,13 @@ BEGIN
@@ -12583,7 +12514,7 @@ index e539eb0..1f70faa 100644
     END ;
     upperS := KillString (upperS) ;
 diff --git a/gcc/m2/gm2-gcc/m2configure.cc b/gcc/m2/gm2-gcc/m2configure.cc
-index 6ae14a2..9924c87 100644
+index 6ae14a2fd9f..9924c8722af 100644
 --- a/gcc/m2/gm2-gcc/m2configure.cc
 +++ b/gcc/m2/gm2-gcc/m2configure.cc
 @@ -50,22 +50,21 @@ along with GNU Modula-2; see the file COPYING3.  If not see
@@ -12647,19 +12578,19 @@ index 6ae14a2..9924c87 100644
        return full;
      }
 diff --git a/gcc/m2/gm2-gcc/m2options.h b/gcc/m2/gm2-gcc/m2options.h
-index 041de26..68f4eb9 100644
+index d60b510de34..75d33614343 100644
 --- a/gcc/m2/gm2-gcc/m2options.h
 +++ b/gcc/m2/gm2-gcc/m2options.h
-@@ -171,5 +171,7 @@ EXTERN bool M2Options_GetDumpGimple (void);
- EXTERN void M2Options_SetStrictTypeAssignment (bool value);
- EXTERN void M2Options_SetStrictTypeReason (bool value);
+@@ -169,5 +169,7 @@ EXTERN void M2Options_SetM2DebugTraceFilter (bool value, const char *arg);
+ EXTERN bool M2Options_SetM2Dump (bool value, const char *arg);
+ EXTERN bool M2Options_GetDumpGimple (void);
  
 +EXTERN void M2Scaffold_SetNeedsMain(void);
 +
  #undef EXTERN
  #endif /* m2options_h.  */
 diff --git a/gcc/m2/gm2-lang.cc b/gcc/m2/gm2-lang.cc
-index e8820da..c21ed38 100644
+index e8820daf474..c21ed383eab 100644
 --- a/gcc/m2/gm2-lang.cc
 +++ b/gcc/m2/gm2-lang.cc
 @@ -160,6 +160,13 @@ gm2_langhook_init_options_struct (struct gcc_options *opts)
@@ -12705,7 +12636,7 @@ index e8820da..c21ed38 100644
  struct lang_hooks lang_hooks = LANG_HOOKS_INITIALIZER;
  
 diff --git a/gcc/m2/gm2-libs-ch/wrapc.c b/gcc/m2/gm2-libs-ch/wrapc.c
-index cb3a77a..6be21fe 100644
+index cb3a77ae89f..6be21fe4501 100644
 --- a/gcc/m2/gm2-libs-ch/wrapc.c
 +++ b/gcc/m2/gm2-libs-ch/wrapc.c
 @@ -62,7 +62,7 @@ wrapc_filesize (int f, unsigned int *low, unsigned int *high)
@@ -12727,7 +12658,7 @@ index cb3a77a..6be21fe 100644
      }
    else
 diff --git a/gcc/m2/tools-src/mklink.c b/gcc/m2/tools-src/mklink.c
-index e489e2f..9215b5c 100644
+index e489e2ffcb4..9215b5c7438 100644
 --- a/gcc/m2/tools-src/mklink.c
 +++ b/gcc/m2/tools-src/mklink.c
 @@ -137,6 +137,8 @@ addGccArg (char *arg)
@@ -12740,7 +12671,7 @@ index e489e2f..9215b5c 100644
  main (int argc, char *argv[])
  {
 diff --git a/gcc/main.cc b/gcc/main.cc
-index 5f682c2..34a0599 100644
+index 5f682c2bf52..34a0599585c 100644
 --- a/gcc/main.cc
 +++ b/gcc/main.cc
 @@ -24,6 +24,8 @@ along with GCC; see the file COPYING3.  If not see
@@ -12753,7 +12684,7 @@ index 5f682c2..34a0599 100644
  
  /* We define main() to call toplev::main(), which is defined in toplev.cc.
 diff --git a/gcc/opts.cc b/gcc/opts.cc
-index ffcbdfe..672879e 100644
+index ffcbdfef0bd..672879e25f2 100644
 --- a/gcc/opts.cc
 +++ b/gcc/opts.cc
 @@ -54,7 +54,7 @@ static void set_Wstrict_aliasing (struct gcc_options *opts, int onoff);
@@ -12813,7 +12744,7 @@ index ffcbdfe..672879e 100644
        else if ((opts->x_write_symbols & CTF_DEBUG)
  	       || (opts->x_write_symbols & BTF_DEBUG)
 diff --git a/gcc/params.opt b/gcc/params.opt
-index 64e453d..b9e2a16 100644
+index a2b606fb917..f4839ab1afe 100644
 --- a/gcc/params.opt
 +++ b/gcc/params.opt
 @@ -657,7 +657,7 @@ Common Joined UInteger Var(param_max_modulo_backtrack_attempts) Init(40) Param O
@@ -12826,7 +12757,7 @@ index 64e453d..b9e2a16 100644
  
  -param=max-partial-antic-length=
 diff --git a/gcc/poly-int.h b/gcc/poly-int.h
-index 77f7875..d99f63b 100644
+index 77f78752e74..d99f63b671f 100644
 --- a/gcc/poly-int.h
 +++ b/gcc/poly-int.h
 @@ -374,7 +374,7 @@ template<> struct poly_int_fullness<true> { using type = poly_int_full; };
@@ -12839,7 +12770,7 @@ index 77f7875..d99f63b 100644
  public:
    poly_int () = default;
 diff --git a/gcc/pretty-print.cc b/gcc/pretty-print.cc
-index abd6c0b..1d54799 100644
+index abd6c0b528f..1d547997e35 100644
 --- a/gcc/pretty-print.cc
 +++ b/gcc/pretty-print.cc
 @@ -49,6 +49,13 @@ along with GCC; see the file COPYING3.  If not see
@@ -12858,7 +12789,7 @@ index abd6c0b..1d54799 100644
  static void
 diff --git a/gcc/stab.def b/gcc/stab.def
 new file mode 100644
-index 0000000..e5af19b
+index 00000000000..e5af19b2bd8
 --- /dev/null
 +++ b/gcc/stab.def
 @@ -0,0 +1,239 @@
@@ -13102,7 +13033,7 @@ index 0000000..e5af19b
 + * 48 BSLINE is also BROWS.
 + */
 diff --git a/gcc/system.h b/gcc/system.h
-index 3e59090..d55ae26 100644
+index e516b49d04a..fbd106169fa 100644
 --- a/gcc/system.h
 +++ b/gcc/system.h
 @@ -204,16 +204,16 @@ extern int fprintf_unlocked (FILE *, const char *, ...);
@@ -13125,7 +13056,7 @@ index 3e59090..d55ae26 100644
  # include <vector>
  #endif
  #ifdef INCLUDE_ARRAY
-@@ -745,6 +745,9 @@ private:
+@@ -740,6 +740,9 @@ private:
  #ifndef HOST_BIT_BUCKET
  #define HOST_BIT_BUCKET "/dev/null"
  #endif
@@ -13135,7 +13066,7 @@ index 3e59090..d55ae26 100644
  
  #ifndef offsetof
  #define offsetof(TYPE, MEMBER)	((size_t) &((TYPE *) 0)->MEMBER)
-@@ -1025,7 +1028,8 @@ extern void fancy_abort (const char *, int, const char *)
+@@ -1020,7 +1023,8 @@ extern void fancy_abort (const char *, int, const char *)
  	ASM_OUTPUT_DEFINE_LABEL_DIFFERENCE_SYMBOL HOST_WORDS_BIG_ENDIAN	   \
  	OBJC_PROLOGUE ALLOCATE_TRAMPOLINE HANDLE_PRAGMA ROUND_TYPE_SIZE	   \
  	ROUND_TYPE_SIZE_UNIT CONST_SECTION_ASM_OP CRT_GET_RFIB_TEXT	   \
@@ -13145,7 +13076,7 @@ index 3e59090..d55ae26 100644
  	INSN_CACHE_LINE_WIDTH INIT_SECTION_PREAMBLE NEED_ATEXIT ON_EXIT	   \
  	EXIT_BODY OBJECT_FORMAT_ROSE MULTIBYTE_CHARS MAP_CHARACTER	   \
  	LIBGCC_NEEDS_DOUBLE FINAL_PRESCAN_LABEL DEFAULT_CALLER_SAVES	   \
-@@ -1038,14 +1042,15 @@ extern void fancy_abort (const char *, int, const char *)
+@@ -1033,14 +1037,15 @@ extern void fancy_abort (const char *, int, const char *)
  	MAX_WCHAR_TYPE_SIZE SHARED_SECTION_ASM_OP INTEGRATE_THRESHOLD      \
  	FINAL_REG_PARM_STACK_SPACE MAYBE_REG_PARM_STACK_SPACE		   \
  	TRADITIONAL_PIPELINE_INTERFACE DFA_PIPELINE_INTERFACE		   \
@@ -13164,7 +13095,7 @@ index 3e59090..d55ae26 100644
  	NON_SAVING_SETJMP TARGET_LATE_RTL_PROLOGUE_EPILOGUE		   \
  	CASE_DROPS_THROUGH TARGET_BELL TARGET_BS TARGET_CR TARGET_DIGIT0   \
          TARGET_ESC TARGET_FF TARGET_NEWLINE TARGET_TAB TARGET_VT	   \
-@@ -1070,8 +1075,8 @@ extern void fancy_abort (const char *, int, const char *)
+@@ -1065,8 +1070,8 @@ extern void fancy_abort (const char *, int, const char *)
  	PREFERRED_OUTPUT_RELOAD_CLASS SYSTEM_INCLUDE_DIR		   \
  	STANDARD_INCLUDE_DIR STANDARD_INCLUDE_COMPONENT			   \
  	LINK_ELIMINATE_DUPLICATE_LDIRECTORIES MIPS_DEBUGGING_INFO	   \
@@ -13176,7 +13107,7 @@ index 3e59090..d55ae26 100644
  	TARGET_ALIGN_ANON_BITFIELDS TARGET_NARROW_VOLATILE_BITFIELDS	   \
  	IDENT_ASM_OP UNALIGNED_SHORT_ASM_OP UNALIGNED_INT_ASM_OP	   \
 diff --git a/gcc/target-def.h b/gcc/target-def.h
-index a262f7d..40e3f05 100644
+index a262f7d34be..40e3f05fd6e 100644
 --- a/gcc/target-def.h
 +++ b/gcc/target-def.h
 @@ -63,7 +63,7 @@
@@ -13198,7 +13129,7 @@ index a262f7d..40e3f05 100644
  # endif
  #endif
 diff --git a/gcc/toplev.cc b/gcc/toplev.cc
-index 6d8b885..255bf5f 100644
+index 6d8b8852fb8..255bf5fc463 100644
 --- a/gcc/toplev.cc
 +++ b/gcc/toplev.cc
 @@ -96,12 +96,23 @@ along with GCC; see the file COPYING3.  If not see
@@ -13271,7 +13202,7 @@ index 6d8b885..255bf5f 100644
    else if (dwarf_debuginfo_p ())
      debug_hooks = &dwarf2_debug_hooks;
 diff --git a/gcc/tree-data-ref.cc b/gcc/tree-data-ref.cc
-index 8a46e6d..7c39ebc 100644
+index 8a46e6daabb..7c39ebce5de 100644
 --- a/gcc/tree-data-ref.cc
 +++ b/gcc/tree-data-ref.cc
 @@ -103,6 +103,10 @@ along with GCC; see the file COPYING3.  If not see
@@ -13286,7 +13217,7 @@ index 8a46e6d..7c39ebc 100644
  {
    int num_dependence_tests;
 diff --git a/gcc/tree-loop-distribution.cc b/gcc/tree-loop-distribution.cc
-index fc0cd39..dd2996d 100644
+index fc0cd3952d5..dd2996d5369 100644
 --- a/gcc/tree-loop-distribution.cc
 +++ b/gcc/tree-loop-distribution.cc
 @@ -1771,6 +1771,7 @@ classify_builtin_st (loop_p loop, partition *partition, data_reference_p dr)
@@ -13298,7 +13229,7 @@ index fc0cd39..dd2996d 100644
        && (!INTEGRAL_TYPE_P (TREE_TYPE (rhs))
  	  || (TYPE_MODE (TREE_TYPE (rhs))
 diff --git a/gcc/varasm.cc b/gcc/varasm.cc
-index 10c1d2e..388e19b 100644
+index 10c1d2e3137..388e19b5b9d 100644
 --- a/gcc/varasm.cc
 +++ b/gcc/varasm.cc
 @@ -1109,9 +1109,15 @@ align_variable (tree decl, bool dont_output_data)
@@ -13327,7 +13258,7 @@ index 10c1d2e..388e19b 100644
  	       && asan_protect_global (decl)))
  	return lcomm_section;
 diff --git a/gnattools/Makefile.in b/gnattools/Makefile.in
-index 996e600..2c33bf1 100644
+index 996e600c196..2c33bf12782 100644
 --- a/gnattools/Makefile.in
 +++ b/gnattools/Makefile.in
 @@ -204,7 +204,7 @@ gnattools-native: $(GCC_DIR)/stamp-tools $(GCC_DIR)/stamp-gnatlib-rts
@@ -13349,7 +13280,7 @@ index 996e600..2c33bf1 100644
  gnattools-cross: $(GCC_DIR)/stamp-tools
  	# gnattools1-re
 diff --git a/gnattools/configure b/gnattools/configure
-index 1eb0deb..119fc53 100755
+index 1eb0debc2ce..119fc5304d2 100755
 --- a/gnattools/configure
 +++ b/gnattools/configure
 @@ -2081,7 +2081,7 @@ case "${target}" in
@@ -13362,7 +13293,7 @@ index 1eb0deb..119fc53 100755
      EXTRA_GNATTOOLS='../../gnatdll$(exeext)'
      ;;
 diff --git a/libatomic/configure b/libatomic/configure
-index d579bab..301bf16 100755
+index d579bab96f8..301bf16f22d 100755
 --- a/libatomic/configure
 +++ b/libatomic/configure
 @@ -5284,7 +5284,7 @@ if test "$GCC" = yes; then
@@ -13446,7 +13377,7 @@ index d579bab..301bf16 100755
      ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
    *)
 diff --git a/libbacktrace/configure b/libbacktrace/configure
-index 85be043..3976b5b 100755
+index 85be043009a..3976b5b02a6 100755
 --- a/libbacktrace/configure
 +++ b/libbacktrace/configure
 @@ -5732,7 +5732,7 @@ if test "$GCC" = yes; then
@@ -13521,7 +13452,7 @@ index 85be043..3976b5b 100755
     esac
  else
 diff --git a/libbacktrace/configure.ac b/libbacktrace/configure.ac
-index 6549cde..77bccc1 100644
+index 6549cdeacf4..77bccc10308 100644
 --- a/libbacktrace/configure.ac
 +++ b/libbacktrace/configure.ac
 @@ -405,7 +405,7 @@ AC_CHECK_HEADERS(tlhelp32.h, [], [],
@@ -13534,7 +13465,7 @@ index 6549cde..77bccc1 100644
     esac
  else
 diff --git a/libcc1/configure b/libcc1/configure
-index ea689a3..6e5c7ff 100755
+index ea689a353c8..6e5c7ff5aae 100755
 --- a/libcc1/configure
 +++ b/libcc1/configure
 @@ -4987,7 +4987,7 @@ if test "$GCC" = yes; then
@@ -13644,7 +13575,7 @@ index ea689a3..6e5c7ff 100755
        soname_spec='${libname}`echo ${release} | $SED -e 's/[.]/-/g'`${versuffix}${shared_ext}'
        ;;
 diff --git a/libcody/cody.hh b/libcody/cody.hh
-index 93bce93..9fd5edb 100644
+index 789ce9e70b7..8f5b30ab5f1 100644
 --- a/libcody/cody.hh
 +++ b/libcody/cody.hh
 @@ -9,7 +9,7 @@
@@ -13656,7 +13587,7 @@ index 93bce93..9fd5edb 100644
  #define CODY_NETWORKING 1
  #else
  #define CODY_NETWORKING 0
-@@ -814,10 +814,12 @@ int OpenLocal (char const **, char const *name);
+@@ -792,10 +792,12 @@ int OpenLocal (char const **, char const *name);
  int ListenLocal (char const **, char const *name, unsigned backlog = 0);
  
  // ipv6 socket
@@ -13670,7 +13601,7 @@ index 93bce93..9fd5edb 100644
  // FIXME: Mapping file utilities?
  
 diff --git a/libcody/netclient.cc b/libcody/netclient.cc
-index 558808b..9ee05b0 100644
+index 558808be485..9ee05b0176c 100644
 --- a/libcody/netclient.cc
 +++ b/libcody/netclient.cc
 @@ -69,6 +69,7 @@ int OpenLocal (char const **e, char const *name)
@@ -13690,7 +13621,7 @@ index 558808b..9ee05b0 100644
  }
  
 diff --git a/libcody/netserver.cc b/libcody/netserver.cc
-index 0499b57..c44ae34 100644
+index 0499b5790b4..c44ae34faeb 100644
 --- a/libcody/netserver.cc
 +++ b/libcody/netserver.cc
 @@ -76,6 +76,7 @@ int ListenLocal (char const **e, char const *name, unsigned backlog)
@@ -13710,7 +13641,7 @@ index 0499b57..c44ae34 100644
  }
  #endif
 diff --git a/libcody/resolver.cc b/libcody/resolver.cc
-index 034fd63..480d918 100644
+index 034fd63b9a8..480d9189fba 100644
 --- a/libcody/resolver.cc
 +++ b/libcody/resolver.cc
 @@ -21,6 +21,10 @@
@@ -13725,7 +13656,7 @@ index 034fd63..480d918 100644
  // Resolver code
  
 diff --git a/libcpp/configure b/libcpp/configure
-index e3c39f4..3cde426 100755
+index e3c39f4d7bd..3cde426fbb3 100755
 --- a/libcpp/configure
 +++ b/libcpp/configure
 @@ -6954,7 +6954,7 @@ if test "$GCC" = yes; then
@@ -13738,7 +13669,7 @@ index e3c39f4..3cde426 100755
      ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
    *)
 diff --git a/libcpp/files.cc b/libcpp/files.cc
-index 4d15c03..8adb1e3 100644
+index c1abde6639f..7487b8adc85 100644
 --- a/libcpp/files.cc
 +++ b/libcpp/files.cc
 @@ -30,6 +30,13 @@ along with this program; see the file COPYING3.  If not see
@@ -13850,7 +13781,7 @@ index 4d15c03..8adb1e3 100644
    if (file->fd != -1)
      {
 diff --git a/libcpp/include/mkdeps.h b/libcpp/include/mkdeps.h
-index 49aa049..fc53a96 100644
+index 49aa0494463..fc53a96fc2d 100644
 --- a/libcpp/include/mkdeps.h
 +++ b/libcpp/include/mkdeps.h
 @@ -52,15 +52,15 @@ extern void deps_add_target (class mkdeps *, const char *, int);
@@ -13882,7 +13813,7 @@ index 49aa049..fc53a96 100644
  /* Write out a deps buffer to a file, in a form that can be read back
     with deps_restore.  Returns nonzero on error, in which case the
 diff --git a/libcpp/init.cc b/libcpp/init.cc
-index e9732af..adb92ef 100644
+index e9732afeb2c..adb92efa6c0 100644
 --- a/libcpp/init.cc
 +++ b/libcpp/init.cc
 @@ -50,7 +50,7 @@ static void post_options (cpp_reader *);
@@ -13904,7 +13835,7 @@ index e9732af..adb92ef 100644
  #endif
  
 diff --git a/libcpp/internal.h b/libcpp/internal.h
-index 9973836..59314f5 100644
+index 9973836068b..59314f5a6b8 100644
 --- a/libcpp/internal.h
 +++ b/libcpp/internal.h
 @@ -26,6 +26,12 @@ along with this program; see the file COPYING3.  If not see
@@ -13921,7 +13852,7 @@ index 9973836..59314f5 100644
  #include <iconv.h>
  #else
 diff --git a/libcpp/macro.cc b/libcpp/macro.cc
-index be25710..b2a6891 100644
+index be257103471..b2a6891387b 100644
 --- a/libcpp/macro.cc
 +++ b/libcpp/macro.cc
 @@ -3625,7 +3625,8 @@ parse_params (cpp_reader *pfile, unsigned *n_ptr, bool *variadic_ptr)
@@ -13935,7 +13866,7 @@ index be25710..b2a6891 100644
  			   "anonymous variadic macros were introduced in C99");
  	    }
 diff --git a/libdecnumber/decNumberLocal.h b/libdecnumber/decNumberLocal.h
-index bf378d4..127b313 100644
+index bf378d41954..127b31364ef 100644
 --- a/libdecnumber/decNumberLocal.h
 +++ b/libdecnumber/decNumberLocal.h
 @@ -187,7 +187,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -13948,7 +13879,7 @@ index bf378d4..127b313 100644
    #endif
  
 diff --git a/libffi/acinclude.m4 b/libffi/acinclude.m4
-index 1a70efb..0af866e 100644
+index 1a70efb010d..0af866ecb2f 100644
 --- a/libffi/acinclude.m4
 +++ b/libffi/acinclude.m4
 @@ -37,7 +37,7 @@ else
@@ -13970,7 +13901,7 @@ index 1a70efb..0af866e 100644
       *)
  	ac_cv_func_mmap_anon=yes;;
 diff --git a/libffi/configure b/libffi/configure
-index f82a45b..51f131b 100755
+index f82a45b13bc..51f131bc5be 100755
 --- a/libffi/configure
 +++ b/libffi/configure
 @@ -5516,7 +5516,7 @@ if test "$GCC" = yes; then
@@ -14120,7 +14051,7 @@ index f82a45b..51f131b 100755
      ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
    *)
 diff --git a/libffi/configure.host b/libffi/configure.host
-index 9d73f18..26d2f2b 100644
+index 9d73f18ee8c..26d2f2b89de 100644
 --- a/libffi/configure.host
 +++ b/libffi/configure.host
 @@ -84,7 +84,7 @@ case "${host}" in
@@ -14133,10 +14064,10 @@ index 9d73f18..26d2f2b 100644
  	if test $ac_cv_sizeof_size_t = 4; then
  	  TARGET=X86_WIN32
 diff --git a/libgcc/Makefile.in b/libgcc/Makefile.in
-index edb6cce..3662cbc 100644
+index 0719fd0615d..78e729f6098 100644
 --- a/libgcc/Makefile.in
 +++ b/libgcc/Makefile.in
-@@ -510,7 +510,7 @@ endif
+@@ -509,7 +509,7 @@ endif
  # Build lib2funcs.  For the static library also include LIB2FUNCS_ST.
  lib2funcs-o = $(patsubst %,%$(objext),$(lib2funcs) $(LIB2FUNCS_ST))
  $(lib2funcs-o): %$(objext): $(srcdir)/libgcc2.c
@@ -14146,7 +14077,7 @@ index edb6cce..3662cbc 100644
  
  ifeq ($(enable_shared),yes)
 diff --git a/libgcc/config.host b/libgcc/config.host
-index 6a88ee5..fcdf848 100644
+index 6a88ee5a2dd..fcdf848a6ff 100644
 --- a/libgcc/config.host
 +++ b/libgcc/config.host
 @@ -1042,6 +1042,13 @@ m68k-*-linux*)			# Motorola m68k's running GNU/Linux
@@ -14165,7 +14096,7 @@ index 6a88ee5..fcdf848 100644
  	extra_parts="$extra_parts crti.o crtn.o"
 diff --git a/libgcc/config/m68k/addxf.S b/libgcc/config/m68k/addxf.S
 new file mode 100644
-index 0000000..3cf97b1
+index 00000000000..3cf97b1039f
 --- /dev/null
 +++ b/libgcc/config/m68k/addxf.S
 @@ -0,0 +1,648 @@
@@ -14819,13 +14750,13 @@ index 0000000..3cf97b1
 +	bra	Lx$infty	| the opposite sign
 diff --git a/libgcc/config/m68k/addxf3.c b/libgcc/config/m68k/addxf3.c
 new file mode 100644
-index 0000000..d8a718f
+index 00000000000..d8a718fe32b
 --- /dev/null
 +++ b/libgcc/config/m68k/addxf3.c
 @@ -0,0 +1 @@
 +#include "soft-fp/addxf3.c"
 diff --git a/libgcc/config/m68k/crti.S b/libgcc/config/m68k/crti.S
-index a054a19..470892e 100644
+index a054a19d4ec..470892e1f00 100644
 --- a/libgcc/config/m68k/crti.S
 +++ b/libgcc/config/m68k/crti.S
 @@ -42,3 +42,9 @@ _init:
@@ -14839,7 +14770,7 @@ index a054a19..470892e 100644
 +	.section	.note.GNU-stack,"",@progbits
 +#endif
 diff --git a/libgcc/config/m68k/crtn.S b/libgcc/config/m68k/crtn.S
-index f5414cb..9cc63e1 100644
+index f5414cbe223..9cc63e13fe0 100644
 --- a/libgcc/config/m68k/crtn.S
 +++ b/libgcc/config/m68k/crtn.S
 @@ -38,3 +38,9 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -14854,14 +14785,14 @@ index f5414cb..9cc63e1 100644
 +#endif
 diff --git a/libgcc/config/m68k/divxf3.c b/libgcc/config/m68k/divxf3.c
 new file mode 100644
-index 0000000..b8be020
+index 00000000000..b8be020eaae
 --- /dev/null
 +++ b/libgcc/config/m68k/divxf3.c
 @@ -0,0 +1 @@
 +#include "soft-fp/divxf3.c"
 diff --git a/libgcc/config/m68k/extenddfxf2.c b/libgcc/config/m68k/extenddfxf2.c
 new file mode 100644
-index 0000000..9480b1d
+index 00000000000..9480b1d4806
 --- /dev/null
 +++ b/libgcc/config/m68k/extenddfxf2.c
 @@ -0,0 +1,2 @@
@@ -14869,7 +14800,7 @@ index 0000000..9480b1d
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/extendsfdf2.c b/libgcc/config/m68k/extendsfdf2.c
 new file mode 100644
-index 0000000..d323cf2
+index 00000000000..d323cf2fa35
 --- /dev/null
 +++ b/libgcc/config/m68k/extendsfdf2.c
 @@ -0,0 +1,2 @@
@@ -14877,7 +14808,7 @@ index 0000000..d323cf2
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/extendsfxf2.c b/libgcc/config/m68k/extendsfxf2.c
 new file mode 100644
-index 0000000..5bd4bea
+index 00000000000..5bd4bea784f
 --- /dev/null
 +++ b/libgcc/config/m68k/extendsfxf2.c
 @@ -0,0 +1,2 @@
@@ -14885,7 +14816,7 @@ index 0000000..5bd4bea
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/fixdfsi.c b/libgcc/config/m68k/fixdfsi.c
 new file mode 100644
-index 0000000..1d81101
+index 00000000000..1d811017e2c
 --- /dev/null
 +++ b/libgcc/config/m68k/fixdfsi.c
 @@ -0,0 +1,2 @@
@@ -14893,7 +14824,7 @@ index 0000000..1d81101
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/fixsfsi.c b/libgcc/config/m68k/fixsfsi.c
 new file mode 100644
-index 0000000..c76353b
+index 00000000000..c76353b3bd6
 --- /dev/null
 +++ b/libgcc/config/m68k/fixsfsi.c
 @@ -0,0 +1,2 @@
@@ -14901,7 +14832,7 @@ index 0000000..c76353b
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/fixxfsi.c b/libgcc/config/m68k/fixxfsi.c
 new file mode 100644
-index 0000000..ba166b1
+index 00000000000..ba166b14308
 --- /dev/null
 +++ b/libgcc/config/m68k/fixxfsi.c
 @@ -0,0 +1,2 @@
@@ -14909,7 +14840,7 @@ index 0000000..ba166b1
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/floatsidf.c b/libgcc/config/m68k/floatsidf.c
 new file mode 100644
-index 0000000..0fe443c
+index 00000000000..0fe443ca183
 --- /dev/null
 +++ b/libgcc/config/m68k/floatsidf.c
 @@ -0,0 +1,2 @@
@@ -14917,7 +14848,7 @@ index 0000000..0fe443c
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/floatsisf.c b/libgcc/config/m68k/floatsisf.c
 new file mode 100644
-index 0000000..7ce0748
+index 00000000000..7ce07487f40
 --- /dev/null
 +++ b/libgcc/config/m68k/floatsisf.c
 @@ -0,0 +1,2 @@
@@ -14925,7 +14856,7 @@ index 0000000..7ce0748
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/floatsixf.c b/libgcc/config/m68k/floatsixf.c
 new file mode 100644
-index 0000000..5c10b80
+index 00000000000..5c10b8081ed
 --- /dev/null
 +++ b/libgcc/config/m68k/floatsixf.c
 @@ -0,0 +1,2 @@
@@ -14933,7 +14864,7 @@ index 0000000..5c10b80
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/floatunsidf.c b/libgcc/config/m68k/floatunsidf.c
 new file mode 100644
-index 0000000..f901056
+index 00000000000..f901056f428
 --- /dev/null
 +++ b/libgcc/config/m68k/floatunsidf.c
 @@ -0,0 +1,2 @@
@@ -14941,7 +14872,7 @@ index 0000000..f901056
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/floatunsisf.c b/libgcc/config/m68k/floatunsisf.c
 new file mode 100644
-index 0000000..8a143a2
+index 00000000000..8a143a26cdc
 --- /dev/null
 +++ b/libgcc/config/m68k/floatunsisf.c
 @@ -0,0 +1,2 @@
@@ -14949,14 +14880,14 @@ index 0000000..8a143a2
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/floatunsixf.c b/libgcc/config/m68k/floatunsixf.c
 new file mode 100644
-index 0000000..d67949b
+index 00000000000..d67949bd696
 --- /dev/null
 +++ b/libgcc/config/m68k/floatunsixf.c
 @@ -0,0 +1,2 @@
 +#define L_floatunsixf
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/fpgnulib.c b/libgcc/config/m68k/fpgnulib.c
-index a7d4258..917acfd 100644
+index a7d4258dff0..917acfd0748 100644
 --- a/libgcc/config/m68k/fpgnulib.c
 +++ b/libgcc/config/m68k/fpgnulib.c
 @@ -1,10 +1,6 @@
@@ -15441,7 +15372,7 @@ index a7d4258..917acfd 100644
 -#endif /* EXTFLOAT */
 diff --git a/libgcc/config/m68k/lb1sf68-fast.S b/libgcc/config/m68k/lb1sf68-fast.S
 new file mode 100644
-index 0000000..0c2b886
+index 00000000000..0c2b886d812
 --- /dev/null
 +++ b/libgcc/config/m68k/lb1sf68-fast.S
 @@ -0,0 +1,219 @@
@@ -15665,7 +15596,7 @@ index 0000000..0c2b886
 +	rts
 +#endif /* L_modsi3 */
 diff --git a/libgcc/config/m68k/lb1sf68.S b/libgcc/config/m68k/lb1sf68.S
-index bcbcaf3..da5bf56 100644
+index bcbcaf327dc..da5bf56028f 100644
 --- a/libgcc/config/m68k/lb1sf68.S
 +++ b/libgcc/config/m68k/lb1sf68.S
 @@ -52,17 +52,17 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -18906,7 +18837,7 @@ index bcbcaf3..da5bf56 100644
  #endif
 diff --git a/libgcc/config/m68k/lb1sf68.pc.S b/libgcc/config/m68k/lb1sf68.pc.S
 new file mode 100644
-index 0000000..e50c4f8
+index 00000000000..e50c4f8e2d1
 --- /dev/null
 +++ b/libgcc/config/m68k/lb1sf68.pc.S
 @@ -0,0 +1,4858 @@
@@ -23770,7 +23701,7 @@ index 0000000..e50c4f8
 +#endif
 diff --git a/libgcc/config/m68k/mint-atomic.c b/libgcc/config/m68k/mint-atomic.c
 new file mode 100644
-index 0000000..e46ef7f
+index 00000000000..e46ef7f8055
 --- /dev/null
 +++ b/libgcc/config/m68k/mint-atomic.c
 @@ -0,0 +1,233 @@
@@ -24009,14 +23940,14 @@ index 0000000..e46ef7f
 +SUBWORD_SYNC_OP (test_and_set, , COMMA, SHORTINT, SHORTINT, 2, oldval)
 diff --git a/libgcc/config/m68k/mulxf3.c b/libgcc/config/m68k/mulxf3.c
 new file mode 100644
-index 0000000..51e5fb9
+index 00000000000..51e5fb9d5a8
 --- /dev/null
 +++ b/libgcc/config/m68k/mulxf3.c
 @@ -0,0 +1 @@
 +#include "soft-fp/mulxf3.c"
 diff --git a/libgcc/config/m68k/sfp-exceptions.c b/libgcc/config/m68k/sfp-exceptions.c
 new file mode 100644
-index 0000000..3bd77a7
+index 00000000000..3bd77a70b7c
 --- /dev/null
 +++ b/libgcc/config/m68k/sfp-exceptions.c
 @@ -0,0 +1,32 @@
@@ -24054,7 +23985,7 @@ index 0000000..3bd77a7
 +#endif
 diff --git a/libgcc/config/m68k/sfp-machine.h b/libgcc/config/m68k/sfp-machine.h
 new file mode 100644
-index 0000000..9376f62
+index 00000000000..9376f62c74f
 --- /dev/null
 +++ b/libgcc/config/m68k/sfp-machine.h
 @@ -0,0 +1,193 @@
@@ -24253,7 +24184,7 @@ index 0000000..9376f62
 +
 diff --git a/libgcc/config/m68k/subxf3.c b/libgcc/config/m68k/subxf3.c
 new file mode 100644
-index 0000000..e0d0057
+index 00000000000..e0d005769ad
 --- /dev/null
 +++ b/libgcc/config/m68k/subxf3.c
 @@ -0,0 +1,45 @@
@@ -24303,7 +24234,7 @@ index 0000000..e0d0057
 +}
 +#endif
 diff --git a/libgcc/config/m68k/t-floatlib b/libgcc/config/m68k/t-floatlib
-index 1ee8782..50a9ad2 100644
+index 1ee8782d9fd..50a9ad20070 100644
 --- a/libgcc/config/m68k/t-floatlib
 +++ b/libgcc/config/m68k/t-floatlib
 @@ -1,11 +1,31 @@
@@ -24348,14 +24279,14 @@ index 1ee8782..50a9ad2 100644
 +	$(empty)
 diff --git a/libgcc/config/m68k/t-mint b/libgcc/config/m68k/t-mint
 new file mode 100644
-index 0000000..c768fc1
+index 00000000000..c768fc121b0
 --- /dev/null
 +++ b/libgcc/config/m68k/t-mint
 @@ -0,0 +1 @@
 +LIB2ADD_ST = $(srcdir)/config/m68k/mint-atomic.c
 diff --git a/libgcc/config/m68k/truncdfsf2.c b/libgcc/config/m68k/truncdfsf2.c
 new file mode 100644
-index 0000000..75017b4
+index 00000000000..75017b4f0a8
 --- /dev/null
 +++ b/libgcc/config/m68k/truncdfsf2.c
 @@ -0,0 +1,2 @@
@@ -24363,7 +24294,7 @@ index 0000000..75017b4
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/truncxfdf2.c b/libgcc/config/m68k/truncxfdf2.c
 new file mode 100644
-index 0000000..67db750
+index 00000000000..67db750e2d0
 --- /dev/null
 +++ b/libgcc/config/m68k/truncxfdf2.c
 @@ -0,0 +1,2 @@
@@ -24371,7 +24302,7 @@ index 0000000..67db750
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/truncxfsf2.c b/libgcc/config/m68k/truncxfsf2.c
 new file mode 100644
-index 0000000..1320019
+index 00000000000..1320019a454
 --- /dev/null
 +++ b/libgcc/config/m68k/truncxfsf2.c
 @@ -0,0 +1,2 @@
@@ -24379,7 +24310,7 @@ index 0000000..1320019
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/unorddf2.c b/libgcc/config/m68k/unorddf2.c
 new file mode 100644
-index 0000000..32f668b
+index 00000000000..32f668b2aa7
 --- /dev/null
 +++ b/libgcc/config/m68k/unorddf2.c
 @@ -0,0 +1,2 @@
@@ -24387,7 +24318,7 @@ index 0000000..32f668b
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/unordsf2.c b/libgcc/config/m68k/unordsf2.c
 new file mode 100644
-index 0000000..0471d9a
+index 00000000000..0471d9a121e
 --- /dev/null
 +++ b/libgcc/config/m68k/unordsf2.c
 @@ -0,0 +1,2 @@
@@ -24395,14 +24326,14 @@ index 0000000..0471d9a
 +#include "fpgnulib.c"
 diff --git a/libgcc/config/m68k/unordxf2.c b/libgcc/config/m68k/unordxf2.c
 new file mode 100644
-index 0000000..a1c11be
+index 00000000000..a1c11bee483
 --- /dev/null
 +++ b/libgcc/config/m68k/unordxf2.c
 @@ -0,0 +1,2 @@
 +#define L_unordxf2
 +#include "fpgnulib.c"
 diff --git a/libgcc/crtstuff.c b/libgcc/crtstuff.c
-index b9767cd..d5a3850 100644
+index b9767cd1eee..d5a3850d688 100644
 --- a/libgcc/crtstuff.c
 +++ b/libgcc/crtstuff.c
 @@ -198,7 +198,12 @@ extern void _ITM_deregisterTMCloneTable (void *) TARGET_ATTRIBUTE_WEAK;
@@ -24463,7 +24394,7 @@ index b9767cd..d5a3850 100644
  #error "What are you doing with crtstuff.c, then?"
  #endif
 diff --git a/libgcc/emutls.c b/libgcc/emutls.c
-index ee41092..81412af 100644
+index ee410923f43..81412af08d3 100644
 --- a/libgcc/emutls.c
 +++ b/libgcc/emutls.c
 @@ -66,9 +66,9 @@ struct __emutls_array
@@ -24502,7 +24433,7 @@ index ee41092..81412af 100644
      {
        obj->size = size;
 diff --git a/libgcc/gthr-posix.h b/libgcc/gthr-posix.h
-index eeb84f3..7afb7f2 100644
+index eeb84f32d8f..7afb7f2c457 100644
 --- a/libgcc/gthr-posix.h
 +++ b/libgcc/gthr-posix.h
 @@ -103,7 +103,7 @@ typedef struct timespec __gthread_time_t;
@@ -24515,7 +24446,7 @@ index eeb84f3..7afb7f2 100644
  #  define __gthrw_pragma(pragma)
  # endif
 diff --git a/libgcc/libgcc2.c b/libgcc/libgcc2.c
-index 92cb79d..1fdc826 100644
+index 92cb79dc8f8..1fdc82648eb 100644
 --- a/libgcc/libgcc2.c
 +++ b/libgcc/libgcc2.c
 @@ -3189,6 +3189,9 @@ SYMBOL__MAIN (void)
@@ -24538,7 +24469,7 @@ index 92cb79d..1fdc826 100644
  #endif /* LIBGCC2_UNITS_PER_WORD <= MIN_UNITS_PER_WORD */
 diff --git a/libgcc/soft-fp/addxf3.c b/libgcc/soft-fp/addxf3.c
 new file mode 100644
-index 0000000..bde96b0
+index 00000000000..bde96b06081
 --- /dev/null
 +++ b/libgcc/soft-fp/addxf3.c
 @@ -0,0 +1,51 @@
@@ -24594,7 +24525,7 @@ index 0000000..bde96b0
 +}
 +#endif
 diff --git a/libgcc/soft-fp/brain.h b/libgcc/soft-fp/brain.h
-index c8563ef..0d4b89e 100644
+index c8563ef8897..0d4b89eeede 100644
 --- a/libgcc/soft-fp/brain.h
 +++ b/libgcc/soft-fp/brain.h
 @@ -164,6 +164,7 @@ union _FP_UNION_B
@@ -24607,7 +24538,7 @@ index c8563ef..0d4b89e 100644
  
 diff --git a/libgcc/soft-fp/divxf3.c b/libgcc/soft-fp/divxf3.c
 new file mode 100644
-index 0000000..9eb45e2
+index 00000000000..9eb45e27365
 --- /dev/null
 +++ b/libgcc/soft-fp/divxf3.c
 @@ -0,0 +1,51 @@
@@ -24663,7 +24594,7 @@ index 0000000..9eb45e2
 +}
 +#endif
 diff --git a/libgcc/soft-fp/double.h b/libgcc/soft-fp/double.h
-index 497ab92..cdf3d20 100644
+index 497ab92ccf8..cdf3d20703d 100644
 --- a/libgcc/soft-fp/double.h
 +++ b/libgcc/soft-fp/double.h
 @@ -186,6 +186,7 @@ union _FP_UNION_D
@@ -24684,7 +24615,7 @@ index 497ab92..cdf3d20 100644
  # define _FP_FRAC_HIGH_DW_D(X)	_FP_FRAC_HIGH_2 (X)
 diff --git a/libgcc/soft-fp/eqxf2.c b/libgcc/soft-fp/eqxf2.c
 new file mode 100644
-index 0000000..f5d8640
+index 00000000000..f5d86407a6d
 --- /dev/null
 +++ b/libgcc/soft-fp/eqxf2.c
 @@ -0,0 +1,49 @@
@@ -24739,7 +24670,7 @@ index 0000000..f5d8640
 +strong_alias (__eqxf2, __nexf2);
 diff --git a/libgcc/soft-fp/extenddfxf2.c b/libgcc/soft-fp/extenddfxf2.c
 new file mode 100644
-index 0000000..053ee08
+index 00000000000..053ee08a8ca
 --- /dev/null
 +++ b/libgcc/soft-fp/extenddfxf2.c
 @@ -0,0 +1,53 @@
@@ -24797,7 +24728,7 @@ index 0000000..053ee08
 +  return r;
 +}
 diff --git a/libgcc/soft-fp/extended.h b/libgcc/soft-fp/extended.h
-index 14e306d..7c80924 100644
+index 14e306d58c3..7c80924a933 100644
 --- a/libgcc/soft-fp/extended.h
 +++ b/libgcc/soft-fp/extended.h
 @@ -75,10 +75,9 @@ union _FP_UNION_E
@@ -24845,7 +24776,7 @@ index 14e306d..7c80924 100644
  # define _FP_FRAC_HIGH_DW_E(X)	(X##_f[2])
 diff --git a/libgcc/soft-fp/extendsfxf2.c b/libgcc/soft-fp/extendsfxf2.c
 new file mode 100644
-index 0000000..d9ae418
+index 00000000000..d9ae418f3ef
 --- /dev/null
 +++ b/libgcc/soft-fp/extendsfxf2.c
 @@ -0,0 +1,53 @@
@@ -24903,7 +24834,7 @@ index 0000000..d9ae418
 +  return r;
 +}
 diff --git a/libgcc/soft-fp/extendxftf2.c b/libgcc/soft-fp/extendxftf2.c
-index 4d56b1d..fb6efd5 100644
+index 4d56b1d9d08..fb6efd5ab0a 100644
 --- a/libgcc/soft-fp/extendxftf2.c
 +++ b/libgcc/soft-fp/extendxftf2.c
 @@ -26,6 +26,7 @@
@@ -24916,7 +24847,7 @@ index 4d56b1d..fb6efd5 100644
  #include "quad.h"
 diff --git a/libgcc/soft-fp/fixunsxfdi.c b/libgcc/soft-fp/fixunsxfdi.c
 new file mode 100644
-index 0000000..7826eb5
+index 00000000000..7826eb586c1
 --- /dev/null
 +++ b/libgcc/soft-fp/fixunsxfdi.c
 @@ -0,0 +1,45 @@
@@ -24967,7 +24898,7 @@ index 0000000..7826eb5
 +}
 diff --git a/libgcc/soft-fp/fixunsxfsi.c b/libgcc/soft-fp/fixunsxfsi.c
 new file mode 100644
-index 0000000..2197c15
+index 00000000000..2197c15af56
 --- /dev/null
 +++ b/libgcc/soft-fp/fixunsxfsi.c
 @@ -0,0 +1,45 @@
@@ -25018,7 +24949,7 @@ index 0000000..2197c15
 +}
 diff --git a/libgcc/soft-fp/fixxfdi.c b/libgcc/soft-fp/fixxfdi.c
 new file mode 100644
-index 0000000..191b2cc
+index 00000000000..191b2cc9640
 --- /dev/null
 +++ b/libgcc/soft-fp/fixxfdi.c
 @@ -0,0 +1,45 @@
@@ -25069,7 +25000,7 @@ index 0000000..191b2cc
 +}
 diff --git a/libgcc/soft-fp/fixxfsi.c b/libgcc/soft-fp/fixxfsi.c
 new file mode 100644
-index 0000000..d7b194e
+index 00000000000..d7b194e5094
 --- /dev/null
 +++ b/libgcc/soft-fp/fixxfsi.c
 @@ -0,0 +1,45 @@
@@ -25120,7 +25051,7 @@ index 0000000..d7b194e
 +}
 diff --git a/libgcc/soft-fp/floatdixf.c b/libgcc/soft-fp/floatdixf.c
 new file mode 100644
-index 0000000..1ffc2b3
+index 00000000000..1ffc2b36e84
 --- /dev/null
 +++ b/libgcc/soft-fp/floatdixf.c
 @@ -0,0 +1,46 @@
@@ -25172,7 +25103,7 @@ index 0000000..1ffc2b3
 +}
 diff --git a/libgcc/soft-fp/floatsixf.c b/libgcc/soft-fp/floatsixf.c
 new file mode 100644
-index 0000000..dc1589c
+index 00000000000..dc1589c844a
 --- /dev/null
 +++ b/libgcc/soft-fp/floatsixf.c
 @@ -0,0 +1,43 @@
@@ -25221,7 +25152,7 @@ index 0000000..dc1589c
 +}
 diff --git a/libgcc/soft-fp/floatundixf.c b/libgcc/soft-fp/floatundixf.c
 new file mode 100644
-index 0000000..fa397ff
+index 00000000000..fa397ff2373
 --- /dev/null
 +++ b/libgcc/soft-fp/floatundixf.c
 @@ -0,0 +1,46 @@
@@ -25273,7 +25204,7 @@ index 0000000..fa397ff
 +}
 diff --git a/libgcc/soft-fp/floatunsixf.c b/libgcc/soft-fp/floatunsixf.c
 new file mode 100644
-index 0000000..09994a9
+index 00000000000..09994a9d01f
 --- /dev/null
 +++ b/libgcc/soft-fp/floatunsixf.c
 @@ -0,0 +1,43 @@
@@ -25322,7 +25253,7 @@ index 0000000..09994a9
 +}
 diff --git a/libgcc/soft-fp/gexf2.c b/libgcc/soft-fp/gexf2.c
 new file mode 100644
-index 0000000..bae1915
+index 00000000000..bae1915e825
 --- /dev/null
 +++ b/libgcc/soft-fp/gexf2.c
 @@ -0,0 +1,49 @@
@@ -25376,7 +25307,7 @@ index 0000000..bae1915
 +
 +strong_alias (__gexf2, __gtxf2);
 diff --git a/libgcc/soft-fp/half.h b/libgcc/soft-fp/half.h
-index a8c5c31..9c75802 100644
+index a8c5c318233..9c75802004d 100644
 --- a/libgcc/soft-fp/half.h
 +++ b/libgcc/soft-fp/half.h
 @@ -164,6 +164,7 @@ union _FP_UNION_H
@@ -25389,7 +25320,7 @@ index a8c5c31..9c75802 100644
  
 diff --git a/libgcc/soft-fp/lexf2.c b/libgcc/soft-fp/lexf2.c
 new file mode 100644
-index 0000000..2bf1b99
+index 00000000000..2bf1b992f3a
 --- /dev/null
 +++ b/libgcc/soft-fp/lexf2.c
 @@ -0,0 +1,49 @@
@@ -25444,7 +25375,7 @@ index 0000000..2bf1b99
 +strong_alias (__lexf2, __ltxf2);
 diff --git a/libgcc/soft-fp/mulxf3.c b/libgcc/soft-fp/mulxf3.c
 new file mode 100644
-index 0000000..d3df98b
+index 00000000000..d3df98b74ab
 --- /dev/null
 +++ b/libgcc/soft-fp/mulxf3.c
 @@ -0,0 +1,51 @@
@@ -25501,7 +25432,7 @@ index 0000000..d3df98b
 +#endif
 diff --git a/libgcc/soft-fp/negxf2.c b/libgcc/soft-fp/negxf2.c
 new file mode 100644
-index 0000000..2da7d10
+index 00000000000..2da7d10ab3d
 --- /dev/null
 +++ b/libgcc/soft-fp/negxf2.c
 @@ -0,0 +1,44 @@
@@ -25550,7 +25481,7 @@ index 0000000..2da7d10
 +  return r;
 +}
 diff --git a/libgcc/soft-fp/op-2.h b/libgcc/soft-fp/op-2.h
-index 412b972..35f47a4 100644
+index 412b972e8fc..35f47a4dfc1 100644
 --- a/libgcc/soft-fp/op-2.h
 +++ b/libgcc/soft-fp/op-2.h
 @@ -30,7 +30,7 @@
@@ -25575,7 +25506,7 @@ index 412b972..35f47a4 100644
  # define __FP_FRAC_DEC_2(xh, xl, yh, yl)	\
    sub_ddmmss (xh, xl, xh, xl, yh, yl)
 diff --git a/libgcc/soft-fp/op-common.h b/libgcc/soft-fp/op-common.h
-index 090028f..6e21a52 100644
+index 090028f8c7d..6e21a52695c 100644
 --- a/libgcc/soft-fp/op-common.h
 +++ b/libgcc/soft-fp/op-common.h
 @@ -243,6 +243,7 @@
@@ -25595,7 +25526,7 @@ index 090028f..6e21a52 100644
  	      _FP_ADD_INTERNAL_diff -= _FP_WFRACXBITS_##fs;		\
  	      _FP_FRAC_SLL_##wc (R, _FP_ADD_INTERNAL_diff);		\
 diff --git a/libgcc/soft-fp/quad.h b/libgcc/soft-fp/quad.h
-index 71f87d3..f5f5aa2 100644
+index 71f87d36ba9..f5f5aa29801 100644
 --- a/libgcc/soft-fp/quad.h
 +++ b/libgcc/soft-fp/quad.h
 @@ -193,6 +193,7 @@ union _FP_UNION_Q
@@ -25615,7 +25546,7 @@ index 71f87d3..f5f5aa2 100644
  
  # define _FP_FRAC_HIGH_DW_Q(X)	_FP_FRAC_HIGH_4 (X)
 diff --git a/libgcc/soft-fp/single.h b/libgcc/soft-fp/single.h
-index 2d3a19d..f846c6e 100644
+index 2d3a19dddeb..f846c6e3d28 100644
 --- a/libgcc/soft-fp/single.h
 +++ b/libgcc/soft-fp/single.h
 @@ -184,6 +184,7 @@ union _FP_UNION_S
@@ -25627,7 +25558,7 @@ index 2d3a19d..f846c6e 100644
  
  #if _FP_W_TYPE_SIZE < 64
 diff --git a/libgcc/soft-fp/soft-fp.h b/libgcc/soft-fp/soft-fp.h
-index 3799be4..89d8f60 100644
+index 3799be4e09c..89d8f60d6af 100644
 --- a/libgcc/soft-fp/soft-fp.h
 +++ b/libgcc/soft-fp/soft-fp.h
 @@ -347,4 +347,6 @@ typedef USItype UHWtype;
@@ -25639,7 +25570,7 @@ index 3799be4..89d8f60 100644
  #endif /* !SOFT_FP_H */
 diff --git a/libgcc/soft-fp/softfp-protos.h b/libgcc/soft-fp/softfp-protos.h
 new file mode 100644
-index 0000000..6bf7e9b
+index 00000000000..6bf7e9bf42e
 --- /dev/null
 +++ b/libgcc/soft-fp/softfp-protos.h
 @@ -0,0 +1,215 @@
@@ -25860,7 +25791,7 @@ index 0000000..6bf7e9b
 +#endif
 diff --git a/libgcc/soft-fp/subxf3.c b/libgcc/soft-fp/subxf3.c
 new file mode 100644
-index 0000000..ba893c7
+index 00000000000..ba893c73f55
 --- /dev/null
 +++ b/libgcc/soft-fp/subxf3.c
 @@ -0,0 +1,51 @@
@@ -25917,7 +25848,7 @@ index 0000000..ba893c7
 +#endif
 diff --git a/libgcc/soft-fp/test-double.c b/libgcc/soft-fp/test-double.c
 new file mode 100644
-index 0000000..d425319
+index 00000000000..d4253195b31
 --- /dev/null
 +++ b/libgcc/soft-fp/test-double.c
 @@ -0,0 +1,157 @@
@@ -26080,7 +26011,7 @@ index 0000000..d425319
 +}
 diff --git a/libgcc/soft-fp/test-float.c b/libgcc/soft-fp/test-float.c
 new file mode 100644
-index 0000000..69d8dcd
+index 00000000000..69d8dcd213a
 --- /dev/null
 +++ b/libgcc/soft-fp/test-float.c
 @@ -0,0 +1,158 @@
@@ -26244,7 +26175,7 @@ index 0000000..69d8dcd
 +}
 diff --git a/libgcc/soft-fp/test-ldouble.c b/libgcc/soft-fp/test-ldouble.c
 new file mode 100644
-index 0000000..bd14543
+index 00000000000..bd145431046
 --- /dev/null
 +++ b/libgcc/soft-fp/test-ldouble.c
 @@ -0,0 +1,160 @@
@@ -26410,7 +26341,7 @@ index 0000000..bd14543
 +}
 diff --git a/libgcc/soft-fp/truncxfdf2.c b/libgcc/soft-fp/truncxfdf2.c
 new file mode 100644
-index 0000000..31690ed
+index 00000000000..31690ed80bb
 --- /dev/null
 +++ b/libgcc/soft-fp/truncxfdf2.c
 @@ -0,0 +1,52 @@
@@ -26468,7 +26399,7 @@ index 0000000..31690ed
 +}
 diff --git a/libgcc/soft-fp/truncxfsf2.c b/libgcc/soft-fp/truncxfsf2.c
 new file mode 100644
-index 0000000..0417839
+index 00000000000..041783904f5
 --- /dev/null
 +++ b/libgcc/soft-fp/truncxfsf2.c
 @@ -0,0 +1,52 @@
@@ -26526,7 +26457,7 @@ index 0000000..0417839
 +}
 diff --git a/libgcc/soft-fp/unordxf2.c b/libgcc/soft-fp/unordxf2.c
 new file mode 100644
-index 0000000..b2cf051
+index 00000000000..b2cf0511f68
 --- /dev/null
 +++ b/libgcc/soft-fp/unordxf2.c
 @@ -0,0 +1,47 @@
@@ -26578,7 +26509,7 @@ index 0000000..b2cf051
 +  return r;
 +}
 diff --git a/libgcc/unwind-c.c b/libgcc/unwind-c.c
-index f5faa00..a7f9ee0 100644
+index f5faa00784d..a7f9ee0603f 100644
 --- a/libgcc/unwind-c.c
 +++ b/libgcc/unwind-c.c
 @@ -244,3 +244,11 @@ __gcc_personality_seh0 (PEXCEPTION_RECORD ms_exc, void *this_frame,
@@ -26594,7 +26525,7 @@ index f5faa00..a7f9ee0 100644
 +;
 +#endif
 diff --git a/libgcc/unwind-pe.h b/libgcc/unwind-pe.h
-index 005a163..836e12f 100644
+index 005a1639b78..836e12f589b 100644
 --- a/libgcc/unwind-pe.h
 +++ b/libgcc/unwind-pe.h
 @@ -203,7 +203,18 @@ read_encoded_value_with_base (unsigned char encoding, _Unwind_Ptr base,
@@ -26617,7 +26548,7 @@ index 005a163..836e12f 100644
        p = (const unsigned char *) (_Unwind_Internal_Ptr) (a + sizeof (void *));
      }
 diff --git a/libgfortran/Makefile.am b/libgfortran/Makefile.am
-index 60aa949..3315e93 100644
+index 21b35c76a06..f64a13029b1 100644
 --- a/libgfortran/Makefile.am
 +++ b/libgfortran/Makefile.am
 @@ -61,7 +61,7 @@ libgfortran_la_DEPENDENCIES = $(version_dep) libgfortran.spec $(LIBQUADLIB_DEP)
@@ -26630,10 +26561,10 @@ index 60aa949..3315e93 100644
  libcaf_single_la_LINK = $(LINK) $(libcaf_single_la_LDFLAGS)
  
 diff --git a/libgfortran/Makefile.in b/libgfortran/Makefile.in
-index c171b3d..133714c 100644
+index 6a63d8876b1..e92f9bd7157 100644
 --- a/libgfortran/Makefile.in
 +++ b/libgfortran/Makefile.in
-@@ -1000,7 +1000,7 @@ libgfortran_la_DEPENDENCIES = $(version_dep) libgfortran.spec $(LIBQUADLIB_DEP)
+@@ -997,7 +997,7 @@ libgfortran_la_DEPENDENCIES = $(version_dep) libgfortran.spec $(LIBQUADLIB_DEP)
  cafexeclib_LTLIBRARIES = libcaf_single.la
  cafexeclibdir = $(libdir)/gcc/$(target_alias)/$(gcc_version)$(MULTISUBDIR)
  libcaf_single_la_SOURCES = caf/single.c
@@ -26643,7 +26574,7 @@ index c171b3d..133714c 100644
  libcaf_single_la_LINK = $(LINK) $(libcaf_single_la_LDFLAGS)
  @IEEE_SUPPORT_TRUE@fincludedir = $(libdir)/gcc/$(target_alias)/$(gcc_version)$(MULTISUBDIR)/finclude
 diff --git a/libgfortran/configure b/libgfortran/configure
-index 9898a94..d3f1878 100755
+index 9898a94a372..d3f1878079f 100755
 --- a/libgfortran/configure
 +++ b/libgfortran/configure
 @@ -6504,7 +6504,7 @@ if test "$GCC" = yes; then
@@ -26775,7 +26706,7 @@ index 9898a94..d3f1878 100755
        soname_spec='${libname}`echo ${release} | $SED -e 's/[.]/-/g'`${versuffix}${shared_ext}'
        ;;
 diff --git a/libgfortran/generated/matmul_c10.c b/libgfortran/generated/matmul_c10.c
-index 07432e8..065e2c2 100644
+index 07432e83c91..065e2c27728 100644
 --- a/libgfortran/generated/matmul_c10.c
 +++ b/libgfortran/generated/matmul_c10.c
 @@ -242,6 +242,8 @@ matmul_c10_avx (gfc_array_c10 * const restrict retarray,
@@ -26824,7 +26755,7 @@ index 07432e8..065e2c2 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_c16.c b/libgfortran/generated/matmul_c16.c
-index 03ffe2d..67dac5b 100644
+index 03ffe2d0de1..67dac5b93ec 100644
 --- a/libgfortran/generated/matmul_c16.c
 +++ b/libgfortran/generated/matmul_c16.c
 @@ -242,6 +242,8 @@ matmul_c16_avx (gfc_array_c16 * const restrict retarray,
@@ -26873,7 +26804,7 @@ index 03ffe2d..67dac5b 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_c4.c b/libgfortran/generated/matmul_c4.c
-index 20d8aff..7a26d04 100644
+index 20d8affd9f5..7a26d04c0a8 100644
 --- a/libgfortran/generated/matmul_c4.c
 +++ b/libgfortran/generated/matmul_c4.c
 @@ -242,6 +242,8 @@ matmul_c4_avx (gfc_array_c4 * const restrict retarray,
@@ -26922,7 +26853,7 @@ index 20d8aff..7a26d04 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_c8.c b/libgfortran/generated/matmul_c8.c
-index 1919963..f26516e 100644
+index 1919963cf38..f26516e86ee 100644
 --- a/libgfortran/generated/matmul_c8.c
 +++ b/libgfortran/generated/matmul_c8.c
 @@ -242,6 +242,8 @@ matmul_c8_avx (gfc_array_c8 * const restrict retarray,
@@ -26971,7 +26902,7 @@ index 1919963..f26516e 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_i1.c b/libgfortran/generated/matmul_i1.c
-index 526755d..fc9bfe4 100644
+index 526755d94a2..fc9bfe4535d 100644
 --- a/libgfortran/generated/matmul_i1.c
 +++ b/libgfortran/generated/matmul_i1.c
 @@ -242,6 +242,8 @@ matmul_i1_avx (gfc_array_m1 * const restrict retarray,
@@ -27020,7 +26951,7 @@ index 526755d..fc9bfe4 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_i16.c b/libgfortran/generated/matmul_i16.c
-index e472999..c691e12 100644
+index e4729994498..c691e1222ff 100644
 --- a/libgfortran/generated/matmul_i16.c
 +++ b/libgfortran/generated/matmul_i16.c
 @@ -242,6 +242,8 @@ matmul_i16_avx (gfc_array_m16 * const restrict retarray,
@@ -27051,7 +26982,7 @@ index e472999..c691e12 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_i2.c b/libgfortran/generated/matmul_i2.c
-index 1b9e34b..19a9e59 100644
+index 1b9e34b4f68..19a9e594fe1 100644
 --- a/libgfortran/generated/matmul_i2.c
 +++ b/libgfortran/generated/matmul_i2.c
 @@ -242,6 +242,8 @@ matmul_i2_avx (gfc_array_m2 * const restrict retarray,
@@ -27100,7 +27031,7 @@ index 1b9e34b..19a9e59 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_i4.c b/libgfortran/generated/matmul_i4.c
-index b14fafb..eff6fd0 100644
+index b14fafb5b0c..eff6fd06e19 100644
 --- a/libgfortran/generated/matmul_i4.c
 +++ b/libgfortran/generated/matmul_i4.c
 @@ -242,6 +242,8 @@ matmul_i4_avx (gfc_array_m4 * const restrict retarray,
@@ -27149,7 +27080,7 @@ index b14fafb..eff6fd0 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_i8.c b/libgfortran/generated/matmul_i8.c
-index 1ec49ce..8a538cd 100644
+index 1ec49ce3bb4..8a538cda519 100644
 --- a/libgfortran/generated/matmul_i8.c
 +++ b/libgfortran/generated/matmul_i8.c
 @@ -242,6 +242,8 @@ matmul_i8_avx (gfc_array_m8 * const restrict retarray,
@@ -27198,7 +27129,7 @@ index 1ec49ce..8a538cd 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_r10.c b/libgfortran/generated/matmul_r10.c
-index 755ebae..92537e6 100644
+index 755ebaed7d4..92537e6a6a2 100644
 --- a/libgfortran/generated/matmul_r10.c
 +++ b/libgfortran/generated/matmul_r10.c
 @@ -242,6 +242,8 @@ matmul_r10_avx (gfc_array_r10 * const restrict retarray,
@@ -27247,7 +27178,7 @@ index 755ebae..92537e6 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_r16.c b/libgfortran/generated/matmul_r16.c
-index e91b220..387fb4c 100644
+index e91b220ffb4..387fb4c8f63 100644
 --- a/libgfortran/generated/matmul_r16.c
 +++ b/libgfortran/generated/matmul_r16.c
 @@ -242,6 +242,8 @@ matmul_r16_avx (gfc_array_r16 * const restrict retarray,
@@ -27296,7 +27227,7 @@ index e91b220..387fb4c 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_r4.c b/libgfortran/generated/matmul_r4.c
-index 458ebc3..97ad59c 100644
+index 458ebc36812..97ad59c4886 100644
 --- a/libgfortran/generated/matmul_r4.c
 +++ b/libgfortran/generated/matmul_r4.c
 @@ -242,6 +242,8 @@ matmul_r4_avx (gfc_array_r4 * const restrict retarray,
@@ -27345,7 +27276,7 @@ index 458ebc3..97ad59c 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmul_r8.c b/libgfortran/generated/matmul_r8.c
-index 225b5c6..39c0b4a 100644
+index 225b5c664f4..39c0b4a2f60 100644
 --- a/libgfortran/generated/matmul_r8.c
 +++ b/libgfortran/generated/matmul_r8.c
 @@ -242,6 +242,8 @@ matmul_r8_avx (gfc_array_r8 * const restrict retarray,
@@ -27394,7 +27325,7 @@ index 225b5c6..39c0b4a 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_c10.c b/libgfortran/generated/matmulavx128_c10.c
-index 7094a5f..933961b 100644
+index 7094a5f80e9..933961be0ab 100644
 --- a/libgfortran/generated/matmulavx128_c10.c
 +++ b/libgfortran/generated/matmulavx128_c10.c
 @@ -207,6 +207,8 @@ matmul_c10_avx128_fma3 (gfc_array_c10 * const restrict retarray,
@@ -27416,7 +27347,7 @@ index 7094a5f..933961b 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_c16.c b/libgfortran/generated/matmulavx128_c16.c
-index 4a1a340..40a260f 100644
+index 4a1a3408be9..40a260fd678 100644
 --- a/libgfortran/generated/matmulavx128_c16.c
 +++ b/libgfortran/generated/matmulavx128_c16.c
 @@ -207,6 +207,8 @@ matmul_c16_avx128_fma3 (gfc_array_c16 * const restrict retarray,
@@ -27438,7 +27369,7 @@ index 4a1a340..40a260f 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_c4.c b/libgfortran/generated/matmulavx128_c4.c
-index f0014cc..d9e069a 100644
+index f0014cc89e2..d9e069a90c4 100644
 --- a/libgfortran/generated/matmulavx128_c4.c
 +++ b/libgfortran/generated/matmulavx128_c4.c
 @@ -207,6 +207,8 @@ matmul_c4_avx128_fma3 (gfc_array_c4 * const restrict retarray,
@@ -27460,7 +27391,7 @@ index f0014cc..d9e069a 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_c8.c b/libgfortran/generated/matmulavx128_c8.c
-index 94764a9..84eab74 100644
+index 94764a9c38b..84eab743cf7 100644
 --- a/libgfortran/generated/matmulavx128_c8.c
 +++ b/libgfortran/generated/matmulavx128_c8.c
 @@ -207,6 +207,8 @@ matmul_c8_avx128_fma3 (gfc_array_c8 * const restrict retarray,
@@ -27482,7 +27413,7 @@ index 94764a9..84eab74 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_i1.c b/libgfortran/generated/matmulavx128_i1.c
-index 3ab8eda..f0356fd 100644
+index 3ab8eda71b3..f0356fd2bd6 100644
 --- a/libgfortran/generated/matmulavx128_i1.c
 +++ b/libgfortran/generated/matmulavx128_i1.c
 @@ -207,6 +207,8 @@ matmul_i1_avx128_fma3 (gfc_array_i1 * const restrict retarray,
@@ -27504,7 +27435,7 @@ index 3ab8eda..f0356fd 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_i16.c b/libgfortran/generated/matmulavx128_i16.c
-index c8ef87e..88ded7a 100644
+index c8ef87e019c..88ded7a0409 100644
 --- a/libgfortran/generated/matmulavx128_i16.c
 +++ b/libgfortran/generated/matmulavx128_i16.c
 @@ -207,6 +207,8 @@ matmul_i16_avx128_fma3 (gfc_array_i16 * const restrict retarray,
@@ -27526,7 +27457,7 @@ index c8ef87e..88ded7a 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_i2.c b/libgfortran/generated/matmulavx128_i2.c
-index 88f3452..9f60a51 100644
+index 88f34527249..9f60a51f690 100644
 --- a/libgfortran/generated/matmulavx128_i2.c
 +++ b/libgfortran/generated/matmulavx128_i2.c
 @@ -207,6 +207,8 @@ matmul_i2_avx128_fma3 (gfc_array_i2 * const restrict retarray,
@@ -27548,7 +27479,7 @@ index 88f3452..9f60a51 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_i4.c b/libgfortran/generated/matmulavx128_i4.c
-index 272692e..1eb4f62 100644
+index 272692e5351..1eb4f62ed87 100644
 --- a/libgfortran/generated/matmulavx128_i4.c
 +++ b/libgfortran/generated/matmulavx128_i4.c
 @@ -207,6 +207,8 @@ matmul_i4_avx128_fma3 (gfc_array_i4 * const restrict retarray,
@@ -27570,7 +27501,7 @@ index 272692e..1eb4f62 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_i8.c b/libgfortran/generated/matmulavx128_i8.c
-index a1db25b..efebc95 100644
+index a1db25b3069..efebc954b91 100644
 --- a/libgfortran/generated/matmulavx128_i8.c
 +++ b/libgfortran/generated/matmulavx128_i8.c
 @@ -207,6 +207,8 @@ matmul_i8_avx128_fma3 (gfc_array_i8 * const restrict retarray,
@@ -27592,7 +27523,7 @@ index a1db25b..efebc95 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_r10.c b/libgfortran/generated/matmulavx128_r10.c
-index 8d164d0..7827b50 100644
+index 8d164d0049c..7827b50b610 100644
 --- a/libgfortran/generated/matmulavx128_r10.c
 +++ b/libgfortran/generated/matmulavx128_r10.c
 @@ -207,6 +207,8 @@ matmul_r10_avx128_fma3 (gfc_array_r10 * const restrict retarray,
@@ -27614,7 +27545,7 @@ index 8d164d0..7827b50 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_r16.c b/libgfortran/generated/matmulavx128_r16.c
-index ee536b5..34b6097 100644
+index ee536b53390..34b60979c06 100644
 --- a/libgfortran/generated/matmulavx128_r16.c
 +++ b/libgfortran/generated/matmulavx128_r16.c
 @@ -207,6 +207,8 @@ matmul_r16_avx128_fma3 (gfc_array_r16 * const restrict retarray,
@@ -27636,7 +27567,7 @@ index ee536b5..34b6097 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_r4.c b/libgfortran/generated/matmulavx128_r4.c
-index 104b1df..fd6d47c 100644
+index 104b1df35eb..fd6d47c0668 100644
 --- a/libgfortran/generated/matmulavx128_r4.c
 +++ b/libgfortran/generated/matmulavx128_r4.c
 @@ -207,6 +207,8 @@ matmul_r4_avx128_fma3 (gfc_array_r4 * const restrict retarray,
@@ -27658,7 +27589,7 @@ index 104b1df..fd6d47c 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/matmulavx128_r8.c b/libgfortran/generated/matmulavx128_r8.c
-index f76301d..2a3f63e 100644
+index f76301dec03..2a3f63ecd38 100644
 --- a/libgfortran/generated/matmulavx128_r8.c
 +++ b/libgfortran/generated/matmulavx128_r8.c
 @@ -207,6 +207,8 @@ matmul_r8_avx128_fma3 (gfc_array_r8 * const restrict retarray,
@@ -27680,7 +27611,7 @@ index f76301d..2a3f63e 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/generated/unpack_c10.c b/libgfortran/generated/unpack_c10.c
-index 3d68e8a..cbeb7f5 100644
+index 3d68e8a95ca..cbeb7f57dc9 100644
 --- a/libgfortran/generated/unpack_c10.c
 +++ b/libgfortran/generated/unpack_c10.c
 @@ -81,6 +81,7 @@ unpack0_c10 (gfc_array_c10 *ret, const gfc_array_c10 *vector,
@@ -27692,7 +27623,7 @@ index 3d68e8a..cbeb7f5 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_c16.c b/libgfortran/generated/unpack_c16.c
-index ec2068a..b2ce24a 100644
+index ec2068add0d..b2ce24a4c8a 100644
 --- a/libgfortran/generated/unpack_c16.c
 +++ b/libgfortran/generated/unpack_c16.c
 @@ -81,6 +81,7 @@ unpack0_c16 (gfc_array_c16 *ret, const gfc_array_c16 *vector,
@@ -27704,7 +27635,7 @@ index ec2068a..b2ce24a 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_c17.c b/libgfortran/generated/unpack_c17.c
-index 7bf5eac..0fbc126 100644
+index 7bf5eac99da..0fbc1267c3c 100644
 --- a/libgfortran/generated/unpack_c17.c
 +++ b/libgfortran/generated/unpack_c17.c
 @@ -81,6 +81,7 @@ unpack0_c17 (gfc_array_c17 *ret, const gfc_array_c17 *vector,
@@ -27716,7 +27647,7 @@ index 7bf5eac..0fbc126 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_c4.c b/libgfortran/generated/unpack_c4.c
-index 1475a26..7e162f2 100644
+index 1475a26d9c7..7e162f2f78c 100644
 --- a/libgfortran/generated/unpack_c4.c
 +++ b/libgfortran/generated/unpack_c4.c
 @@ -81,6 +81,7 @@ unpack0_c4 (gfc_array_c4 *ret, const gfc_array_c4 *vector,
@@ -27728,7 +27659,7 @@ index 1475a26..7e162f2 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_c8.c b/libgfortran/generated/unpack_c8.c
-index d62c001..715e7df 100644
+index d62c0013b89..715e7df59f4 100644
 --- a/libgfortran/generated/unpack_c8.c
 +++ b/libgfortran/generated/unpack_c8.c
 @@ -81,6 +81,7 @@ unpack0_c8 (gfc_array_c8 *ret, const gfc_array_c8 *vector,
@@ -27740,7 +27671,7 @@ index d62c001..715e7df 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_i1.c b/libgfortran/generated/unpack_i1.c
-index 5308365..814cacc 100644
+index 530836544e9..814cacc38fe 100644
 --- a/libgfortran/generated/unpack_i1.c
 +++ b/libgfortran/generated/unpack_i1.c
 @@ -81,6 +81,7 @@ unpack0_i1 (gfc_array_i1 *ret, const gfc_array_i1 *vector,
@@ -27752,7 +27683,7 @@ index 5308365..814cacc 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_i16.c b/libgfortran/generated/unpack_i16.c
-index 566df21..0f2266d 100644
+index 566df21e16f..0f2266d6f3a 100644
 --- a/libgfortran/generated/unpack_i16.c
 +++ b/libgfortran/generated/unpack_i16.c
 @@ -81,6 +81,7 @@ unpack0_i16 (gfc_array_i16 *ret, const gfc_array_i16 *vector,
@@ -27764,7 +27695,7 @@ index 566df21..0f2266d 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_i2.c b/libgfortran/generated/unpack_i2.c
-index 769d12f..fcbbcde 100644
+index 769d12f2344..fcbbcdef5dd 100644
 --- a/libgfortran/generated/unpack_i2.c
 +++ b/libgfortran/generated/unpack_i2.c
 @@ -81,6 +81,7 @@ unpack0_i2 (gfc_array_i2 *ret, const gfc_array_i2 *vector,
@@ -27776,7 +27707,7 @@ index 769d12f..fcbbcde 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_i4.c b/libgfortran/generated/unpack_i4.c
-index af92fdf..1e880a3 100644
+index af92fdfcbcd..1e880a31e18 100644
 --- a/libgfortran/generated/unpack_i4.c
 +++ b/libgfortran/generated/unpack_i4.c
 @@ -81,6 +81,7 @@ unpack0_i4 (gfc_array_i4 *ret, const gfc_array_i4 *vector,
@@ -27788,7 +27719,7 @@ index af92fdf..1e880a3 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_i8.c b/libgfortran/generated/unpack_i8.c
-index e7abf35..021079b 100644
+index e7abf354790..021079b1a3e 100644
 --- a/libgfortran/generated/unpack_i8.c
 +++ b/libgfortran/generated/unpack_i8.c
 @@ -81,6 +81,7 @@ unpack0_i8 (gfc_array_i8 *ret, const gfc_array_i8 *vector,
@@ -27800,7 +27731,7 @@ index e7abf35..021079b 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_r10.c b/libgfortran/generated/unpack_r10.c
-index 26b738e..db0877f 100644
+index 26b738e73a4..db0877f2d58 100644
 --- a/libgfortran/generated/unpack_r10.c
 +++ b/libgfortran/generated/unpack_r10.c
 @@ -81,6 +81,7 @@ unpack0_r10 (gfc_array_r10 *ret, const gfc_array_r10 *vector,
@@ -27812,7 +27743,7 @@ index 26b738e..db0877f 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_r16.c b/libgfortran/generated/unpack_r16.c
-index 48709c7..0d7441a 100644
+index 48709c73ca0..0d7441a990f 100644
 --- a/libgfortran/generated/unpack_r16.c
 +++ b/libgfortran/generated/unpack_r16.c
 @@ -81,6 +81,7 @@ unpack0_r16 (gfc_array_r16 *ret, const gfc_array_r16 *vector,
@@ -27824,7 +27755,7 @@ index 48709c7..0d7441a 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_r17.c b/libgfortran/generated/unpack_r17.c
-index 7ed1671..c987152 100644
+index 7ed16710679..c987152d32a 100644
 --- a/libgfortran/generated/unpack_r17.c
 +++ b/libgfortran/generated/unpack_r17.c
 @@ -81,6 +81,7 @@ unpack0_r17 (gfc_array_r17 *ret, const gfc_array_r17 *vector,
@@ -27836,7 +27767,7 @@ index 7ed1671..c987152 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_r4.c b/libgfortran/generated/unpack_r4.c
-index ed2389d..fc40c40 100644
+index ed2389dc7dc..fc40c409fb1 100644
 --- a/libgfortran/generated/unpack_r4.c
 +++ b/libgfortran/generated/unpack_r4.c
 @@ -81,6 +81,7 @@ unpack0_r4 (gfc_array_r4 *ret, const gfc_array_r4 *vector,
@@ -27848,7 +27779,7 @@ index ed2389d..fc40c40 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/generated/unpack_r8.c b/libgfortran/generated/unpack_r8.c
-index f24e0a5..2381132 100644
+index f24e0a59d97..23811320252 100644
 --- a/libgfortran/generated/unpack_r8.c
 +++ b/libgfortran/generated/unpack_r8.c
 @@ -81,6 +81,7 @@ unpack0_r8 (gfc_array_r8 *ret, const gfc_array_r8 *vector,
@@ -27860,7 +27791,7 @@ index f24e0a5..2381132 100644
      {
        /* The front end has signalled that we need to populate the
 diff --git a/libgfortran/intrinsics/c99_functions.c b/libgfortran/intrinsics/c99_functions.c
-index ff71ce4..2e2f1e6 100644
+index ff71ce4b3fa..2e2f1e67f1e 100644
 --- a/libgfortran/intrinsics/c99_functions.c
 +++ b/libgfortran/intrinsics/c99_functions.c
 @@ -914,12 +914,15 @@ carg (double complex z)
@@ -27889,7 +27820,7 @@ index ff71ce4..2e2f1e6 100644
  
        COMPLEX_ASSIGN (v, r, copysignf (s, im));
 diff --git a/libgfortran/intrinsics/date_and_time.c b/libgfortran/intrinsics/date_and_time.c
-index 0478c77..5d63a20 100644
+index 0478c77a931..5d63a208830 100644
 --- a/libgfortran/intrinsics/date_and_time.c
 +++ b/libgfortran/intrinsics/date_and_time.c
 @@ -123,6 +123,9 @@ extern void date_and_time (char *, char *, char *, gfc_array_i4 *,
@@ -27903,7 +27834,7 @@ index 0478c77..5d63a20 100644
  date_and_time (char *__date, char *__time, char *__zone,
  	       gfc_array_i4 *__values, GFC_INTEGER_4 __date_len,
 diff --git a/libgfortran/intrinsics/execute_command_line.c b/libgfortran/intrinsics/execute_command_line.c
-index bf3a2ec..1561eba 100644
+index bf3a2ec38fe..1561eba75f1 100644
 --- a/libgfortran/intrinsics/execute_command_line.c
 +++ b/libgfortran/intrinsics/execute_command_line.c
 @@ -99,6 +99,9 @@ execute_command_line (const char *command, bool wait, int *exitstat,
@@ -27917,7 +27848,7 @@ index bf3a2ec..1561eba 100644
        bool sig_init = __atomic_load_n (&sig_init_saved, __ATOMIC_RELAXED);
        if (!sig_init)
 diff --git a/libgfortran/io/async.c b/libgfortran/io/async.c
-index 509a1d4..85e8316 100644
+index 509a1d43547..85e8316ef31 100644
 --- a/libgfortran/io/async.c
 +++ b/libgfortran/io/async.c
 @@ -503,6 +503,9 @@ init_async_unit (gfc_unit *u)
@@ -28003,7 +27934,7 @@ index 509a1d4..85e8316 100644
  }
  
 diff --git a/libgfortran/io/transfer.c b/libgfortran/io/transfer.c
-index 3fc5393..d58d659 100644
+index 3fc53938b4a..d58d65940bc 100644
 --- a/libgfortran/io/transfer.c
 +++ b/libgfortran/io/transfer.c
 @@ -2963,7 +2963,7 @@ us_read (st_parameter_dt *dtp, int continued)
@@ -28056,7 +27987,7 @@ index 3fc5393..d58d659 100644
    dummy = 0;
  
 diff --git a/libgfortran/io/unit.c b/libgfortran/io/unit.c
-index 62a8c51..58a2b45 100644
+index 62a8c514c18..58a2b4537f9 100644
 --- a/libgfortran/io/unit.c
 +++ b/libgfortran/io/unit.c
 @@ -635,7 +635,7 @@ init_units (void)
@@ -28069,7 +28000,7 @@ index 62a8c51..58a2b45 100644
  	 inquire statement is a 4 byte value, u->recl is truncated,
  	 and this trick ensures it becomes HUGE(0) rather than -1.
 diff --git a/libgfortran/m4/matmul_internal.m4 b/libgfortran/m4/matmul_internal.m4
-index 20b1a48..8905763 100644
+index 20b1a486a4a..890576366fe 100644
 --- a/libgfortran/m4/matmul_internal.m4
 +++ b/libgfortran/m4/matmul_internal.m4
 @@ -158,6 +158,8 @@ sinclude(`matmul_asm_'rtype_code`.m4')dnl
@@ -28082,7 +28013,7 @@ index 20b1a48..8905763 100644
  #define max(a,b) ((a) >= (b) ? (a) : (b))
  
 diff --git a/libgfortran/runtime/ISO_Fortran_binding.c b/libgfortran/runtime/ISO_Fortran_binding.c
-index 1057f37..d523126 100644
+index 1057f37b7d4..d5231262c46 100644
 --- a/libgfortran/runtime/ISO_Fortran_binding.c
 +++ b/libgfortran/runtime/ISO_Fortran_binding.c
 @@ -197,9 +197,9 @@ void *CFI_address (const CFI_cdesc_t *dv, const CFI_index_t subscripts[])
@@ -28200,7 +28131,7 @@ index 1057f37..d523126 100644
  	    }
  
 diff --git a/libgfortran/runtime/error.c b/libgfortran/runtime/error.c
-index d2ae7be..2cc0fa8 100644
+index d2ae7be16f4..2cc0fa8d44b 100644
 --- a/libgfortran/runtime/error.c
 +++ b/libgfortran/runtime/error.c
 @@ -24,8 +24,8 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -28215,10 +28146,10 @@ index d2ae7be..2cc0fa8 100644
  #include <assert.h>
  #include <string.h>
 diff --git a/libgm2/configure b/libgm2/configure
-index 8ffdb31..b664b24 100755
+index efe3b660769..10c5efd80f8 100755
 --- a/libgm2/configure
 +++ b/libgm2/configure
-@@ -22575,6 +22575,7 @@ case ${host} in
+@@ -22300,6 +22300,7 @@ case ${host} in
    *-*-solaris2*) M2_HOST_OS=solaris ;;
    *-*-aix*)      M2_HOST_OS=aix ;;
    *-*-gnu*)      M2_HOST_OS=hurd ;;
@@ -28226,7 +28157,7 @@ index 8ffdb31..b664b24 100755
  esac
  
  M2_TARGET_OS=unknown
-@@ -22588,6 +22589,7 @@ case ${target} in
+@@ -22313,6 +22314,7 @@ case ${target} in
    *-*-solaris2*) M2_TARGET_OS=solaris ;;
    *-*-aix*)      M2_TARGET_OS=aix ;;
    *-*-gnu*)      M2_TARGET_OS=hurd ;;
@@ -28235,10 +28166,10 @@ index 8ffdb31..b664b24 100755
  
  # M2_HOST_OS=unknown
 diff --git a/libgm2/configure.ac b/libgm2/configure.ac
-index 437485f..6150cff 100644
+index c070491c968..f2a0125c7ab 100644
 --- a/libgm2/configure.ac
 +++ b/libgm2/configure.ac
-@@ -398,6 +398,7 @@ case ${host} in
+@@ -354,6 +354,7 @@ case ${host} in
    *-*-solaris2*) M2_HOST_OS=solaris ;;
    *-*-aix*)      M2_HOST_OS=aix ;;
    *-*-gnu*)      M2_HOST_OS=hurd ;;
@@ -28246,7 +28177,7 @@ index 437485f..6150cff 100644
  esac
  
  M2_TARGET_OS=unknown
-@@ -411,6 +412,7 @@ case ${target} in
+@@ -367,6 +368,7 @@ case ${target} in
    *-*-solaris2*) M2_TARGET_OS=solaris ;;
    *-*-aix*)      M2_TARGET_OS=aix ;;
    *-*-gnu*)      M2_TARGET_OS=hurd ;;
@@ -28255,7 +28186,7 @@ index 437485f..6150cff 100644
  
  # M2_HOST_OS=unknown
 diff --git a/libgm2/libm2iso/RTco.cc b/libgm2/libm2iso/RTco.cc
-index 190c897..e694b89 100644
+index 190c897c0c0..e694b89c95a 100644
 --- a/libgm2/libm2iso/RTco.cc
 +++ b/libgm2/libm2iso/RTco.cc
 @@ -27,6 +27,7 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -28538,7 +28469,7 @@ index 190c897..e694b89 100644
    return 0;
  }
 diff --git a/libgm2/libm2pim/SysExceptions.cc b/libgm2/libm2pim/SysExceptions.cc
-index d93e79e..3d5fdf2 100644
+index d93e79e3d55..0f6a2c60173 100644
 --- a/libgm2/libm2pim/SysExceptions.cc
 +++ b/libgm2/libm2pim/SysExceptions.cc
 @@ -126,6 +126,15 @@ static void (*systemProc) (void *);
@@ -28546,9 +28477,9 @@ index d93e79e..3d5fdf2 100644
  static void (*exceptionProc) (void *);
  
 +#ifdef __MINT__
-+#ifndef SA_SIGINFO
 +#define NO_SIGINFO
 +typedef struct _siginfo_t siginfo_t;
++#ifndef SA_SIGINFO
 +#define SA_SIGINFO 0
 +#endif
 +#endif
@@ -28604,7 +28535,7 @@ index d93e79e..3d5fdf2 100644
    sigemptyset (&sigfpe.sa_mask);
  
 diff --git a/libgm2/libm2pim/wrapc.cc b/libgm2/libm2pim/wrapc.cc
-index 5c31f1e..202f3b9 100644
+index 5c31f1e2687..202f3b95476 100644
 --- a/libgm2/libm2pim/wrapc.cc
 +++ b/libgm2/libm2pim/wrapc.cc
 @@ -97,7 +97,7 @@ EXPORT(filesize) (int f, unsigned int *low, unsigned int *high)
@@ -28647,7 +28578,7 @@ index 5c31f1e..202f3b9 100644
    return false;
  #endif
 diff --git a/libgo/config/libtool.m4 b/libgo/config/libtool.m4
-index 4ca90ee..98c2c5d 100644
+index 4ca90ee71bc..98c2c5d39d9 100644
 --- a/libgo/config/libtool.m4
 +++ b/libgo/config/libtool.m4
 @@ -1733,7 +1733,7 @@ else
@@ -28722,7 +28653,7 @@ index 4ca90ee..98c2c5d 100644
          # as there is no search path for DLLs.
          _LT_TAGVAR(hardcode_libdir_flag_spec, $1)='-L$libdir'
 diff --git a/libgo/configure b/libgo/configure
-index b1a2228..e19545a 100755
+index b1a2228fa1b..e19545a9b5a 100755
 --- a/libgo/configure
 +++ b/libgo/configure
 @@ -5169,7 +5169,7 @@ if test "$GCC" = yes; then
@@ -28806,7 +28737,7 @@ index b1a2228..e19545a 100755
        # Microsoft Visual C++.
        # hardcode_libdir_flag_spec is actually meaningless, as there is
 diff --git a/libgomp/configure b/libgomp/configure
-index df1fc8d..678328d 100755
+index df1fc8df30e..678328deeed 100755
 --- a/libgomp/configure
 +++ b/libgomp/configure
 @@ -5297,7 +5297,7 @@ if test "$GCC" = yes; then
@@ -28947,7 +28878,7 @@ index df1fc8d..678328d 100755
      ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
    *)
 diff --git a/libgomp/configure.tgt b/libgomp/configure.tgt
-index 46af75f..359f5fa 100644
+index 46af75f978f..359f5fae4ef 100644
 --- a/libgomp/configure.tgt
 +++ b/libgomp/configure.tgt
 @@ -145,7 +145,7 @@ case "${target}" in
@@ -28960,7 +28891,7 @@ index 46af75f..359f5fa 100644
  	;;
  
 diff --git a/libiberty/configure b/libiberty/configure
-index 02fbaab..cf3d211 100755
+index 02fbaabe89e..cf3d21131e9 100755
 --- a/libiberty/configure
 +++ b/libiberty/configure
 @@ -4626,7 +4626,7 @@ ac_libiberty_warn_cflags=
@@ -29020,7 +28951,7 @@ index 02fbaab..cf3d211 100755
       *-*-msdos*)		pexecute=pex-msdos  ;;
       *)				pexecute=pex-unix   ;;
 diff --git a/libiberty/configure.ac b/libiberty/configure.ac
-index 3de5eca..5c61a73 100644
+index 3de5eca0df2..5c61a737d06 100644
 --- a/libiberty/configure.ac
 +++ b/libiberty/configure.ac
 @@ -178,7 +178,7 @@ AC_PROG_CPP_WERROR
@@ -29069,7 +29000,7 @@ index 3de5eca..5c61a73 100644
       *-*-msdos*)		pexecute=pex-msdos  ;;
       *)				pexecute=pex-unix   ;;
 diff --git a/libiberty/hex.c b/libiberty/hex.c
-index 4be701d..ce612ad 100644
+index 4be701d5600..ce612ad09a9 100644
 --- a/libiberty/hex.c
 +++ b/libiberty/hex.c
 @@ -24,7 +24,7 @@ Boston, MA 02110-1301, USA.  */
@@ -29082,7 +29013,7 @@ index 4be701d..ce612ad 100644
  #endif
  
 diff --git a/libiberty/safe-ctype.c b/libiberty/safe-ctype.c
-index 95d3f6d..94a66e1 100644
+index 95d3f6dcf1a..94a66e11ede 100644
 --- a/libiberty/safe-ctype.c
 +++ b/libiberty/safe-ctype.c
 @@ -118,7 +118,7 @@ sets of characters:
@@ -29095,7 +29026,7 @@ index 95d3f6d..94a66e1 100644
  #endif
  
 diff --git a/libiberty/strsignal.c b/libiberty/strsignal.c
-index 36b41f1..de7a531 100644
+index 36b41f17e12..de7a5317b60 100644
 --- a/libiberty/strsignal.c
 +++ b/libiberty/strsignal.c
 @@ -551,7 +551,7 @@ followed by a newline.
@@ -29108,7 +29039,7 @@ index 36b41f1..de7a531 100644
    if (signal_names == NULL)
      {
 diff --git a/libitm/configure b/libitm/configure
-index 9ba7fb0..5c82012 100755
+index 9ba7fb03a57..5c82012bd09 100755
 --- a/libitm/configure
 +++ b/libitm/configure
 @@ -5958,7 +5958,7 @@ if test "$GCC" = yes; then
@@ -29245,7 +29176,7 @@ index 9ba7fb0..5c82012 100755
      ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
    *)
 diff --git a/libobjc/configure b/libobjc/configure
-index 6817254..a894ade 100755
+index 68172549137..a894ade7c17 100755
 --- a/libobjc/configure
 +++ b/libobjc/configure
 @@ -3419,7 +3419,7 @@ ac_compiler_gnu=$ac_cv_c_compiler_gnu
@@ -29342,7 +29273,7 @@ index 6817254..a894ade 100755
      extra_ldflags_libobjc='$(lt_host_flags)'
      ;;
 diff --git a/libobjc/configure.ac b/libobjc/configure.ac
-index 073b84f..1f34623 100644
+index 073b84f7d97..1f346232826 100644
 --- a/libobjc/configure.ac
 +++ b/libobjc/configure.ac
 @@ -190,7 +190,7 @@ case "${host}" in
@@ -29355,7 +29286,7 @@ index 073b84f..1f34623 100644
      extra_ldflags_libobjc='$(lt_host_flags)'
      ;;
 diff --git a/libquadmath/configure b/libquadmath/configure
-index f82dd3d..348f18c 100755
+index f82dd3d0d6d..348f18c9713 100755
 --- a/libquadmath/configure
 +++ b/libquadmath/configure
 @@ -4985,7 +4985,7 @@ if test "$GCC" = yes; then
@@ -29430,7 +29361,7 @@ index f82dd3d..348f18c 100755
      # we must compare to with_cross_host to decide if this is a native
      # or cross-compiler and select where to install dlls appropriately.
 diff --git a/libsanitizer/configure b/libsanitizer/configure
-index 6bfd289..c3db4b3 100755
+index 6bfd28916d2..c3db4b392f0 100755
 --- a/libsanitizer/configure
 +++ b/libsanitizer/configure
 @@ -6572,7 +6572,7 @@ if test "$GCC" = yes; then
@@ -29549,7 +29480,7 @@ index 6bfd289..c3db4b3 100755
     esac
  else
 diff --git a/libsanitizer/configure.ac b/libsanitizer/configure.ac
-index 8037c94..5830ddb 100644
+index 8037c941774..5830ddb4d34 100644
 --- a/libsanitizer/configure.ac
 +++ b/libsanitizer/configure.ac
 @@ -319,7 +319,7 @@ fi
@@ -29562,7 +29493,7 @@ index 8037c94..5830ddb 100644
     esac
  else
 diff --git a/libssp/configure b/libssp/configure
-index 0052e03..02eb6c3 100755
+index 0052e03650d..02eb6c3f791 100755
 --- a/libssp/configure
 +++ b/libssp/configure
 @@ -4458,6 +4458,8 @@ XCFLAGS="$XCFLAGS $CET_FLAGS"
@@ -29667,7 +29598,7 @@ index 0052e03..02eb6c3 100755
      # we must compare to with_cross_host to decide if this is a native
      # or cross-compiler and select where to install dlls appropriately.
 diff --git a/libssp/configure.ac b/libssp/configure.ac
-index 5c5698f..19f0ae5 100644
+index 5c5698fa3a2..19f0ae52074 100644
 --- a/libssp/configure.ac
 +++ b/libssp/configure.ac
 @@ -67,10 +67,13 @@ XCFLAGS="$XCFLAGS $CET_FLAGS"
@@ -29685,7 +29616,7 @@ index 5c5698f..19f0ae5 100644
    AC_DEFINE([HAVE_HIDDEN_VISIBILITY],[1],[__attribute__((visibility ("hidden"))) supported])
  fi
 diff --git a/libssp/ssp.c b/libssp/ssp.c
-index 1cc0676..0736748 100644
+index 1cc067661f0..07367482826 100644
 --- a/libssp/ssp.c
 +++ b/libssp/ssp.c
 @@ -66,6 +66,9 @@ see the files COPYING3 and COPYING.RUNTIME respectively.  If not, see
@@ -29727,7 +29658,7 @@ index 1cc0676..0736748 100644
  
  void
 diff --git a/libstdc++-v3/acinclude.m4 b/libstdc++-v3/acinclude.m4
-index a0094c2..88aa857 100644
+index a0094c2dd95..88aa8571b3a 100644
 --- a/libstdc++-v3/acinclude.m4
 +++ b/libstdc++-v3/acinclude.m4
 @@ -3143,7 +3143,7 @@ AC_DEFUN([GLIBCXX_ENABLE_VTABLE_VERIFY], [
@@ -29740,7 +29671,7 @@ index a0094c2..88aa857 100644
          VTV_CXXLINKFLAGS="-L${toplevel_builddir}/libvtv/.libs -Wl,--rpath -Wl,${toplevel_builddir}/libvtv/.libs"
          vtv_cygmin=yes
 diff --git a/libstdc++-v3/config/abi/pre/gnu.ver b/libstdc++-v3/config/abi/pre/gnu.ver
-index 29bc7d8..acc6f83 100644
+index 29bc7d86256..acc6f838b60 100644
 --- a/libstdc++-v3/config/abi/pre/gnu.ver
 +++ b/libstdc++-v3/config/abi/pre/gnu.ver
 @@ -2738,7 +2738,7 @@ CXXABI_1.3.6 {
@@ -29753,7 +29684,7 @@ index 29bc7d8..acc6f83 100644
  
  CXXABI_1.3.7 {
 diff --git a/libstdc++-v3/config/locale/dragonfly/c_locale.h b/libstdc++-v3/config/locale/dragonfly/c_locale.h
-index dd2eaab..c2bcaf3 100644
+index dd2eaab3c69..c2bcaf39e8a 100644
 --- a/libstdc++-v3/config/locale/dragonfly/c_locale.h
 +++ b/libstdc++-v3/config/locale/dragonfly/c_locale.h
 @@ -55,7 +55,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -29778,7 +29709,7 @@ index dd2eaab..c2bcaf3 100644
  
      __builtin_va_end(__args);
 diff --git a/libstdc++-v3/config/locale/generic/c_locale.h b/libstdc++-v3/config/locale/generic/c_locale.h
-index d556d87..6295705 100644
+index d556d87fcdc..62957055070 100644
 --- a/libstdc++-v3/config/locale/generic/c_locale.h
 +++ b/libstdc++-v3/config/locale/generic/c_locale.h
 @@ -53,7 +53,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -29803,7 +29734,7 @@ index d556d87..6295705 100644
  
      __builtin_va_end(__args);
 diff --git a/libstdc++-v3/config/locale/gnu/c_locale.h b/libstdc++-v3/config/locale/gnu/c_locale.h
-index d9a310b..607421d 100644
+index d9a310b7027..607421d2aa2 100644
 --- a/libstdc++-v3/config/locale/gnu/c_locale.h
 +++ b/libstdc++-v3/config/locale/gnu/c_locale.h
 @@ -72,7 +72,7 @@ namespace __gnu_cxx_ieee128 {
@@ -29829,7 +29760,7 @@ index d9a310b..607421d 100644
      __builtin_va_end(__args);
 diff --git a/libstdc++-v3/config/os/mint/ctype_base.h b/libstdc++-v3/config/os/mint/ctype_base.h
 new file mode 100644
-index 0000000..0f2e672
+index 00000000000..0f2e672c6fe
 --- /dev/null
 +++ b/libstdc++-v3/config/os/mint/ctype_base.h
 @@ -0,0 +1,67 @@
@@ -29902,7 +29833,7 @@ index 0000000..0f2e672
 +} // namespace
 diff --git a/libstdc++-v3/config/os/mint/ctype_configure_char.cc b/libstdc++-v3/config/os/mint/ctype_configure_char.cc
 new file mode 100644
-index 0000000..840c473
+index 00000000000..840c4730312
 --- /dev/null
 +++ b/libstdc++-v3/config/os/mint/ctype_configure_char.cc
 @@ -0,0 +1,243 @@
@@ -30151,7 +30082,7 @@ index 0000000..840c473
 +} // namespace
 diff --git a/libstdc++-v3/config/os/mint/ctype_inline.h b/libstdc++-v3/config/os/mint/ctype_inline.h
 new file mode 100644
-index 0000000..b2d7b98
+index 00000000000..b2d7b9861bf
 --- /dev/null
 +++ b/libstdc++-v3/config/os/mint/ctype_inline.h
 @@ -0,0 +1,75 @@
@@ -30232,7 +30163,7 @@ index 0000000..b2d7b98
 +} // namespace
 diff --git a/libstdc++-v3/config/os/mint/os_defines.h b/libstdc++-v3/config/os/mint/os_defines.h
 new file mode 100644
-index 0000000..cf72499
+index 00000000000..cf72499370a
 --- /dev/null
 +++ b/libstdc++-v3/config/os/mint/os_defines.h
 @@ -0,0 +1,36 @@
@@ -30273,7 +30204,7 @@ index 0000000..cf72499
 +
 +#endif
 diff --git a/libstdc++-v3/configure b/libstdc++-v3/configure
-index 5275480..812901b 100755
+index 819a1d82876..8541269f375 100755
 --- a/libstdc++-v3/configure
 +++ b/libstdc++-v3/configure
 @@ -6226,7 +6226,7 @@ if test "$GCC" = yes; then
@@ -30431,7 +30362,7 @@ index 5275480..812901b 100755
      # gcc leaves a trailing carriage return which upsets mingw
      ac_prog=`($CC -print-prog-name=ld) 2>&5 | tr -d '\015'` ;;
    *)
-@@ -38878,7 +38884,7 @@ $as_echo "#define HAVE_TLS 1" >>confdefs.h
+@@ -38856,7 +38862,7 @@ $as_echo "#define HAVE_TLS 1" >>confdefs.h
  
    fi
      ;;
@@ -30440,7 +30371,7 @@ index 5275480..812901b 100755
  
    # All these tests are for C++; save the language and the compiler flags.
    # The CXXFLAGS thing is suspicious, but based on similar bits previously
-@@ -42375,7 +42381,7 @@ done
+@@ -42353,7 +42359,7 @@ done
  
  
      ;;
@@ -30450,7 +30381,7 @@ index 5275480..812901b 100755
    # If we're not using GNU ld, then there's no point in even trying these
    # tests.  Check for that first.  We should have already tested for gld
 diff --git a/libstdc++-v3/configure.host b/libstdc++-v3/configure.host
-index 253e5a9..608a6a7 100644
+index 253e5a9ad0d..608a6a7adf3 100644
 --- a/libstdc++-v3/configure.host
 +++ b/libstdc++-v3/configure.host
 @@ -293,6 +293,10 @@ case "${host_os}" in
@@ -30465,7 +30396,7 @@ index 253e5a9..608a6a7 100644
      os_include_dir="os/bsd/netbsd"
      ;;
 diff --git a/libstdc++-v3/crossconfig.m4 b/libstdc++-v3/crossconfig.m4
-index b3269cb..34a8866 100644
+index b3269cb88e0..34a88662c10 100644
 --- a/libstdc++-v3/crossconfig.m4
 +++ b/libstdc++-v3/crossconfig.m4
 @@ -174,7 +174,7 @@ case "${host}" in
@@ -30487,10 +30418,10 @@ index b3269cb..34a8866 100644
      GLIBCXX_CHECK_MATH_SUPPORT
      GLIBCXX_CHECK_STDLIB_SUPPORT
 diff --git a/libstdc++-v3/include/bits/basic_string.h b/libstdc++-v3/include/bits/basic_string.h
-index 8c7b3a1..96c2d40 100644
+index c90bd099b63..e4c1d3c57e7 100644
 --- a/libstdc++-v3/include/bits/basic_string.h
 +++ b/libstdc++-v3/include/bits/basic_string.h
-@@ -4424,13 +4424,13 @@ _GLIBCXX_END_NAMESPACE_CXX11
+@@ -4426,13 +4426,13 @@ _GLIBCXX_END_NAMESPACE_CXX11
  
    template<>
      basic_istream<char>&
@@ -30507,7 +30438,7 @@ index 8c7b3a1..96c2d40 100644
  #endif
  
 diff --git a/libstdc++-v3/include/bits/basic_string.tcc b/libstdc++-v3/include/bits/basic_string.tcc
-index bca55bc..fdb098f 100644
+index bca55bc5658..fdb098f81d7 100644
 --- a/libstdc++-v3/include/bits/basic_string.tcc
 +++ b/libstdc++-v3/include/bits/basic_string.tcc
 @@ -863,7 +863,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -30653,7 +30584,7 @@ index bca55bc..fdb098f 100644
  
    // Inhibit implicit instantiations for required instantiations,
 diff --git a/libstdc++-v3/include/bits/chrono_io.h b/libstdc++-v3/include/bits/chrono_io.h
-index d84c669..0eb9e97 100644
+index b7f6f5f49e5..b0e7793aaad 100644
 --- a/libstdc++-v3/include/bits/chrono_io.h
 +++ b/libstdc++-v3/include/bits/chrono_io.h
 @@ -105,15 +105,15 @@ namespace __detail
@@ -30721,7 +30652,7 @@ index d84c669..0eb9e97 100644
  	  };
  
  	  // Characters to output for "%n", "%t" and "%%" specifiers.
-@@ -572,63 +572,63 @@ namespace __format
+@@ -572,105 +572,105 @@ namespace __format
  		{
  		case 'a':
  		case 'A':
@@ -30735,11 +30666,8 @@ index d84c669..0eb9e97 100644
 +		  ___out = _M_b_B(__t, std::move(___out), __fc, __c == 'B');
  		  break;
  		case 'c':
- 		case 'r':
- 		case 'x':
- 		case 'X':
--		  __out = _M_c_r_x_X(__t, std::move(__out), __fc, __c, __mod);
-+		  ___out = _M_c_r_x_X(__t, std::move(___out), __fc, __c, __mod);
+-		  __out = _M_c(__t, std::move(__out), __fc, __mod == 'E');
++		  ___out = _M_c(__t, std::move(___out), __fc, __mod == 'E');
  		  break;
  		case 'C':
  		case 'y':
@@ -30800,7 +30728,11 @@ index d84c669..0eb9e97 100644
  					   +__t.count());
  		  else
  		    __throw_format_error("chrono format error: argument is "
-@@ -636,35 +636,35 @@ namespace __format
+ 					 "not a duration");
+ 		  break;
+ 		case 'r':
+-		  __out = _M_r(__t, __print_sign(), __fc);
++		  ___out = _M_r(__t, __print_sign(), __fc);
  		  break;
  		case 'R':
  		case 'T':
@@ -30822,6 +30754,14 @@ index d84c669..0eb9e97 100644
 -		  __out = _M_U_V_W(__t, std::move(__out), __fc, __c,
 +		  ___out = _M_U_V_W(__t, std::move(___out), __fc, __c,
  				   __mod == 'O');
+ 		  break;
+ 		case 'x':
+-		  __out = _M_x(__t, std::move(__out), __fc, __mod == 'E');
++		  ___out = _M_x(__t, std::move(___out), __fc, __mod == 'E');
+ 		  break;
+ 		case 'X':
+-		  __out = _M_X(__t, __print_sign(), __fc, __mod == 'E');
++		  ___out = _M_X(__t, __print_sign(), __fc, __mod == 'E');
  		  break;
  		case 'z':
 -		  __out = _M_z(__t, std::move(__out), __fc, (bool)__mod);
@@ -30845,7 +30785,7 @@ index d84c669..0eb9e97 100644
  		  break;
  		case 'O':
  		case 'E':
-@@ -689,7 +689,7 @@ namespace __format
+@@ -695,7 +695,7 @@ namespace __format
  		      __str.remove_suffix(__str.length() - __pos);
  		      __first += __pos + 1;
  		    }
@@ -30854,16 +30794,16 @@ index d84c669..0eb9e97 100644
  		}
  	    }
  	  while (__first != __last);
-@@ -697,7 +697,7 @@ namespace __format
+@@ -703,7 +703,7 @@ namespace __format
  	  if constexpr (is_same_v<typename _FormatContext::iterator,
  				  _Sink_iter<_CharT>>)
  	    if (__write_direct)
 -	      return __out;
 +	      return ___out;
  
- 	  auto __span = __sink.view();
- 	  __string_view __str(__span.data(), __span.size());
-@@ -810,7 +810,7 @@ namespace __format
+ 	  auto __str = std::move(__sink).get();
+ 	  return __format::__write_padded_as_spec(__str, __str.size(),
+@@ -807,7 +807,7 @@ namespace __format
  
        template<typename _OutIter>
  	_OutIter
@@ -30872,7 +30812,7 @@ index d84c669..0eb9e97 100644
  	{
  #if defined _GLIBCXX_USE_NL_LANGINFO_L && __CHAR_BIT__ == 8
  	  __sso_string __buf;
-@@ -828,12 +828,12 @@ namespace __format
+@@ -825,12 +825,12 @@ namespace __format
  		  __s = __locale_encoding_to_utf8(__loc, __s, &__buf);
  		}
  #endif
@@ -30887,13 +30827,12 @@ index d84c669..0eb9e97 100644
  	       _FormatContext& __ctx, bool __full) const
  	{
  	  // %a Locale's abbreviated weekday name.
-@@ -845,13 +845,13 @@ namespace __format
- 	  locale __loc = _M_locale(__ctx);
- 	  struct tm __tm{};
- 	  __tm.tm_wday = __wd.c_encoding();
--	  return _M_locale_fmt(std::move(__out), __loc, __tm,
-+	  return _M_locale_fmt(std::move(___out), __loc, __tm,
- 			       __full ? 'A' : 'a', 0);
+@@ -847,12 +847,12 @@ namespace __format
+ 	  else
+ 	    __tp._M_days_abbreviated(__days);
+ 	  __string_view __str(__days[__wd.c_encoding()]);
+-	  return _M_write(std::move(__out), __loc, __str);
++	  return _M_write(std::move(___out), __loc, __str);
  	}
  
        template<typename _Tp, typename _FormatContext>
@@ -30903,29 +30842,28 @@ index d84c669..0eb9e97 100644
  	       _FormatContext& __ctx, bool __full) const
  	{
  	  // %b Locale's abbreviated month name.
-@@ -862,13 +862,13 @@ namespace __format
- 	  locale __loc = _M_locale(__ctx);
- 	  struct tm __tm{};
- 	  __tm.tm_mon = (unsigned)__m - 1;
--	  return _M_locale_fmt(std::move(__out), __loc, __tm,
-+	  return _M_locale_fmt(std::move(___out), __loc, __tm,
- 			       __full ? 'B' : 'b', 0);
+@@ -868,12 +868,12 @@ namespace __format
+ 	  else
+ 	    __tp._M_months_abbreviated(__months);
+ 	  __string_view __str(__months[(unsigned)__m - 1]);
+-	  return _M_write(std::move(__out), __loc, __str);
++	  return _M_write(std::move(___out), __loc, __str);
  	}
  
        template<typename _Tp, typename _FormatContext>
  	typename _FormatContext::iterator
--	_M_c_r_x_X(const _Tp& __t, typename _FormatContext::iterator __out,
-+	_M_c_r_x_X(const _Tp& __t, typename _FormatContext::iterator ___out,
- 		   _FormatContext& __ctx, _CharT __conv, _CharT __mod) const
+-	_M_c(const _Tp& __t, typename _FormatContext::iterator __out,
++	_M_c(const _Tp& __t, typename _FormatContext::iterator ___out,
+ 	     _FormatContext& __ctx, bool __mod = false) const
  	{
  	  // %c  Locale's date and time representation.
-@@ -933,13 +933,13 @@ namespace __format
- 	    __tm.tm_sec = __hms.seconds().count();
- 	  }
+@@ -926,13 +926,13 @@ namespace __format
+ 	  __tm.tm_min = __hms.minutes().count();
+ 	  __tm.tm_sec = __hms.seconds().count();
  
--	  return _M_locale_fmt(std::move(__out), _M_locale(__ctx), __tm,
-+	  return _M_locale_fmt(std::move(___out), _M_locale(__ctx), __tm,
- 			       __conv, __mod);
+-	  return _M_locale_fmt(std::move(__out), _M_locale(__ctx), __tm, 'c',
++	  return _M_locale_fmt(std::move(___out), _M_locale(__ctx), __tm, 'c',
+ 			       __mod ? 'E' : '\0');
  	}
  
        template<typename _Tp, typename _FormatContext>
@@ -30935,7 +30873,7 @@ index d84c669..0eb9e97 100644
  	       _FormatContext& __ctx, _CharT __conv, _CharT __mod = 0) const
  	{
  	  // %C  Year divided by 100 using floored division.
-@@ -957,7 +957,7 @@ namespace __format
+@@ -950,7 +950,7 @@ namespace __format
  	      {
  		struct tm __tm{};
  		__tm.tm_year = (int)__y - 1900;
@@ -30944,7 +30882,7 @@ index d84c669..0eb9e97 100644
  				     __conv, __mod);
  	      }
  
-@@ -987,12 +987,12 @@ namespace __format
+@@ -980,12 +980,12 @@ namespace __format
  	  if (__conv == 'Y' || __conv == 'y')
  	    __s += _S_two_digits(__yi % 100);
  
@@ -30959,7 +30897,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext&) const
  	{
  	  auto __ymd = _S_date(__t);
-@@ -1005,12 +1005,12 @@ namespace __format
+@@ -998,12 +998,12 @@ namespace __format
  	  __s += _S_two_digits((unsigned)__ymd.day());
  	  __s += _S_slash;
  	  __s += _S_two_digits(__builtin_abs((int)__ymd.year()) % 100);
@@ -30974,7 +30912,7 @@ index d84c669..0eb9e97 100644
  	       _FormatContext& __ctx, _CharT __conv, bool __mod = false) const
  	{
  	  // %d  The day of month as a decimal number.
-@@ -1026,7 +1026,7 @@ namespace __format
+@@ -1019,7 +1019,7 @@ namespace __format
  	      {
  		struct tm __tm{};
  		__tm.tm_mday = __i;
@@ -30983,7 +30921,7 @@ index d84c669..0eb9e97 100644
  				     (char)__conv, 'O');
  	      }
  
-@@ -1038,12 +1038,12 @@ namespace __format
+@@ -1031,12 +1031,12 @@ namespace __format
  	      __buf[1] = __sv[1];
  	      __sv = {__buf, 2};
  	    }
@@ -30998,7 +30936,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext&) const
  	{
  	  auto __ymd = _S_date(__t);
-@@ -1056,12 +1056,12 @@ namespace __format
+@@ -1049,12 +1049,12 @@ namespace __format
  	  __s[__s.size() - 2] = __sv[0];
  	  __s[__s.size() - 1] = __sv[1];
  	  __sv = __s;
@@ -31013,7 +30951,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext& __ctx, bool __full) const
  	{
  	  // %g last two decimal digits of the ISO week-based year.
-@@ -1072,12 +1072,12 @@ namespace __format
+@@ -1065,12 +1065,12 @@ namespace __format
  	  __d -= (weekday(__d) - Monday) - days(3);
  	  // ISO week-based year is the year that contains that Thursday:
  	  year __y = year_month_day(__d).year();
@@ -31028,7 +30966,7 @@ index d84c669..0eb9e97 100644
  	       _FormatContext& __ctx, _CharT __conv, bool __mod = false) const
  	{
  	  // %H  The hour (24-hour clock) as a decimal number.
-@@ -1093,7 +1093,7 @@ namespace __format
+@@ -1086,7 +1086,7 @@ namespace __format
  	      {
  		struct tm __tm{};
  		__tm.tm_hour = __i;
@@ -31037,7 +30975,7 @@ index d84c669..0eb9e97 100644
  				     (char)__conv, 'O');
  	      }
  
-@@ -1104,19 +1104,19 @@ namespace __format
+@@ -1097,19 +1097,19 @@ namespace __format
  	      else if (__i > 12)
  		__i -= 12;
  	    }
@@ -31060,7 +30998,7 @@ index d84c669..0eb9e97 100644
  	    }
  	  else
  	    {
-@@ -1131,14 +1131,14 @@ namespace __format
+@@ -1124,14 +1124,14 @@ namespace __format
  		__d = __day - local_days(__ymd.year()/January/0);
  	      else
  		__d = __day - sys_days(__ymd.year()/January/0);
@@ -31077,7 +31015,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext& __ctx, bool __mod) const
  	{
  	  // %m  month as a decimal number.
-@@ -1152,16 +1152,16 @@ namespace __format
+@@ -1145,16 +1145,16 @@ namespace __format
  	      {
  		struct tm __tm{};
  		__tm.tm_mon = __i - 1;
@@ -31097,7 +31035,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext& __ctx, bool __mod) const
  	{
  	  // %M  The minute as a decimal number.
-@@ -1175,16 +1175,16 @@ namespace __format
+@@ -1168,16 +1168,16 @@ namespace __format
  	      {
  		struct tm __tm{};
  		__tm.tm_min = __i;
@@ -31117,12 +31055,13 @@ index d84c669..0eb9e97 100644
  	     _FormatContext& __ctx) const
  	{
  	  // %p The locale's equivalent of the AM/PM designations.
-@@ -1195,12 +1195,12 @@ namespace __format
- 	  locale __loc = _M_locale(__ctx);
- 	  struct tm __tm{};
- 	  __tm.tm_hour = __hi;
--	  return _M_locale_fmt(std::move(__out), __loc, __tm, 'p', 0);
-+	  return _M_locale_fmt(std::move(___out), __loc, __tm, 'p', 0);
+@@ -1186,13 +1186,13 @@ namespace __format
+ 	  const auto& __tp = use_facet<__timepunct<_CharT>>(__loc);
+ 	  const _CharT* __ampm[2];
+ 	  __tp._M_am_pm(__ampm);
+-	  return _M_write(std::move(__out), __loc,
++	  return _M_write(std::move(___out), __loc,
+ 			  __ampm[__hms.hours().count() >= 12]);
  	}
  
        template<typename _Tp, typename _FormatContext>
@@ -31132,7 +31071,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext&) const
  	{
  	  // %q The duration's unit suffix
-@@ -1210,7 +1210,7 @@ namespace __format
+@@ -1202,7 +1202,7 @@ namespace __format
  	    {
  	      namespace __d = chrono::__detail;
  	      using period = typename _Tp::period;
@@ -31141,7 +31080,23 @@ index d84c669..0eb9e97 100644
  	    }
  	}
  
-@@ -1218,7 +1218,7 @@ namespace __format
+@@ -1210,7 +1210,7 @@ namespace __format
+ 
+       template<typename _Tp, typename _FormatContext>
+ 	typename _FormatContext::iterator
+-	_M_r(const _Tp& __tt, typename _FormatContext::iterator __out,
++	_M_r(const _Tp& __tt, typename _FormatContext::iterator ___out,
+ 	     _FormatContext& __ctx) const
+ 	{
+ 	  // %r locale's 12-hour clock time.
+@@ -1223,13 +1223,13 @@ namespace __format
+ 	  __fmt.insert(1u, 1u, _S_colon);
+ 	  __fmt.insert(2u, __ampm_fmt);
+ 	  using _FmtStr = _Runtime_format_string<_CharT>;
+-	  return _M_write(std::move(__out), __loc,
++	  return _M_write(std::move(___out), __loc,
+ 			  std::format(__loc, _FmtStr(__fmt), __t));
+ 	}
  
        template<typename _Tp, typename _FormatContext>
  	typename _FormatContext::iterator
@@ -31150,7 +31105,7 @@ index d84c669..0eb9e97 100644
  	       _FormatContext& __ctx, bool __secs) const
  	{
  	  // %R Equivalent to %H:%M
-@@ -1231,18 +1231,18 @@ namespace __format
+@@ -1242,18 +1242,18 @@ namespace __format
  	  __s[__s.size() - 2] = __sv[0];
  	  __s[__s.size() - 1] = __sv[1];
  	  __sv = __s;
@@ -31174,7 +31129,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext& __ctx, bool __mod = false) const
  	{
  	  // %S  Seconds as a decimal number.
-@@ -1257,17 +1257,17 @@ namespace __format
+@@ -1268,17 +1268,17 @@ namespace __format
  		  {
  		    struct tm __tm{};
  		    __tm.tm_sec = (int)__s.count();
@@ -31195,7 +31150,7 @@ index d84c669..0eb9e97 100644
  				      _S_two_digits(__s.count()));
  	  else
  	    {
-@@ -1277,7 +1277,7 @@ namespace __format
+@@ -1288,7 +1288,7 @@ namespace __format
  	      if constexpr (is_floating_point_v<rep>)
  		{
  		  chrono::duration<rep> __fs = __s + __ss;
@@ -31204,7 +31159,7 @@ index d84c669..0eb9e97 100644
  					 _GLIBCXX_WIDEN("{:#0{}.{}Lf}"),
  					 __fs.count(),
  					 3 + __hms.fractional_width,
-@@ -1287,32 +1287,32 @@ namespace __format
+@@ -1298,31 +1298,31 @@ namespace __format
  		{
  		  const auto& __np
  		    = use_facet<numpunct<_CharT>>(__loc);
@@ -31222,9 +31177,8 @@ index d84c669..0eb9e97 100644
  		  else
  		    {
  		      auto __str = std::format(_S_empty_spec, __ss.count());
--		      __out = std::format_to(std::move(__out),
-+		      ___out = std::format_to(std::move(___out),
- 					     _GLIBCXX_WIDEN("{:0>{}s}"),
+-		      __out = std::format_to(_GLIBCXX_WIDEN("{:0>{}s}"),
++		      ___out = std::format_to(_GLIBCXX_WIDEN("{:0>{}s}"),
  					     __str,
  					     __hms.fractional_width);
  		    }
@@ -31243,7 +31197,7 @@ index d84c669..0eb9e97 100644
  	       _FormatContext& __ctx, _CharT __conv, bool __mod = false) const
  	{
  	  // %u  ISO weekday as a decimal number (1-7), where Monday is 1.
-@@ -1327,19 +1327,19 @@ namespace __format
+@@ -1337,19 +1337,19 @@ namespace __format
  	      {
  		struct tm __tm{};
  		__tm.tm_wday = __wd.c_encoding();
@@ -31266,7 +31220,7 @@ index d84c669..0eb9e97 100644
  		 _FormatContext& __ctx, _CharT __conv, bool __mod = false) const
  	{
  	  // %U  Week number of the year as a decimal number, from first Sunday.
-@@ -1361,7 +1361,7 @@ namespace __format
+@@ -1371,7 +1371,7 @@ namespace __format
  		__tm.tm_year = (int)__y - 1900;
  		__tm.tm_yday = (__d - _TDays(__y/January/1)).count();
  		__tm.tm_wday = weekday(__d).c_encoding();
@@ -31275,7 +31229,7 @@ index d84c669..0eb9e97 100644
  				     (char)__conv, 'O');
  	      }
  
-@@ -1386,12 +1386,12 @@ namespace __format
+@@ -1396,12 +1396,12 @@ namespace __format
  	    }
  	  auto __weeks = chrono::floor<weeks>(__d - __first);
  	  __string_view __sv = _S_two_digits(__weeks.count() + 1);
@@ -31285,12 +31239,58 @@ index d84c669..0eb9e97 100644
  
        template<typename _Tp, typename _FormatContext>
  	typename _FormatContext::iterator
+-	_M_x(const _Tp& __t, typename _FormatContext::iterator __out,
++	_M_x(const _Tp& __t, typename _FormatContext::iterator ___out,
+ 	     _FormatContext& __ctx, bool __mod = false) const
+ 	{
+ 	  // %x  Locale's date rep
+@@ -1412,19 +1412,19 @@ namespace __format
+ 	  __tp._M_date_formats(__date_reps);
+ 	  const _CharT* __rep = __date_reps[__mod];
+ 	  if (!*__rep)
+-	    return _M_D(__t, std::move(__out), __ctx);
++	    return _M_D(__t, std::move(___out), __ctx);
+ 
+ 	  basic_string<_CharT> __fmt(_S_empty_spec);
+ 	  __fmt.insert(1u, 1u, _S_colon);
+ 	  __fmt.insert(2u, __rep);
+ 	  using _FmtStr = _Runtime_format_string<_CharT>;
+-	  return _M_write(std::move(__out), __loc,
++	  return _M_write(std::move(___out), __loc,
+ 			  std::format(__loc, _FmtStr(__fmt), __t));
+ 	}
+ 
+       template<typename _Tp, typename _FormatContext>
+ 	typename _FormatContext::iterator
+-	_M_X(const _Tp& __tt, typename _FormatContext::iterator __out,
++	_M_X(const _Tp& __tt, typename _FormatContext::iterator ___out,
+ 	     _FormatContext& __ctx, bool __mod = false) const
+ 	{
+ 	  // %X  Locale's time rep
+@@ -1436,19 +1436,19 @@ namespace __format
+ 	  __tp._M_time_formats(__time_reps);
+ 	  const _CharT* __rep = __time_reps[__mod];
+ 	  if (!*__rep)
+-	    return _M_R_T(__t, std::move(__out), __ctx, true);
++	    return _M_R_T(__t, std::move(___out), __ctx, true);
+ 
+ 	  basic_string<_CharT> __fmt(_S_empty_spec);
+ 	  __fmt.insert(1u, 1u, _S_colon);
+ 	  __fmt.insert(2u, __rep);
+ 	  using _FmtStr = _Runtime_format_string<_CharT>;
+-	  return _M_write(std::move(__out), __loc,
++	  return _M_write(std::move(___out), __loc,
+ 			  std::format(__loc, _FmtStr(__fmt), __t));
+ 	}
+ 
+       template<typename _Tp, typename _FormatContext>
+ 	typename _FormatContext::iterator
 -	_M_z(const _Tp& __t, typename _FormatContext::iterator __out,
 +	_M_z(const _Tp& __t, typename _FormatContext::iterator ___out,
  	     _FormatContext&, bool __mod = false) const
  	{
  	  using ::std::chrono::__detail::__utc_leap_second;
-@@ -1404,7 +1404,7 @@ namespace __format
+@@ -1461,7 +1461,7 @@ namespace __format
  	    {
  	      if constexpr (is_same_v<typename _Tp::clock,
  				      chrono::system_clock>)
@@ -31299,7 +31299,7 @@ index d84c669..0eb9e97 100644
  	    }
  	  else if constexpr (__is_specialization_of<_Tp, __local_time_fmt>)
  	    {
-@@ -1422,18 +1422,18 @@ namespace __format
+@@ -1479,18 +1479,18 @@ namespace __format
  		      __s += _S_two_digits(__hms.minutes().count());
  		      __sv = __s;
  		    }
@@ -31321,7 +31321,7 @@ index d84c669..0eb9e97 100644
  	     _FormatContext& __ctx) const
  	{
  	  using ::std::chrono::__detail::__utc_leap_second;
-@@ -1444,7 +1444,7 @@ namespace __format
+@@ -1501,7 +1501,7 @@ namespace __format
  	    {
  	      if constexpr (is_same_v<typename _Tp::clock,
  				      chrono::system_clock>)
@@ -31330,7 +31330,7 @@ index d84c669..0eb9e97 100644
  	    }
  	  else if constexpr (__is_specialization_of<_Tp, __local_time_fmt>)
  	    {
-@@ -1452,7 +1452,7 @@ namespace __format
+@@ -1509,7 +1509,7 @@ namespace __format
  		{
  		  string_view __sv = *__t._M_abbrev;
  		  if constexpr (is_same_v<_CharT, char>)
@@ -31339,7 +31339,7 @@ index d84c669..0eb9e97 100644
  		  else
  		    {
  		      // TODO use resize_and_overwrite
-@@ -1460,12 +1460,12 @@ namespace __format
+@@ -1517,12 +1517,12 @@ namespace __format
  		      auto& __ct = use_facet<ctype<_CharT>>(_M_locale(__ctx));
  		      __ct.widen(__sv.begin(), __sv.end(), __ws.data());
  		      __string_view __wsv = __ws;
@@ -31354,7 +31354,7 @@ index d84c669..0eb9e97 100644
  
  	  __no_timezone_available();
  	}
-@@ -1656,7 +1656,7 @@ namespace __format
+@@ -1713,7 +1713,7 @@ namespace __format
        // a locale-specific representation.
        template<typename _Iter>
  	_Iter
@@ -31363,7 +31363,7 @@ index d84c669..0eb9e97 100644
  		      char __fmt, char __mod) const
  	{
  	  basic_ostringstream<_CharT> __os;
-@@ -1664,8 +1664,8 @@ namespace __format
+@@ -1721,8 +1721,8 @@ namespace __format
  	  const auto& __tp = use_facet<time_put<_CharT>>(__loc);
  	  __tp.put(__os, __os, _S_space, &__tm, __fmt, __mod);
  	  if (__os)
@@ -31375,7 +31375,7 @@ index d84c669..0eb9e97 100644
      };
  
 diff --git a/libstdc++-v3/include/bits/istream.tcc b/libstdc++-v3/include/bits/istream.tcc
-index 7a5f5b0..f46aff6 100644
+index 7a5f5b0f0d8..f46aff67332 100644
 --- a/libstdc++-v3/include/bits/istream.tcc
 +++ b/libstdc++-v3/include/bits/istream.tcc
 @@ -49,22 +49,22 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -31579,7 +31579,7 @@ index 7a5f5b0..f46aff6 100644
  
    // Inhibit implicit instantiations for required instantiations,
 diff --git a/libstdc++-v3/include/bits/locale_conv.h b/libstdc++-v3/include/bits/locale_conv.h
-index 076e14f..b36a141 100644
+index 076e14ff762..b36a1417c1a 100644
 --- a/libstdc++-v3/include/bits/locale_conv.h
 +++ b/libstdc++-v3/include/bits/locale_conv.h
 @@ -337,10 +337,10 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
@@ -31629,7 +31629,7 @@ index 076e14f..b36a141 100644
  
        typename _Wide_streambuf::int_type
 diff --git a/libstdc++-v3/include/bits/locale_facets.h b/libstdc++-v3/include/bits/locale_facets.h
-index 54d3920..5c87a21 100644
+index 54d39206fb0..5c87a21a2ea 100644
 --- a/libstdc++-v3/include/bits/locale_facets.h
 +++ b/libstdc++-v3/include/bits/locale_facets.h
 @@ -1998,7 +1998,7 @@ _GLIBCXX_BEGIN_NAMESPACE_LDBL
@@ -31769,7 +31769,7 @@ index 54d3920..5c87a21 100644
      protected:
        /// Destructor.
 diff --git a/libstdc++-v3/include/bits/ostream.h b/libstdc++-v3/include/bits/ostream.h
-index d19a76a..c53dce9 100644
+index d19a76ab247..c53dce92f1a 100644
 --- a/libstdc++-v3/include/bits/ostream.h
 +++ b/libstdc++-v3/include/bits/ostream.h
 @@ -608,14 +608,14 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -31918,7 +31918,7 @@ index d19a76a..c53dce9 100644
  #if __cplusplus > 201703L
     // The following deleted overloads prevent formatting strings as
 diff --git a/libstdc++-v3/include/bits/ostream.tcc b/libstdc++-v3/include/bits/ostream.tcc
-index a4fe9d4..dbb6bc7 100644
+index a4fe9d467cd..dbb6bc79108 100644
 --- a/libstdc++-v3/include/bits/ostream.tcc
 +++ b/libstdc++-v3/include/bits/ostream.tcc
 @@ -308,10 +308,10 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -31959,7 +31959,7 @@ index a4fe9d4..dbb6bc7 100644
  
    // Inhibit implicit instantiations for required instantiations,
 diff --git a/libstdc++-v3/include/bits/ostream_insert.h b/libstdc++-v3/include/bits/ostream_insert.h
-index c18fb9d..70f31da 100644
+index c18fb9dabca..70f31dabbd4 100644
 --- a/libstdc++-v3/include/bits/ostream_insert.h
 +++ b/libstdc++-v3/include/bits/ostream_insert.h
 @@ -49,31 +49,31 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -32060,10 +32060,10 @@ index c18fb9d..70f31da 100644
  
    // Inhibit implicit instantiations for required instantiations,
 diff --git a/libstdc++-v3/include/bits/ranges_algo.h b/libstdc++-v3/include/bits/ranges_algo.h
-index e552cc6..cb836d2 100644
+index f36e7dd5991..8da03c98cc2 100644
 --- a/libstdc++-v3/include/bits/ranges_algo.h
 +++ b/libstdc++-v3/include/bits/ranges_algo.h
-@@ -1555,7 +1555,7 @@ namespace ranges
+@@ -1552,7 +1552,7 @@ namespace ranges
  	&& indirectly_copyable<_Iter, _Out>
  	&& uniform_random_bit_generator<remove_reference_t<_Gen>>
        _Out
@@ -32072,7 +32072,7 @@ index e552cc6..cb836d2 100644
  		 iter_difference_t<_Iter> __n, _Gen&& __g) const
        {
  	if constexpr (forward_iterator<_Iter>)
-@@ -1564,7 +1564,7 @@ namespace ranges
+@@ -1561,7 +1561,7 @@ namespace ranges
  	    // which may take linear time.
  	    auto __lasti = ranges::next(__first, __last);
  	    return _GLIBCXX_STD_A::
@@ -32081,7 +32081,7 @@ index e552cc6..cb836d2 100644
  		     __n, std::forward<_Gen>(__g));
  	  }
  	else
-@@ -1576,7 +1576,7 @@ namespace ranges
+@@ -1573,7 +1573,7 @@ namespace ranges
  	    iter_difference_t<_Iter> __sample_sz = 0;
  	    while (__first != __last && __sample_sz != __n)
  	      {
@@ -32090,7 +32090,7 @@ index e552cc6..cb836d2 100644
  		++__first;
  	      }
  	    for (auto __pop_sz = __sample_sz; __first != __last;
-@@ -1584,9 +1584,9 @@ namespace ranges
+@@ -1581,9 +1581,9 @@ namespace ranges
  	      {
  		const auto __k = __d(__g, __param_type{0, __pop_sz});
  		if (__k < __n)
@@ -32102,7 +32102,7 @@ index e552cc6..cb836d2 100644
  	  }
        }
  
-@@ -1595,11 +1595,11 @@ namespace ranges
+@@ -1592,11 +1592,11 @@ namespace ranges
  	&& indirectly_copyable<iterator_t<_Range>, _Out>
  	&& uniform_random_bit_generator<remove_reference_t<_Gen>>
        _Out
@@ -32116,7 +32116,7 @@ index e552cc6..cb836d2 100644
  		       std::forward<_Gen>(__g));
        }
    };
-@@ -1976,11 +1976,11 @@ namespace ranges
+@@ -1973,11 +1973,11 @@ namespace ranges
  				      projected<iterator_t<_Range2>, _Proj2>>
        constexpr partial_sort_copy_result<borrowed_iterator_t<_Range1>,
  					 borrowed_iterator_t<_Range2>>
@@ -32131,7 +32131,7 @@ index e552cc6..cb836d2 100644
  		       std::move(__proj1), std::move(__proj2));
        }
 diff --git a/libstdc++-v3/include/bits/ranges_algobase.h b/libstdc++-v3/include/bits/ranges_algobase.h
-index a08f659..2ac7281 100644
+index a08f659b3ae..2ac72811cb3 100644
 --- a/libstdc++-v3/include/bits/ranges_algobase.h
 +++ b/libstdc++-v3/include/bits/ranges_algobase.h
 @@ -193,12 +193,12 @@ namespace __detail
@@ -32231,7 +32231,7 @@ index a08f659..2ac7281 100644
        else if constexpr (sized_sentinel_for<_Sent, _Iter>)
  	{
 diff --git a/libstdc++-v3/include/bits/ranges_uninitialized.h b/libstdc++-v3/include/bits/ranges_uninitialized.h
-index 12a714b..c81eefa 100644
+index 12a714b68aa..c81eefa5d1a 100644
 --- a/libstdc++-v3/include/bits/ranges_uninitialized.h
 +++ b/libstdc++-v3/include/bits/ranges_uninitialized.h
 @@ -380,10 +380,10 @@ namespace ranges
@@ -32261,7 +32261,7 @@ index 12a714b..c81eefa 100644
  	else
  	  {
 diff --git a/libstdc++-v3/include/bits/regex.h b/libstdc++-v3/include/bits/regex.h
-index 50d8863..3d031fd 100644
+index 50d8863537d..3d031fdffd7 100644
 --- a/libstdc++-v3/include/bits/regex.h
 +++ b/libstdc++-v3/include/bits/regex.h
 @@ -2051,7 +2051,7 @@ _GLIBCXX_BEGIN_NAMESPACE_CXX11
@@ -32358,10 +32358,10 @@ index 50d8863..3d031fd 100644
  				  __flags);
      }
 diff --git a/libstdc++-v3/include/bits/regex.tcc b/libstdc++-v3/include/bits/regex.tcc
-index 88ca605..3f2addc 100644
+index b94fe4490f7..a33ce563b5e 100644
 --- a/libstdc++-v3/include/bits/regex.tcc
 +++ b/libstdc++-v3/include/bits/regex.tcc
-@@ -383,7 +383,7 @@ namespace __detail
+@@ -350,7 +350,7 @@ namespace __detail
    template<typename _Out_iter>
      _Out_iter
      match_results<_Bi_iter, _Alloc>::
@@ -32370,7 +32370,7 @@ index 88ca605..3f2addc 100644
  	   const match_results<_Bi_iter, _Alloc>::char_type* __fmt_first,
  	   const match_results<_Bi_iter, _Alloc>::char_type* __fmt_last,
  	   match_flag_type __flags) const
-@@ -398,7 +398,7 @@ namespace __detail
+@@ -365,7 +365,7 @@ namespace __detail
  	{
  	  auto& __sub = (*this)[__idx];
  	  if (__sub.matched)
@@ -32379,7 +32379,7 @@ index 88ca605..3f2addc 100644
  	};
  
        if (__flags & regex_constants::format_sed)
-@@ -412,7 +412,7 @@ namespace __detail
+@@ -379,7 +379,7 @@ namespace __detail
  		  if (__fctyp.is(__ctype_type::digit, *__fmt_first))
  		    __output(__traits.value(*__fmt_first, 10));
  		  else
@@ -32388,7 +32388,7 @@ index 88ca605..3f2addc 100644
  		  continue;
  		}
  	      if (*__fmt_first == '\\')
-@@ -425,10 +425,10 @@ namespace __detail
+@@ -392,10 +392,10 @@ namespace __detail
  		  __output(0);
  		  continue;
  		}
@@ -32401,7 +32401,7 @@ index 88ca605..3f2addc 100644
  	}
        else
  	{
-@@ -438,7 +438,7 @@ namespace __detail
+@@ -405,7 +405,7 @@ namespace __detail
  	      if (__next == __fmt_last)
  		break;
  
@@ -32410,7 +32410,7 @@ index 88ca605..3f2addc 100644
  
  	      auto __eat = [&](char __ch) -> bool
  		{
-@@ -451,22 +451,22 @@ namespace __detail
+@@ -418,22 +418,22 @@ namespace __detail
  		};
  
  	      if (++__next == __fmt_last)
@@ -32437,7 +32437,7 @@ index 88ca605..3f2addc 100644
  		}
  	      else if (__fctyp.is(__ctype_type::digit, *__next))
  		{
-@@ -481,18 +481,18 @@ namespace __detail
+@@ -448,18 +448,18 @@ namespace __detail
  		    __output(__num);
  		}
  	      else
@@ -32460,7 +32460,7 @@ index 88ca605..3f2addc 100644
  		    const basic_regex<_Ch_type, _Rx_traits>& __e,
  		    const _Ch_type* __fmt, size_t __len,
  		    regex_constants::match_flag_type __flags)
-@@ -503,7 +503,7 @@ namespace __detail
+@@ -470,7 +470,7 @@ namespace __detail
        if (__i == __end)
  	{
  	  if (!(__flags & regex_constants::format_no_copy))
@@ -32469,7 +32469,7 @@ index 88ca605..3f2addc 100644
  	}
        else
  	{
-@@ -511,17 +511,17 @@ namespace __detail
+@@ -478,17 +478,17 @@ namespace __detail
  	  for (; __i != __end; ++__i)
  	    {
  	      if (!(__flags & regex_constants::format_no_copy))
@@ -32493,7 +32493,7 @@ index 88ca605..3f2addc 100644
  
    template<typename _Bi_iter,
 diff --git a/libstdc++-v3/include/bits/std_thread.h b/libstdc++-v3/include/bits/std_thread.h
-index b6e795c..f4c7f0b 100644
+index b6e795ce497..f4c7f0be96a 100644
 --- a/libstdc++-v3/include/bits/std_thread.h
 +++ b/libstdc++-v3/include/bits/std_thread.h
 @@ -122,7 +122,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -32506,7 +32506,7 @@ index b6e795c..f4c7f0b 100644
  #if __glibcxx_formatters
        friend formatter<id, char>;
 diff --git a/libstdc++-v3/include/bits/stl_algo.h b/libstdc++-v3/include/bits/stl_algo.h
-index 98c2249..13a1345 100644
+index 71ead103d2b..67dc53f9ad8 100644
 --- a/libstdc++-v3/include/bits/stl_algo.h
 +++ b/libstdc++-v3/include/bits/stl_algo.h
 @@ -5805,7 +5805,7 @@ _GLIBCXX_BEGIN_NAMESPACE_ALGO
@@ -32607,7 +32607,7 @@ index 98c2249..13a1345 100644
      }
  #endif // __glibcxx_sample
 diff --git a/libstdc++-v3/include/bits/stl_algobase.h b/libstdc++-v3/include/bits/stl_algobase.h
-index 4d5662c..d16d1ec 100644
+index 119dbe9a093..97dece944ae 100644
 --- a/libstdc++-v3/include/bits/stl_algobase.h
 +++ b/libstdc++-v3/include/bits/stl_algobase.h
 @@ -397,14 +397,14 @@ _GLIBCXX_END_NAMESPACE_CONTAINER
@@ -32629,7 +32629,7 @@ index 4d5662c..d16d1ec 100644
  
    template<bool _IsMove, typename _InIter, typename _Sent, typename _OutIter>
 diff --git a/libstdc++-v3/include/bits/stl_pair.h b/libstdc++-v3/include/bits/stl_pair.h
-index 85894fa..e71d025 100644
+index 8c57712b461..60dba9f07ad 100644
 --- a/libstdc++-v3/include/bits/stl_pair.h
 +++ b/libstdc++-v3/include/bits/stl_pair.h
 @@ -106,19 +106,19 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -32689,10 +32689,10 @@ index 85894fa..e71d025 100644
  
  #ifdef __glibcxx_tuples_by_type // C++ >= 14
 diff --git a/libstdc++-v3/include/bits/stl_uninitialized.h b/libstdc++-v3/include/bits/stl_uninitialized.h
-index 0621618..1a8b50a 100644
+index b1428db48b0..d5535b37517 100644
 --- a/libstdc++-v3/include/bits/stl_uninitialized.h
 +++ b/libstdc++-v3/include/bits/stl_uninitialized.h
-@@ -1362,9 +1362,9 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
+@@ -1329,9 +1329,9 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
  	    {
  	      // Can't use memcpy. Wrap the pointer so that __relocate_a_1
  	      // resolves to the non-trivial overload above.
@@ -32706,7 +32706,7 @@ index 0621618..1a8b50a 100644
  #endif
  	  __builtin_memcpy(__result, __first, __count * sizeof(_Tp));
 diff --git a/libstdc++-v3/include/experimental/algorithm b/libstdc++-v3/include/experimental/algorithm
-index 2a505b7..1d78f0e 100644
+index 2a505b7fc2d..1d78f0edd96 100644
 --- a/libstdc++-v3/include/experimental/algorithm
 +++ b/libstdc++-v3/include/experimental/algorithm
 @@ -63,7 +63,7 @@ inline namespace fundamentals_v2
@@ -32740,7 +32740,7 @@ index 2a505b7..1d78f0e 100644
      }
  
 diff --git a/libstdc++-v3/include/experimental/bits/simd.h b/libstdc++-v3/include/experimental/bits/simd.h
-index f0cb101..aa59d93 100644
+index f0cb101aaa8..aa59d935ace 100644
 --- a/libstdc++-v3/include/experimental/bits/simd.h
 +++ b/libstdc++-v3/include/experimental/bits/simd.h
 @@ -2291,20 +2291,20 @@ template <int _Offset,
@@ -32784,7 +32784,7 @@ index f0cb101..aa59d93 100644
  	constexpr int _O = _Offset * __return_width;
  	return __call_with_subscripts<__return_width, _O>(
 diff --git a/libstdc++-v3/include/experimental/internet b/libstdc++-v3/include/experimental/internet
-index f9f61f7..5bea55e 100644
+index f9f61f796a9..5bea55e7d81 100644
 --- a/libstdc++-v3/include/experimental/internet
 +++ b/libstdc++-v3/include/experimental/internet
 @@ -836,9 +836,9 @@ namespace ip
@@ -32907,7 +32907,7 @@ index f9f61f7..5bea55e 100644
        }
    }
 diff --git a/libstdc++-v3/include/ext/algorithm b/libstdc++-v3/include/ext/algorithm
-index 86f3e62..368d2d3 100644
+index 86f3e6269f4..368d2d37681 100644
 --- a/libstdc++-v3/include/ext/algorithm
 +++ b/libstdc++-v3/include/ext/algorithm
 @@ -262,7 +262,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -33021,7 +33021,7 @@ index 86f3e62..368d2d3 100644
  
    /**
 diff --git a/libstdc++-v3/include/ext/pb_ds/detail/debug_map_base.hpp b/libstdc++-v3/include/ext/pb_ds/detail/debug_map_base.hpp
-index 067a6a7..f937909 100644
+index 067a6a79382..f93790943cc 100644
 --- a/libstdc++-v3/include/ext/pb_ds/detail/debug_map_base.hpp
 +++ b/libstdc++-v3/include/ext/pb_ds/detail/debug_map_base.hpp
 @@ -57,9 +57,9 @@ namespace __gnu_pbds
@@ -33037,7 +33037,7 @@ index 067a6a7..f937909 100644
  #define PB_DS_CLASS_T_DEC \
      template<typename Key, typename Eq_Fn, typename Const_Key_Reference>
 diff --git a/libstdc++-v3/include/ext/random.tcc b/libstdc++-v3/include/ext/random.tcc
-index e11b7d1..0818892 100644
+index e11b7d1a8ed..08188929faa 100644
 --- a/libstdc++-v3/include/ext/random.tcc
 +++ b/libstdc++-v3/include/ext/random.tcc
 @@ -212,38 +212,38 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -33098,7 +33098,7 @@ index e11b7d1..0818892 100644
  
  
 diff --git a/libstdc++-v3/include/ext/vstring.tcc b/libstdc++-v3/include/ext/vstring.tcc
-index 41c830a..5f8201e 100644
+index 41c830a1478..5f8201e8a63 100644
 --- a/libstdc++-v3/include/ext/vstring.tcc
 +++ b/libstdc++-v3/include/ext/vstring.tcc
 @@ -553,7 +553,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -33245,7 +33245,7 @@ index 41c830a..5f8201e 100644
  
  _GLIBCXX_END_NAMESPACE_VERSION
 diff --git a/libstdc++-v3/include/parallel/algo.h b/libstdc++-v3/include/parallel/algo.h
-index aa11519..9a84fe6 100644
+index aa115191e18..9a84fe64481 100644
 --- a/libstdc++-v3/include/parallel/algo.h
 +++ b/libstdc++-v3/include/parallel/algo.h
 @@ -289,67 +289,67 @@ namespace __parallel
@@ -33585,7 +33585,7 @@ index aa11519..9a84fe6 100644
  
    // Sequential fallback
 diff --git a/libstdc++-v3/include/parallel/multiway_merge.h b/libstdc++-v3/include/parallel/multiway_merge.h
-index 2c10bc2..93d923f 100644
+index 2c10bc2c155..93d923fc99c 100644
 --- a/libstdc++-v3/include/parallel/multiway_merge.h
 +++ b/libstdc++-v3/include/parallel/multiway_merge.h
 @@ -1372,7 +1372,7 @@ namespace __gnu_parallel
@@ -33607,7 +33607,7 @@ index 2c10bc2..93d923f 100644
     *   for (int __i = 0; __i < 10; ++__i)
     *     { seqs.push(std::make_pair<int*>(sequences[__i],
 diff --git a/libstdc++-v3/include/parallel/set_operations.h b/libstdc++-v3/include/parallel/set_operations.h
-index 50b6e30..0d6a7e5 100644
+index 50b6e30643f..0d6a7e5e90f 100644
 --- a/libstdc++-v3/include/parallel/set_operations.h
 +++ b/libstdc++-v3/include/parallel/set_operations.h
 @@ -130,12 +130,12 @@ namespace __gnu_parallel
@@ -33679,7 +33679,7 @@ index 50b6e30..0d6a7e5 100644
  
    template<typename _IIter,
 diff --git a/libstdc++-v3/include/parallel/unique_copy.h b/libstdc++-v3/include/parallel/unique_copy.h
-index aea60f3..dc548ee 100644
+index aea60f384b8..dc548ee8689 100644
 --- a/libstdc++-v3/include/parallel/unique_copy.h
 +++ b/libstdc++-v3/include/parallel/unique_copy.h
 @@ -85,7 +85,7 @@ namespace __gnu_parallel
@@ -33710,10 +33710,10 @@ index aea60f3..dc548ee 100644
                }
            }
 diff --git a/libstdc++-v3/include/std/format b/libstdc++-v3/include/std/format
-index 6c9f274..549ec4f 100644
+index e557e104d74..7708ffad550 100644
 --- a/libstdc++-v3/include/std/format
 +++ b/libstdc++-v3/include/std/format
-@@ -781,24 +781,24 @@ namespace __format
+@@ -775,24 +775,24 @@ namespace __format
    template<typename _Out, typename _CharT>
      requires output_iterator<_Out, const _CharT&>
      inline _Out
@@ -33743,7 +33743,7 @@ index 6c9f274..549ec4f 100644
  		   _Align __align, size_t __nfill, char32_t __fill_char)
      {
        const size_t __buflen = 0x20;
-@@ -848,11 +848,11 @@ namespace __format
+@@ -842,11 +842,11 @@ namespace __format
  	    basic_string<_CharT> __padstr(__v.begin(), __v.end());
  	    __padding = __padstr;
  	    while (__l-- > 0)
@@ -33759,7 +33759,7 @@ index 6c9f274..549ec4f 100644
  	  }
  
        if (__max < __buflen)
-@@ -861,11 +861,11 @@ namespace __format
+@@ -855,11 +855,11 @@ namespace __format
  	__max = __buflen;
  
        char_traits<_CharT>::assign(__padding_chars, __max, __fill_char);
@@ -33775,7 +33775,7 @@ index 6c9f274..549ec4f 100644
      }
  
    // Write STR to OUT, with alignment and padding as determined by SPEC.
-@@ -1008,7 +1008,7 @@ namespace __format
+@@ -1002,7 +1002,7 @@ namespace __format
    using uint_least32_t = __UINT_LEAST32_TYPE__;
    template<typename _Out, typename _CharT>
      _Out
@@ -33784,7 +33784,7 @@ index 6c9f274..549ec4f 100644
  		       basic_string_view<_CharT> __prefix)
      {
        using _Str_view = basic_string_view<_CharT>;
-@@ -1018,46 +1018,46 @@ namespace __format
+@@ -1012,46 +1012,46 @@ namespace __format
  	__buf,
  	std::__to_chars_i<uint_least32_t>(__buf, __buf + __max, __val, 16).ptr);
  
@@ -33846,7 +33846,7 @@ index 6c9f274..549ec4f 100644
  				static_cast<_UChar>(__c),
  						_Esc::_S_u());
  	}
-@@ -1065,7 +1065,7 @@ namespace __format
+@@ -1059,7 +1059,7 @@ namespace __format
  
    template<typename _CharT, typename _Out>
      _Out
@@ -33855,7 +33855,7 @@ index 6c9f274..549ec4f 100644
  			  basic_string_view<_CharT> __str,
  			  _Term_char __term)
      {
-@@ -1081,21 +1081,21 @@ namespace __format
+@@ -1075,21 +1075,21 @@ namespace __format
  	  ++__print;
  
  	if (__print != __first)
@@ -33882,7 +33882,7 @@ index 6c9f274..549ec4f 100644
  			    basic_string_view<_CharT> __str,
  			    _Term_char __term)
      {
-@@ -1146,46 +1146,46 @@ namespace __format
+@@ -1140,46 +1140,46 @@ namespace __format
  	    }
  
  	  if (__print != __first)
@@ -33943,7 +33943,7 @@ index 6c9f274..549ec4f 100644
      }
  
    // A lightweight optional<locale>.
-@@ -1707,13 +1707,13 @@ namespace __format
+@@ -1701,13 +1701,13 @@ namespace __format
  	{
  	  using _Esc = _Escapes<_CharT>;
  	  constexpr auto __term = __format::_Term_char::_Tc_apos;
@@ -33960,7 +33960,7 @@ index 6c9f274..549ec4f 100644
  
  	  const basic_string_view<_CharT> __escaped = __sink.view();
  	  size_t __estimated_width;
-@@ -1800,7 +1800,7 @@ namespace __format
+@@ -1794,7 +1794,7 @@ namespace __format
  	  _Align __align = _M_spec._M_align;
  
  	  size_t __nfill = __width - __str.size();
@@ -33969,7 +33969,7 @@ index 6c9f274..549ec4f 100644
  	  if (__align == _Align_default)
  	    {
  	      __align = _Align_right;
-@@ -1810,7 +1810,7 @@ namespace __format
+@@ -1804,7 +1804,7 @@ namespace __format
  		  // Write sign and base prefix before zero filling.
  		  if (__prefix_len != 0)
  		    {
@@ -33978,7 +33978,7 @@ index 6c9f274..549ec4f 100644
  						__str.substr(0, __prefix_len));
  		      __str.remove_prefix(__prefix_len);
  		    }
-@@ -1818,7 +1818,7 @@ namespace __format
+@@ -1812,7 +1812,7 @@ namespace __format
  	      else
  		__fill_char = _CharT(' ');
  	    }
@@ -33987,7 +33987,7 @@ index 6c9f274..549ec4f 100644
  					  __align, __nfill, __fill_char);
  	}
  
-@@ -2289,7 +2289,7 @@ namespace __format
+@@ -2283,7 +2283,7 @@ namespace __format
  	  _Align __align = _M_spec._M_align;
  
  	  size_t __nfill = __width - __str.size();
@@ -33996,7 +33996,7 @@ index 6c9f274..549ec4f 100644
  	  if (__align == _Align_default)
  	    {
  	      __align = _Align_right;
-@@ -2299,14 +2299,14 @@ namespace __format
+@@ -2293,14 +2293,14 @@ namespace __format
  		  // Write sign before zero filling.
  		  if (!__format::__is_xdigit(__narrow_str[0]))
  		    {
@@ -34013,7 +34013,7 @@ index 6c9f274..549ec4f 100644
  					  __align, __nfill, __fill_char);
  	}
  
-@@ -2955,12 +2955,12 @@ namespace __format
+@@ -2942,12 +2942,12 @@ namespace __format
  	      if (__width <= __str.size())
  		return __format::__write(__fc.out(), __str);
  
@@ -34029,7 +34029,7 @@ index 6c9f274..549ec4f 100644
  					      __format::_Align_right,
  					      __nfill, _CharT('0'));
  	    }
-@@ -3432,8 +3432,8 @@ namespace __format
+@@ -3468,8 +3468,8 @@ namespace __format
      public:
        [[__gnu__::__always_inline__]]
        explicit
@@ -34040,7 +34040,7 @@ index 6c9f274..549ec4f 100644
        { }
  
        using _Sink<_CharT>::out;
-@@ -3542,9 +3542,9 @@ namespace __format
+@@ -3578,9 +3578,9 @@ namespace __format
  
      public:
        explicit
@@ -34053,7 +34053,7 @@ index 6c9f274..549ec4f 100644
        { }
  
        format_to_n_result<_OutIter>
-@@ -4386,13 +4386,13 @@ namespace __format
+@@ -4422,13 +4422,13 @@ namespace __format
        __format::_Optional_locale _M_loc;
  
        basic_format_context(basic_format_args<basic_format_context> __args,
@@ -34071,7 +34071,7 @@ index 6c9f274..549ec4f 100644
        { }
  
        // _GLIBCXX_RESOLVE_LIB_DEFECTS
-@@ -4675,15 +4675,15 @@ namespace __format
+@@ -4711,15 +4711,15 @@ namespace __format
  
    template<typename _Out, typename _CharT, typename _Context>
      inline _Out
@@ -34090,7 +34090,7 @@ index 6c9f274..549ec4f 100644
        else
  	__sink_out = __sink.out();
  
-@@ -4815,34 +4815,34 @@ namespace __format
+@@ -4851,34 +4851,34 @@ namespace __format
    template<typename _Out> requires output_iterator<_Out, const char&>
      [[__gnu__::__always_inline__]]
      inline _Out
@@ -34133,7 +34133,7 @@ index 6c9f274..549ec4f 100644
      }
  #endif
  
-@@ -4925,9 +4925,9 @@ namespace __format
+@@ -4961,9 +4961,9 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const char&>
      inline _Out
@@ -34145,7 +34145,7 @@ index 6c9f274..549ec4f 100644
  			     std::make_format_args(__args...));
      }
  
-@@ -4935,9 +4935,9 @@ namespace __format
+@@ -4971,9 +4971,9 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const wchar_t&>
      inline _Out
@@ -34157,7 +34157,7 @@ index 6c9f274..549ec4f 100644
  			     std::make_wformat_args(__args...));
      }
  #endif
-@@ -4945,10 +4945,10 @@ namespace __format
+@@ -4981,10 +4981,10 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const char&>
      inline _Out
@@ -34170,7 +34170,7 @@ index 6c9f274..549ec4f 100644
  			     std::make_format_args(__args...));
      }
  
-@@ -4956,10 +4956,10 @@ namespace __format
+@@ -4992,10 +4992,10 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const wchar_t&>
      inline _Out
@@ -34183,7 +34183,7 @@ index 6c9f274..549ec4f 100644
  			     std::make_wformat_args(__args...));
      }
  #endif
-@@ -4967,10 +4967,10 @@ namespace __format
+@@ -5003,10 +5003,10 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const char&>
      inline format_to_n_result<_Out>
@@ -34196,7 +34196,7 @@ index 6c9f274..549ec4f 100644
        std::vformat_to(__sink.out(), __fmt.get(),
  		      std::make_format_args(__args...));
        return std::move(__sink)._M_finish();
-@@ -4980,10 +4980,10 @@ namespace __format
+@@ -5016,10 +5016,10 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const wchar_t&>
      inline format_to_n_result<_Out>
@@ -34209,7 +34209,7 @@ index 6c9f274..549ec4f 100644
        std::vformat_to(__sink.out(), __fmt.get(),
  		      std::make_wformat_args(__args...));
        return std::move(__sink)._M_finish();
-@@ -4993,10 +4993,10 @@ namespace __format
+@@ -5029,10 +5029,10 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const char&>
      inline format_to_n_result<_Out>
@@ -34222,7 +34222,7 @@ index 6c9f274..549ec4f 100644
        std::vformat_to(__sink.out(), __loc, __fmt.get(),
  		      std::make_format_args(__args...));
        return std::move(__sink)._M_finish();
-@@ -5006,10 +5006,10 @@ namespace __format
+@@ -5042,10 +5042,10 @@ namespace __format
    template<typename _Out, typename... _Args>
      requires output_iterator<_Out, const wchar_t&>
      inline format_to_n_result<_Out>
@@ -34235,7 +34235,7 @@ index 6c9f274..549ec4f 100644
        std::vformat_to(__sink.out(), __loc, __fmt.get(),
  		      std::make_wformat_args(__args...));
        return std::move(__sink)._M_finish();
-@@ -5636,23 +5636,23 @@ namespace __format
+@@ -5676,23 +5676,23 @@ namespace __format
  	_M_format_elems(_Rg& __rg,
  			basic_format_context<_Out, _CharT>& __fc) const
  	{
@@ -34268,7 +34268,7 @@ index 6c9f274..549ec4f 100644
  
        __format::_Spec<_CharT> _M_spec{};
 diff --git a/libstdc++-v3/include/std/istream b/libstdc++-v3/include/std/istream
-index d5bb187..369cb67 100644
+index d5bb1876001..369cb67b834 100644
 --- a/libstdc++-v3/include/std/istream
 +++ b/libstdc++-v3/include/std/istream
 @@ -833,7 +833,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -34412,7 +34412,7 @@ index d5bb187..369cb67 100644
    ///@}
  
 diff --git a/libstdc++-v3/include/std/ostream b/libstdc++-v3/include/std/ostream
-index 644e568..a6bc22c 100644
+index 644e568e882..a6bc22c5340 100644
 --- a/libstdc++-v3/include/std/ostream
 +++ b/libstdc++-v3/include/std/ostream
 @@ -164,11 +164,11 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -34457,7 +34457,7 @@ index 644e568..a6bc22c 100644
  	__catch(const __cxxabiv1::__forced_unwind&)
  	  {
 diff --git a/libstdc++-v3/include/std/print b/libstdc++-v3/include/std/print
-index ea1aaac..408dbce 100644
+index ea1aaac4389..408dbce6840 100644
 --- a/libstdc++-v3/include/std/print
 +++ b/libstdc++-v3/include/std/print
 @@ -58,8 +58,8 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -34503,7 +34503,7 @@ index ea1aaac..408dbce 100644
  #endif
    }
 diff --git a/libstdc++-v3/include/std/thread b/libstdc++-v3/include/std/thread
-index d2f91ad..6953ae8 100644
+index d2f91ad8995..6953ae830ae 100644
 --- a/libstdc++-v3/include/std/thread
 +++ b/libstdc++-v3/include/std/thread
 @@ -104,7 +104,7 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -34528,7 +34528,7 @@ index d2f91ad..6953ae8 100644
    /// @}
  
 diff --git a/libstdc++-v3/include/std/tuple b/libstdc++-v3/include/std/tuple
-index 95bfc16..bb4a495 100644
+index 2e69af13a98..5d4a5667d56 100644
 --- a/libstdc++-v3/include/std/tuple
 +++ b/libstdc++-v3/include/std/tuple
 @@ -325,35 +325,35 @@ _GLIBCXX_BEGIN_NAMESPACE_VERSION
@@ -35383,7 +35383,7 @@ index 95bfc16..bb4a495 100644
  #endif // concepts && conditional_explicit
  
 diff --git a/libstdc++-v3/include/tr1/regex b/libstdc++-v3/include/tr1/regex
-index c120a3f..a99b265 100644
+index c120a3f5f7e..a99b2659467 100644
 --- a/libstdc++-v3/include/tr1/regex
 +++ b/libstdc++-v3/include/tr1/regex
 @@ -2009,7 +2009,7 @@ namespace regex_constants
@@ -35405,7 +35405,7 @@ index c120a3f..a99b265 100644
  		  const basic_string<_Ch_type>& __fmt,
  		  regex_constants::match_flag_type __flags
 diff --git a/libstdc++-v3/include/tr1/tuple b/libstdc++-v3/include/tr1/tuple
-index e793d55..bdcc933 100644
+index e793d55673a..bdcc933ed02 100644
 --- a/libstdc++-v3/include/tr1/tuple
 +++ b/libstdc++-v3/include/tr1/tuple
 @@ -109,26 +109,26 @@ namespace tr1
@@ -35535,7 +35535,7 @@ index e793d55..bdcc933 100644
  	}
      };
 diff --git a/libstdc++-v3/include/tr1/utility b/libstdc++-v3/include/tr1/utility
-index 7fe76c2..f80a50d 100644
+index 7fe76c24de7..f80a50dd338 100644
 --- a/libstdc++-v3/include/tr1/utility
 +++ b/libstdc++-v3/include/tr1/utility
 @@ -97,13 +97,13 @@ namespace tr1
@@ -35557,7 +35557,7 @@ index 7fe76c2..f80a50d 100644
  
  _GLIBCXX_END_NAMESPACE_VERSION
 diff --git a/libstdc++-v3/include/tr2/bool_set b/libstdc++-v3/include/tr2/bool_set
-index c003ace..be62520 100644
+index c003ace5a42..be625204deb 100644
 --- a/libstdc++-v3/include/tr2/bool_set
 +++ b/libstdc++-v3/include/tr2/bool_set
 @@ -133,18 +133,18 @@ namespace tr2
@@ -35584,7 +35584,7 @@ index c003ace..be62520 100644
  	  __b._M_b = static_cast<_Bool_set_val>(__c);
        }
 diff --git a/libstdc++-v3/include/tr2/bool_set.tcc b/libstdc++-v3/include/tr2/bool_set.tcc
-index 111fcb6..0a4e8d1 100644
+index 111fcb635ff..0a4e8d14d78 100644
 --- a/libstdc++-v3/include/tr2/bool_set.tcc
 +++ b/libstdc++-v3/include/tr2/bool_set.tcc
 @@ -102,9 +102,9 @@ _GLIBCXX_END_NAMESPACE_VERSION
@@ -35600,7 +35600,7 @@ index 111fcb6..0a4e8d1 100644
  /*
    template<typename _CharT, typename _InIter>
 diff --git a/libstdc++-v3/src/c++11/shared_ptr.cc b/libstdc++-v3/src/c++11/shared_ptr.cc
-index 1036419..7153ded 100644
+index 10364198f69..7153dedba27 100644
 --- a/libstdc++-v3/src/c++11/shared_ptr.cc
 +++ b/libstdc++-v3/src/c++11/shared_ptr.cc
 @@ -34,7 +34,7 @@ namespace __gnu_internal _GLIBCXX_VISIBILITY(hidden)
@@ -35613,7 +35613,7 @@ index 1036419..7153ded 100644
      struct alignas(__GCC_DESTRUCTIVE_SIZE) M : __gnu_cxx::__mutex { };
  #else
 diff --git a/libstdc++-v3/src/c++17/fast_float/fast_float.h b/libstdc++-v3/src/c++17/fast_float/fast_float.h
-index 3da58f2..6e5b62d 100644
+index 3da58f2850c..6e5b62d2f72 100644
 --- a/libstdc++-v3/src/c++17/fast_float/fast_float.h
 +++ b/libstdc++-v3/src/c++17/fast_float/fast_float.h
 @@ -102,7 +102,7 @@ from_chars_result from_chars_advanced(const char *first, const char *last,
@@ -35635,7 +35635,7 @@ index 3da58f2..6e5b62d 100644
      mask = (uint64_t(1) << shift) - 1;
    }
 diff --git a/libstdc++-v3/src/c++17/ryu/common.h b/libstdc++-v3/src/c++17/ryu/common.h
-index f8ee147..c9b966a 100644
+index f8ee147db04..c9b966aecaa 100644
 --- a/libstdc++-v3/src/c++17/ryu/common.h
 +++ b/libstdc++-v3/src/c++17/ryu/common.h
 @@ -18,7 +18,7 @@
@@ -35648,7 +35648,7 @@ index f8ee147..c9b966a 100644
  #endif
  
 diff --git a/libstdc++-v3/src/c++98/math_stubs_float.cc b/libstdc++-v3/src/c++98/math_stubs_float.cc
-index f4ef816..0f10be7 100644
+index f4ef81663de..0f10be7c76e 100644
 --- a/libstdc++-v3/src/c++98/math_stubs_float.cc
 +++ b/libstdc++-v3/src/c++98/math_stubs_float.cc
 @@ -28,10 +28,12 @@
@@ -35864,7 +35864,7 @@ index f4ef816..0f10be7 100644
    {
      return (float) tanh(x);
 diff --git a/libstdc++-v3/src/c++98/math_stubs_long_double.cc b/libstdc++-v3/src/c++98/math_stubs_long_double.cc
-index fd3107c..9637a6f 100644
+index fd3107c2902..9637a6f132a 100644
 --- a/libstdc++-v3/src/c++98/math_stubs_long_double.cc
 +++ b/libstdc++-v3/src/c++98/math_stubs_long_double.cc
 @@ -28,10 +28,12 @@
@@ -36080,10 +36080,10 @@ index fd3107c..9637a6f 100644
    {
      return tanh((double) x);
 diff --git a/libstdc++-v3/src/filesystem/ops-common.h b/libstdc++-v3/src/filesystem/ops-common.h
-index ce7645d..5861538 100644
+index 4feacfdb932..877e5aea395 100644
 --- a/libstdc++-v3/src/filesystem/ops-common.h
 +++ b/libstdc++-v3/src/filesystem/ops-common.h
-@@ -261,7 +261,7 @@ namespace __gnu_posix
+@@ -264,7 +264,7 @@ namespace __gnu_posix
    file_time(const stat_type& st, std::error_code& ec) noexcept
    {
      using namespace std::chrono;
@@ -36093,7 +36093,7 @@ index ce7645d..5861538 100644
      nanoseconds ns{st.st_mtim.tv_nsec};
  #else
 diff --git a/libtool.m4 b/libtool.m4
-index add2d4a..6d340c0 100644
+index add2d4a1e23..6d340c0d837 100644
 --- a/libtool.m4
 +++ b/libtool.m4
 @@ -1592,6 +1592,12 @@ AC_CACHE_VAL([lt_cv_sys_max_cmd_len], [dnl
@@ -36181,7 +36181,7 @@ index add2d4a..6d340c0 100644
          # as there is no search path for DLLs.
          _LT_TAGVAR(hardcode_libdir_flag_spec, $1)='-L$libdir'
 diff --git a/libvtv/configure b/libvtv/configure
-index a788916..2b70f26 100755
+index a7889161c50..2b70f267207 100755
 --- a/libvtv/configure
 +++ b/libvtv/configure
 @@ -6466,7 +6466,7 @@ if test "$GCC" = yes; then
@@ -36309,7 +36309,7 @@ index a788916..2b70f26 100755
      ;;
    *)
 diff --git a/libvtv/configure.ac b/libvtv/configure.ac
-index 50aaadb..964e298 100644
+index 50aaadbb3a3..964e29824a5 100644
 --- a/libvtv/configure.ac
 +++ b/libvtv/configure.ac
 @@ -191,7 +191,7 @@ _EOF
@@ -36322,7 +36322,7 @@ index 50aaadb..964e298 100644
      ;;
    *)
 diff --git a/lto-plugin/configure b/lto-plugin/configure
-index 28f5dd7..2e81b84 100755
+index 28f5dd79cd7..2e81b84517d 100755
 --- a/lto-plugin/configure
 +++ b/lto-plugin/configure
 @@ -6337,7 +6337,7 @@ if test "$GCC" = yes; then
@@ -36397,7 +36397,7 @@ index 28f5dd7..2e81b84 100755
      # we must compare to with_cross_host to decide if this is a native
      # or cross-compiler and select where to install dlls appropriately.
 diff --git a/zlib/configure b/zlib/configure
-index 92c462d..f50584c 100755
+index 92c462d04c6..f50584c6e23 100755
 --- a/zlib/configure
 +++ b/zlib/configure
 @@ -4650,7 +4650,7 @@ if test "$GCC" = yes; then
@@ -36475,3 +36475,190 @@ index 92c462d..f50584c 100755
      lt_cv_dlopen="LoadLibrary"
      lt_cv_dlopen_libs=
      ;;
+
+pTOS m68k target and backend fixes (pTOS-toolchain#21), appended to the
+patch above, whose content is otherwise unchanged. prepare.py used to make
+these edits. Registers m68k-unknown-ptos-prgelf in config.gcc and
+libgcc and adds m68k/ptos.opt. Includes the MOVE operand-dependency fix
+(pTOS-toolchain#15) and the reload constant-mode fix (pTOS-toolchain#18).
+
+--- a/gcc/config/m68k/m68k-protos.h
++++ b/gcc/config/m68k/m68k-protos.h
+@@ -26,6 +26,7 @@
+ extern void split_di (rtx[], int, rtx[], rtx[]);
+ 
+ extern bool valid_mov3q_const (HOST_WIDE_INT);
++extern bool m68k_move_operands_p (rtx, rtx);
+ extern const char *output_move_simode (rtx *);
+ extern const char *output_move_himode (rtx *);
+ extern const char *output_move_qimode (rtx *);
+--- a/gcc/config/m68k/m68k.cc
++++ b/gcc/config/m68k/m68k.cc
+@@ -3760,6 +3760,21 @@
+   return "move%.l %1,%0";
+ }
+ 
++/* Reject a memory MOVE whose source updates a register used to address
++   the destination.  Combining such operands changes the destination EA.  */
++bool
++m68k_move_operands_p (rtx dest, rtx src)
++{
++  if (MEM_P (dest) && MEM_P (src))
++    {
++      rtx addr = XEXP (src, 0);
++      if ((GET_CODE (addr) == POST_INC || GET_CODE (addr) == PRE_DEC)
++          && reg_overlap_mentioned_p (XEXP (addr, 0), XEXP (dest, 0)))
++        return false;
++    }
++  return true;
++}
++
+ const char *
+ output_move_simode (rtx *operands)
+ {
+--- a/gcc/config/m68k/m68k.md
++++ b/gcc/config/m68k/m68k.md
+@@ -996,7 +996,7 @@
+   ;; We don't allow f-regs since fixed point cannot go in them.
+   [(set (match_operand:SI 0 "nonimmediate_operand" "=g,d,a<")
+         (match_operand:SI 1 "general_src_operand" "damSnT,n,i"))]
+-  "!TARGET_COLDFIRE && reload_completed"
++  "!TARGET_COLDFIRE && reload_completed && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   return output_move_simode (operands);
+ }
+@@ -1009,7 +1009,7 @@
+   [(set (match_operand:SI 0 "nonimmediate_operand" "=g,d,a<")
+         (match_operand:SI 1 "general_src_operand" "damSKT,n,i"))]
+ 
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   return output_move_simode (operands);
+ }
+@@ -1019,7 +1019,7 @@
+ (define_insn "*movsi_cf"
+   [(set (match_operand:SI 0 "nonimmediate_operand" "=g,d, d, d, d, d, a,Ap,  a,  r<Q>,g,    U")
+ 	(match_operand:SI 1 "general_operand"      " R,CQ,CW,CZ,CS,Ci,J,J Cs,Cs, g,   Rr<Q>,U"))]
+-  "TARGET_COLDFIRE"
++  "TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   switch (which_alternative)
+     {
+@@ -1088,7 +1088,7 @@
+ (define_insn ""
+   [(set (match_operand:HI 0 "nonimmediate_operand" "=g")
+         (match_operand:HI 1 "general_src_operand" "gS"))]
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_himode (operands);"
+   [(set (attr "flags_valid")
+ 	(if_then_else (match_operand 0 "address_reg_operand")
+@@ -1098,7 +1098,7 @@
+ (define_insn ""
+   [(set (match_operand:HI 0 "nonimmediate_operand" "=r<Q>,g,U")
+ 	(match_operand:HI 1 "general_operand" "g,r<Q>,U"))]
+-  "TARGET_COLDFIRE"
++  "TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_himode (operands);"
+   [(set (attr "flags_valid")
+ 	(if_then_else (match_operand 0 "address_reg_operand")
+@@ -1134,14 +1134,14 @@
+ (define_insn ""
+   [(set (match_operand:QI 0 "nonimmediate_operand" "=d,*a,m")
+ 	(match_operand:QI 1 "general_src_operand" "dmSi*a,di*a,dmSi"))]
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_qimode (operands);"
+   [(set_attr "flags_valid" "set")])
+ 
+ (define_insn ""
+   [(set (match_operand:QI 0 "nonimmediate_operand" "=d<Q>,dm,U,d*a")
+ 	(match_operand:QI 1 "general_src_operand" "dmi,d<Q>,U,di*a"))]
+-  "TARGET_COLDFIRE"
++  "TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+   "* return output_move_qimode (operands);"
+   [(set_attr "flags_valid" "set")])
+ 
+@@ -1213,7 +1213,7 @@
+ (define_insn ""
+   [(set (match_operand:SF 0 "nonimmediate_operand" "=rmf")
+ 	(match_operand:SF 1 "general_operand" "rmfF"))]
+-  "!TARGET_COLDFIRE"
++  "!TARGET_COLDFIRE && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   if (FP_REG_P (operands[0]))
+     {
+@@ -1256,7 +1256,7 @@
+ (define_insn "movsf_cf_soft"
+   [(set (match_operand:SF 0 "nonimmediate_operand" "=r<Q>,g,U")
+ 	(match_operand:SF 1 "general_operand" "g,r<Q>,U"))]
+-  "TARGET_COLDFIRE && !TARGET_COLDFIRE_FPU"
++  "TARGET_COLDFIRE && !TARGET_COLDFIRE_FPU && m68k_move_operands_p (operands[0], operands[1])"
+   "move%.l %1,%0"
+   [(set_attr "type" "move_l")])
+ 
+@@ -1267,7 +1267,7 @@
+ ,m")
+         (match_operand:SF 1 "general_operand"      " f,     r<Q>U,f,rm,F,F,   m
+ ,f"))]
+-  "TARGET_COLDFIRE_FPU"
++  "TARGET_COLDFIRE_FPU && m68k_move_operands_p (operands[0], operands[1])"
+ {
+   if (which_alternative == 4 || which_alternative == 5) {
+     rtx xoperands[2];
+--- a/gcc/reload1.cc
++++ b/gcc/reload1.cc
+@@ -5800,7 +5800,10 @@
+ 	  /* If the other reload loads the same input value, that
+ 	     will not cause a conflict only if it's loading it into
+ 	     the same register.  */
+-	  if (true_regnum (reg) != start_regno)
++	  if (true_regnum (reg) != start_regno
++	      /* Equal constants loaded in different modes are different
++		 values: the narrower load clobbers the rest of the wider.  */
++	      || rld[i].mode != rld[reloadnum].mode)
+ 	    other_input = NULL_RTX;
+ 	  if (! other_input || ! rtx_equal_p (other_input, value)
+ 	      || rld[i].out || out)
+--- a/gcc/config.gcc
++++ b/gcc/config.gcc
+@@ -2464,6 +2464,15 @@
+ 	tm_defines="${tm_defines} MOTOROLA=1"
+ 	tmake_file="${tmake_file} m68k/t-floatlib m68k/t-linux m68k/t-mlibs"
+ 	;;
++m68k-*-ptos-prgelf)
++    default_m68k_cpu=68000
++    default_cf_cpu=5475
++    tm_file="${tm_file} dbxelf.h elfos.h m68k/mint.h m68k/mint-stdint.h"
++    tm_defines="${tm_defines} MOTOROLA=1"
++    tmake_file="m68k/t-floatlib m68k/t-mint"
++    extra_options="${extra_options} m68k/ptos.opt"
++    gcc_cv_initfini_array=yes
++    ;;
+ m68k-*-mintelf*)
+ 	default_m68k_cpu=68000
+ 	default_cf_cpu=5475
+--- a/libgcc/config.host
++++ b/libgcc/config.host
+@@ -1020,7 +1020,7 @@
+ m32rle-*-elf*)
+ 	tmake_file=t-fdpbit
+ 	;;
+-m68k-*-elf* | fido-*-elf)
++m68k-*-ptos-prgelf | m68k-*-elf* | fido-*-elf)
+ 	tmake_file="$tmake_file m68k/t-floatlib"
+ 	;;
+ m68k*-*-netbsdelf*)
+--- /dev/null
++++ b/gcc/config/m68k/ptos.opt
+@@ -0,0 +1,5 @@
++
++mmintelf
++Target RejectNegative
++Link a MiNT PRG+ELF executable.
++
+--- /dev/null
++++ b/gcc/config/m68k/ptos.opt.urls
+@@ -0,0 +1 @@
++; pTOS: the ptos.opt option has no documentation URL.
