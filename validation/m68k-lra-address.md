@@ -65,3 +65,16 @@ ABIs. It is included in the GCC 16 smoke tests.
 No complete SDK, ROM build or emulator suite was run. This change fixes
 GCC 16.2's compiler crash; it does not establish that all LRA-generated
 pTOS code passes runtime tests or enable LRA by default.
+
+## macOS patch application follow-up
+
+The macOS m68k builder rejected the LRA hunk before compiling GCC. The
+hunk had trailing context but no leading context. Apple's `patch_match`
+implementation treats that asymmetry as a beginning-of-file change and
+rejects a match elsewhere, unlike GNU patch. Restore three leading context
+lines around the existing change; the patched compiler source is unchanged.
+
+Source preparation with the complete patch passed again for m68k, ARM and
+x86-64 using the verified GCC 16.2.0 archive and GNU patch, and all 40 LRA
+compile/assemble checks passed. Native macOS patch application is checked
+by the PR's macOS build.

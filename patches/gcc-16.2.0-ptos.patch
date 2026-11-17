@@ -25271,7 +25271,10 @@ reach admits the first unencodable positive displacement (128 or 32768).
 
 --- a/gcc/config/m68k/m68k.cc
 +++ b/gcc/config/m68k/m68k.cc
-@@ -2690,4 +2690,6 @@
+@@ -2687,7 +2687,9 @@
+ 
+   memset (address, 0, sizeof (*address));
+ 
 -  if (mode == BLKmode)
 +  /* LRA uses VOIDmode for address operands.  Even without a memory
 +     access, the displacement itself must fit the addressing mode.  */
