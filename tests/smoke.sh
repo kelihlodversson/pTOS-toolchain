@@ -52,6 +52,9 @@ if [[ $arch == all || $arch == m68k ]]; then
     target="$bin/m68k-unknown-ptos-prgelf"
     python3 "$test_dir/m68k_auto_inc_dec.py" "$target-gcc"
     python3 "$test_dir/m68k_reload_const_modes.py" "$target-gcc"
+    case $("$target-gcc" -dumpfullversion) in
+        16.*) python3 "$test_dir/m68k_lra_address.py" "$target-gcc" ;;
+    esac
     # CrossMiNT's GCC 12 patch predates the fastcall compiler option and
     # multilibs. Later supported tracks must provide both.
     fastcall=true
