@@ -94,7 +94,8 @@ def main():
         shutil.copy2(PROJECT / 'tests/smoke.sh', docs / 'smoke.sh')
         for name in ('m68k_auto_inc_dec.py', 'm68k-auto-inc-dec.c', 'm68k-auto-inc-dec-runtime.c',
                      'm68k_reload_const_modes.py', 'm68k-reload-const-modes.c',
-                     'm68k-reload-const-modes-runtime.c'):
+                     'm68k-reload-const-modes-runtime.c',
+                     'm68k_lra_address.py', 'm68k-lra-address.c'):
             shutil.copy2(PROJECT / 'tests' / name, docs / name)
         licenses = {
             'GCC-GPL-3': args.work_dir / args.arch / f"gcc-{gcc['version']}-src/COPYING3",
