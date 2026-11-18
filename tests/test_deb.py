@@ -67,7 +67,8 @@ class DebianPackages(unittest.TestCase):
                 docs = installed / f'usr/share/doc/ptos-sdk-{arch.replace("_", "-")}'
                 for name in ('m68k_auto_inc_dec.py', 'm68k-auto-inc-dec.c', 'm68k-auto-inc-dec-runtime.c',
                              'm68k_reload_const_modes.py', 'm68k-reload-const-modes.c',
-                             'm68k-reload-const-modes-runtime.c'):
+                             'm68k-reload-const-modes-runtime.c',
+                             'm68k_lra_address.py', 'm68k-lra-address.c'):
                     self.assertEqual((docs / name).read_bytes(), (PROJECT / 'tests' / name).read_bytes())
             self.assertEqual(len(packages), 3)
             for arch, target in TARGETS.items():

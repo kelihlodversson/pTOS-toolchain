@@ -5,9 +5,9 @@
 module PtosToolchainFormula
   def self.included(formula)
     formula.class_eval do
-      url "https://github.com/kelihlodversson/pTOS-toolchain/archive/37da5a245e0a324990c501ca3f42550f2fff06c6.tar.gz"
+      url "https://github.com/kelihlodversson/pTOS-toolchain/archive/465d8d7348bbe75502de588dfe3aac2862f44991.tar.gz"
       version "16.2.0"
-      sha256 "36fd5083abe1ed222e96522027172343f78e59987a34edfd5f5f0737526dafd9"
+      sha256 "aeaa6b66c59b27bfa8d704a9dc44ccdb8ef3c5c9198cf704d294f841aad52afa"
       license all_of: ["GPL-3.0-or-later", "LGPL-2.1-or-later"]
 
       depends_on "bison" => :build
@@ -79,7 +79,9 @@ module PtosToolchainFormula
                                "tests/m68k-auto-inc-dec-runtime.c",
                                "tests/m68k_reload_const_modes.py",
                                "tests/m68k-reload-const-modes.c",
-                               "tests/m68k-reload-const-modes-runtime.c"
+                               "tests/m68k-reload-const-modes-runtime.c",
+                               "tests/m68k_lra_address.py",
+                               "tests/m68k-lra-address.c"
     # GCC and Binutils install common manuals. Keep them in a formula-specific
     # directory so the SDKs can be linked side by side.
     pkgshare.install info if info.exist?
