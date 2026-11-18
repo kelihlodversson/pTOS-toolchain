@@ -7,6 +7,11 @@ class PtosM68k < Formula
   homepage "https://github.com/kelihlodversson/pTOS-toolchain"
   revision 3
 
+  bottle do
+    root_url "https://github.com/kelihlodversson/pTOS-toolchain/releases/download/v1.0.3"
+    sha256 cellar: "/opt/homebrew/Cellar", arm64_tahoe: "f0466cc872c444bb02bcecfcc14a6f0fb6d89fa2a0c82075b3302a36e8b32c17"
+  end
+
   def install
     install_ptos "m68k"
   end
