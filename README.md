@@ -1,6 +1,7 @@
 # pTOS toolchain
 
-Host-side cross-compilers and C SDKs for building pTOS applications and kernels.
+Host-side C and C++ cross-compilers and a C SDK for building pTOS applications
+and kernels.
 These packages run on your development computer; they do not install or run the
 pTOS operating system.
 
@@ -144,7 +145,8 @@ without downloading or building anything:
 
 The optional third positional argument selects `binutils`, `gcc` or `sdk`;
 omitting it builds all stages. Install matching Binutils before running the
-`gcc` stage alone. Use separate installation prefixes to retain several SDKs.
+`gcc` stage alone. This stage installs both target-prefixed drivers, `gcc` and
+`g++`, and libgcc. Use separate installation prefixes to retain several SDKs.
 Source and compiler build directories are separated by version. The download
 cache is shared, including between versions.
 
@@ -226,6 +228,28 @@ linker script, use `-ffreestanding -nostdlib` and specify the layout directly.
 
 On m68k, enable `CONF_WITH_ELF_LOADER` in the pTOS kernel to run plain ELF
 programs. The `virt-m68k-cli-elf` configuration enables it.
+
+## Compile freestanding C++
+
+Source builds include `g++` for all three targets. The SDK uses libcmini and
+ships without libstdc++ or the C++ runtime. Compile C++ code that needs neither,
+then link with the matching `gcc` driver to use the SDK's startup and libcmini.
+Declare `main` with C linkage so the startup code can call it.
+
+```cpp
+template <typename T>
+constexpr T square(T value) { return value * value; }
+
+extern "C" int main()
+{
+    return square(3) == 9 ? 0 : 1;
+}
+```
+
+```sh
+m68k-unknown-ptos-prgelf-g++ -std=c++17 -ffreestanding -fno-exceptions -fno-rtti -c hello.cc -o hello.o
+m68k-unknown-ptos-prgelf-gcc hello.o -o hello.elf
+```
 
 Shared libraries and dynamic executables use the corresponding pTOS
 runtime linker and entry ABI. The interpreter paths and loader flags are

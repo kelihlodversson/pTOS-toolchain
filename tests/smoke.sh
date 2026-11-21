@@ -30,6 +30,24 @@ int main(void)
 }
 EOF
 
+cat > hello.cc <<'EOF'
+static_assert(sizeof(void *) == 4 && sizeof(long) == 4, "ILP32 user ABI");
+
+template <typename T>
+T remainder(T value, T divisor)
+{
+    return value % divisor;
+}
+
+static volatile unsigned long long value = 23;
+static volatile unsigned long long divisor = 4;
+
+extern "C" int main()
+{
+    return remainder(value, divisor) == 3 ? 0 : 1;
+}
+EOF
+
 check_elf() {
     local file=$1 class=$2 machine=$3 header
     header=$("$target-readelf" -h "$file")
@@ -46,6 +64,12 @@ check_target() {
     "$target-gcc" hello.c -o hello.elf
     check_elf hello.elf ELF32 "$1"
     "$target-readelf" -h hello.elf | grep -q 'EXEC (Executable file)'
+
+    "$target-g++" -std=c++17 -ffreestanding -fno-exceptions -fno-rtti -c hello.cc -o hello-cxx.o
+    # The C driver links the SDK startup and libcmini without requiring libstdc++.
+    "$target-gcc" hello-cxx.o -o hello-cxx.elf
+    check_elf hello-cxx.elf ELF32 "$1"
+    "$target-readelf" -h hello-cxx.elf | grep -q 'EXEC (Executable file)'
 }
 
 if [[ $arch == all || $arch == m68k ]]; then
