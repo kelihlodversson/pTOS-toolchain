@@ -128,13 +128,15 @@ build_gcc() (
     esac
     archive=$(download "${gcc_recipe[1]}" "${gcc_recipe[2]}")
     prepare gcc "$arch" "$archive" "$mint_patch" "$gcc_version"
-    mkdir -p -- "$work/$arch/gcc-$gcc_version-binutils-$binutils_version-build" "$prefix/$target/sysroot/include"
-    cd -- "$work/$arch/gcc-$gcc_version-binutils-$binutils_version-build"
+    # Use a separate build directory so an existing C-only Makefile is never reused.
+    local build="$work/$arch/gcc-$gcc_version-binutils-$binutils_version-c-cxx-build"
+    mkdir -p -- "$build" "$prefix/$target/sysroot/include"
+    cd -- "$build"
     if [[ ! -f Makefile ]]; then
         ../gcc-$gcc_version-src/configure --target="$target" --prefix="$prefix" \
             --with-sysroot="$prefix/$target/sysroot" --with-native-system-header-dir=/include \
             --with-gnu-as --with-gnu-ld --without-headers --disable-bootstrap \
-            --enable-languages=c --disable-nls --disable-shared --disable-threads \
+            --enable-languages=c,c++ --disable-libstdcxx --disable-nls --disable-shared --disable-threads \
             --disable-libssp --disable-libgomp --disable-libquadmath --disable-libatomic \
             ${host_gcc_options[@]+"${host_gcc_options[@]}"} ${options[@]+"${options[@]}"}
     fi

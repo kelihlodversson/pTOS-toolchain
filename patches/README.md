@@ -117,8 +117,8 @@ five ports are selectable with `--gcc` and in the manual CI dropdown; GCC
 ### GCC 12–15 bugfix releases
 
 The GCC 12.5, 13.5, 14.4 and 15.3 ports retain the full original patch
-contents, including other language runtime changes, although this SDK builds
-C only. GCC 12–14 required only context rebasing. GCC 15.3's
+contents, including changes to language runtimes outside the SDK.
+GCC 12–14 required only context rebasing. GCC 15.3's
 `libstdc++-v3/include/bits/chrono_io.h` needed six remaining `__out` identifiers
 renamed after three hunks encountered upstream context changes. This preserves
 the existing rename while retaining the upstream chrono updates.
@@ -153,8 +153,8 @@ for exact settings, results and image checksums.
 
 The GCC 16.2 patch ports the C compiler and runtime parts of the GCC 15.2
 CrossMiNT patch to the official GCC 16.2.0 archive. It retains m68k fastcall,
-MiNT ELF target registration, compiler runtime and STABS support. Other
-language runtime changes are excluded because this SDK builds C only.
+MiNT ELF target registration, compiler runtime and STABS support. The SDK
+builds the C and C++ front ends and libgcc.
 GCC 16's upstream libiberty PIC selection and poly-int class supersede the
 corresponding GCC 15 patch hunks. The removed `diagnostic-color.cc` host
 portability hunk is not carried over.
