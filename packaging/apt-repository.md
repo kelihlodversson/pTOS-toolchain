@@ -212,19 +212,20 @@ immutable conflicts and package index references. Public verification requires
 no particular CDN headers. Production readiness requires the actual public Ubuntu
 installation tests to pass; fixture success alone does not satisfy that requirement.
 
-## All-target package introduction
+## Debian release layouts
 
-New releases produced after the all-target convenience change include
-`ptos-toolchain_VERSION_amd64.deb` in addition to the three SDK packages. The
-metapackage requires all SDKs at exactly VERSION; it is covered by SHA256SUMS,
-immutable identity validation and the normal Pages index/retention/grace policy.
-The publisher also accepts historical three-package releases. Never mutate
-v0.1.0 to add an asset; introduce the package through the next official release.
-Until that release exists, `apt install ptos-toolchain` is not available from the
-production repository; installing its three SDKs directly remains supported.
+Versions below `1.1.0` contain the three monolithic SDK packages and, in later
+historical releases, `ptos-toolchain`. Starting at `1.1.0`, a complete release
+contains 13 Debian assets. It has three Binutils, GCC and sysroot packages
+for each target, the three target SDK metapackages and `ptos-toolchain`.
 
-Publication verifies dependency installation by requesting only the metapackage
-when the selected version includes it. CI also tests the producer against real
-existing SDK binaries in a separate ephemeral signed repository, using a test key.
-This is intentionally distinct from the public production installation test;
-fixture success must not be reported as public metapackage availability.
+The publisher verifies each package's identity and SHA256SUMS entry, the
+exact Debian dependency versions and the component takeover relationships.
+All layouts share the immutable asset ledger and the normal index retention and
+grace policy. Historical release assets and their checksums stay intact.
+
+Release verification uses an ephemeral signed test repository with the new
+packages and the published v1.0.3 assets, and exercises clean installation
+and upgrades on Ubuntu 24.04 and 26.04. The public production test requests
+only the all-target metapackage when present, or the three SDKs for older
+releases without it.

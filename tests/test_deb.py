@@ -1,19 +1,19 @@
 #!/usr/bin/env python3
 """Exercise real .deb assembly with a small SDK fixture; no compiler build."""
 
+import io
 import json
 from pathlib import Path
 import shutil
 import subprocess
+import sys
+import tarfile
 import tempfile
 import unittest
 
 PROJECT = Path(__file__).resolve().parents[1]
-TARGETS = {
-    'm68k': 'm68k-unknown-ptos-prgelf',
-    'arm': 'arm-unknown-ptos-elf',
-    'x86_64': 'x86_64-unknown-ptos-elfx32',
-}
+sys.path.insert(0, str(PROJECT / 'packaging'))
+from debian_packages import COMPONENTS, SDK_PACKAGES, TARGETS, control_field, package_name
 
 
 class DebianPackages(unittest.TestCase):
@@ -23,25 +23,42 @@ class DebianPackages(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             installed = root / 'installed'
-            packages = []
+            version = '1.2.3~rc1'
+            all_payload_files = set()
             for arch, target in TARGETS.items():
                 prefix = root / arch
                 (prefix / 'bin').mkdir(parents=True)
                 cc = prefix / 'bin' / f'{target}-gcc'
                 cc.write_text(f'#!/bin/sh\ncase "$1" in\n-dumpmachine) echo {target} ;;\n-dumpfullversion) echo {gcc} ;;\nesac\n')
                 cc.chmod(0o700)
+                (prefix / 'bin' / f'{target}-g++').symlink_to(cc.name)
                 ld = prefix / 'bin' / f'{target}-ld'
                 ld.write_text(f'#!/bin/sh\necho "GNU ld {binutils}"\n')
                 ld.chmod(0o700)
+                (prefix / 'bin' / f'{target}-as').symlink_to(ld.name)
                 # Native ELF dependencies must be recorded; target ELF must not
                 # be stripped or handed to dpkg-shlibdeps as a host executable.
                 shutil.copy2('/bin/true', prefix / 'bin' / f'{target}-objcopy')
+                linker_script = prefix / target / 'lib/ldscripts/elf.x'
+                linker_script.parent.mkdir(parents=True)
+                linker_script.write_text('/* Linker script fixture */\n')
+                manifest = root / f'{arch}.manifest'
+                manifest.write_text('\n'.join([f'bin/{target}-{tool}' for tool in ('as', 'ld', 'objcopy')]
+                                              + [linker_script.relative_to(prefix).as_posix()]) + '\n')
+                frontend = prefix / 'libexec/gcc' / target / gcc / 'cc1plus'
+                frontend.parent.mkdir(parents=True)
+                shutil.copy2('/bin/true', frontend)
+                multilib = prefix / 'lib/gcc' / target / gcc / 'variant/libgcc.a'
+                multilib.parent.mkdir(parents=True)
+                multilib.write_bytes(b'!<arch>\n')
                 sysroot = prefix / target / 'sysroot'
                 (sysroot / 'include').mkdir(parents=True)
                 (sysroot / 'include/stdio.h').write_text('/* fixture */\n')
                 (sysroot / 'lib').mkdir()
                 arm_elf = bytes.fromhex('7f454c4601010100000000000000000003002800')
                 (sysroot / 'lib/target.so').write_bytes(arm_elf)
+                # Even native-looking ELF in the target sysroot is payload data.
+                shutil.copy2('/bin/true', sysroot / 'lib/native-looking.so')
                 work = root / 'work' / arch
                 revision = 'c85f67a52679b68782c49fd967732d14bfe87841'
                 for name in [f'gcc-{gcc}-src/COPYING3', f'gcc-{gcc}-src/COPYING.RUNTIME',
@@ -50,17 +67,46 @@ class DebianPackages(unittest.TestCase):
                     p.parent.mkdir(parents=True, exist_ok=True)
                     p.write_text('License fixture\n')
                 subprocess.run(['python3', str(PROJECT / 'packaging/package-deb.py'), arch,
-                                str(prefix), '1.2.3~rc1', str(root / 'dist'), '--work-dir', str(root / 'work')], check=True)
-                package = next((root / 'dist').glob(f'ptos-sdk-{arch.replace("_", "-")}_*.deb'))
-                packages.append(package)
-                depends = subprocess.check_output(['dpkg-deb', '-f', str(package), 'Depends'], text=True)
-                self.assertIn('libc6', depends)
-                self.assertEqual(subprocess.check_output(['dpkg-deb', '-f', str(package), 'Architecture'], text=True).strip(),
-                                 subprocess.check_output(['dpkg', '--print-architecture'], text=True).strip())
-                subprocess.run(['dpkg-deb', '-x', str(package), str(installed)], check=True)
+                                str(prefix), version, str(root / 'dist'), '--work-dir', str(root / 'work'),
+                                '--binutils-manifest', str(manifest)], check=True)
+                host = subprocess.check_output(['dpkg', '--print-architecture'], text=True).strip()
+                for component in (*COMPONENTS, 'sdk'):
+                    name = package_name(component, arch)
+                    package = root / 'dist' / f'{name}_{version}_{host}.deb'
+                    depends = control_field(package, 'Depends')
+                    if component in ('gcc', 'binutils'):
+                        self.assertIn('libc6', depends)
+                    if component == 'gcc':
+                        self.assertIn(f'{package_name("binutils", arch)} (= {version})', depends)
+                        self.assertNotIn('ptos-sysroot-', depends)
+                    if component == 'sysroot':
+                        self.assertEqual(depends, '')
+                    if component != 'sdk':
+                        for field in ('Breaks', 'Replaces'):
+                            self.assertEqual(control_field(package, field), f'{package_name("sdk", arch)} (<< 1.1.0)')
+                    self.assertEqual(control_field(package, 'Architecture'), host)
+                    payload = subprocess.check_output(['dpkg-deb', '--fsys-tarfile', str(package)])
+                    with tarfile.open(fileobj=io.BytesIO(payload)) as archive:
+                        files = {member.name.removeprefix('./') for member in archive if not member.isdir()}
+                    self.assertFalse(all_payload_files & files)
+                    all_payload_files.update(files)
+                    if component == 'sdk':
+                        self.assertTrue(all(p.startswith(f'usr/share/doc/{name}/') for p in files))
+                        deps = [f'{package_name(part, arch)} (= {version})' for part in COMPONENTS]
+                        self.assertEqual(depends, ', '.join(deps))
+                    elif component == 'binutils':
+                        self.assertIn(f'opt/ptos/{arch}/{target}/lib/ldscripts/elf.x', files)
+                        self.assertIn(f'usr/bin/{target}-as', files)
+                    elif component == 'gcc':
+                        self.assertIn(f'opt/ptos/{arch}/{multilib.relative_to(prefix)}', files)
+                        self.assertIn(f'usr/bin/{target}-g++', files)
+                        self.assertFalse(any('/sysroot/' in path for path in files))
+                    subprocess.run(['dpkg-deb', '-x', str(package), str(installed)], check=True)
                 link = installed / 'usr/bin' / f'{target}-gcc'
                 self.assertEqual(str(link.readlink()), f'/opt/ptos/{arch}/bin/{target}-gcc')
                 self.assertEqual((installed / f'opt/ptos/{arch}/{target}/sysroot/lib/target.so').read_bytes(), arm_elf)
+                self.assertEqual((installed / f'opt/ptos/{arch}/{target}/sysroot/lib/native-looking.so').read_bytes(),
+                                 Path('/bin/true').read_bytes())
                 self.assertEqual((installed / f'opt/ptos/{arch}/bin/{target}-gcc').stat().st_mode & 0o777, 0o755)
                 info = json.loads((installed / f'usr/share/doc/ptos-sdk-{arch.replace("_", "-")}/build-info.json').read_text())
                 self.assertEqual(info['gcc']['version'], gcc)
@@ -70,13 +116,14 @@ class DebianPackages(unittest.TestCase):
                              'm68k-reload-const-modes-runtime.c',
                              'm68k_lra_address.py', 'm68k-lra-address.c'):
                     self.assertEqual((docs / name).read_bytes(), (PROJECT / 'tests' / name).read_bytes())
-            self.assertEqual(len(packages), 3)
+            self.assertEqual(len(list((root / 'dist').glob('*.deb'))), 12)
             for arch, target in TARGETS.items():
                 self.assertTrue((installed / f'opt/ptos/{arch}/bin/{target}-gcc').is_file())
 
     def test_invalid_version(self):
         result = subprocess.run(['python3', str(PROJECT / 'packaging/package-deb.py'), 'arm',
-                                 '/does-not-exist', 'invalid version', '/does-not-exist'], capture_output=True, text=True)
+                                 '/does-not-exist', 'invalid version', '/does-not-exist',
+                                 '--binutils-manifest', '/does-not-exist'], capture_output=True, text=True)
         self.assertNotEqual(result.returncode, 0)
         self.assertIn('invalid Debian package version', result.stderr)
 
@@ -134,7 +181,7 @@ class AllTargetMetapackage(unittest.TestCase):
         with tempfile.TemporaryDirectory() as temporary:
             root = Path(temporary)
             files = []
-            for name in sorted(publisher.PACKAGES):
+            for name in sorted(SDK_PACKAGES):
                 stage = root / name
                 (stage / 'DEBIAN').mkdir(parents=True)
                 (stage / 'DEBIAN').chmod(0o755)

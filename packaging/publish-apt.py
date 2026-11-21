@@ -19,7 +19,8 @@ import sys
 import tempfile
 
 sys.path.insert(0, str(Path(__file__).resolve().parent))
-from debian_packages import SDK_PACKAGES as PACKAGES, ALL_PACKAGES, META_PACKAGE, validate_metapackage
+from debian_packages import (ALL_PACKAGES, META_PACKAGE, release_layouts, validate_metapackage,
+                             validate_split_package, validate_version)
 PROJECT = Path(__file__).resolve().parents[1]
 
 
@@ -48,6 +49,7 @@ def identity(path):
 
 
 def verify_assets(directory, version):
+    validate_version(version)
     checksums = {}
     for line in (directory / 'SHA256SUMS').read_text().splitlines():
         match = re.fullmatch(r'([0-9a-f]{64}) [ *](.+)', line)
@@ -55,20 +57,21 @@ def verify_assets(directory, version):
             raise ValueError('Invalid or duplicate SHA256SUMS entry')
         checksums[match[2]] = match[1]
     files = sorted(directory.glob('*.deb'))
-    if len(files) not in (3, 4):
-        raise ValueError('Expected three historical SDK assets or four assets including ptos-toolchain')
-    identities = set()
+    identities = {}
     for path in files:
         if checksums.get(path.name) != digest(path):
             raise ValueError(f'Checksum mismatch or missing checksum: {path.name}')
-        name, actual, arch = identity(path)
+        name, actual, _ = identity(path)
         if actual != version:
             raise ValueError(f'Expected version {version}, got {actual}')
+        identities[name] = path
+    if identities.keys() not in release_layouts(version):
+        raise ValueError(f'Incomplete or unexpected Debian package layout for version {version}')
+    for name, path in identities.items():
         if name == META_PACKAGE:
             validate_metapackage(path, version)
-        identities.add(name)
-    if identities not in (PACKAGES, ALL_PACKAGES):
-        raise ValueError('Release must contain all three SDKs, with only the optional ptos-toolchain metapackage')
+        elif identities.keys() == ALL_PACKAGES:
+            validate_split_package(path, name, version)
     return files
 
 
@@ -153,8 +156,9 @@ def stable_releases(releases):
             continue
         version = run('bash', str(PROJECT / 'packaging/release-version.sh'), tag, text=True).strip()
         names = {asset['name'] for asset in release['assets']}
-        expected = {f'{name}_{version}_amd64.deb' for name in PACKAGES} | {'SHA256SUMS'}
-        if not expected <= names:
+        actual = {name for name in names if name.endswith('.deb')}
+        layouts = [{f'{name}_{version}_amd64.deb' for name in layout} for layout in release_layouts(version)]
+        if 'SHA256SUMS' not in names or actual not in layouts:
             continue  # Another release build may still be uploading assets.
         if version in versions:
             raise ValueError(f'Multiple release tags have Debian version {version}')
@@ -404,6 +408,11 @@ def main():
 
 if __name__ == '__main__':
     try:
-        main()
+        if len(sys.argv) == 4 and sys.argv[1] == '--verify-assets':
+            verify_assets(Path(sys.argv[2]), sys.argv[3])
+        elif len(sys.argv) == 1:
+            main()
+        else:
+            sys.exit(f'Usage: {sys.argv[0]} [--verify-assets DIRECTORY VERSION]')
     except (ValueError, subprocess.CalledProcessError, urllib.error.URLError) as error:
         sys.exit(f'APT generation failed: {error}')
