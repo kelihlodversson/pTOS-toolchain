@@ -2,10 +2,12 @@
 """Keep the host ABI audit from treating target x32/ARM/m68k ELF as native."""
 import importlib.util
 from pathlib import Path
+import sys
 import tempfile
 import unittest
 
 PROJECT = Path(__file__).resolve().parents[1]
+sys.path.insert(0, str(PROJECT / 'packaging'))
 spec = importlib.util.spec_from_file_location('audit', PROJECT / 'packaging/audit-runtime.py')
 audit = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(audit)

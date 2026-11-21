@@ -14,6 +14,8 @@ PROJECT = Path(__file__).resolve().parents[1]
 spec = importlib.util.spec_from_file_location('publish_apt', PROJECT / 'packaging/publish-apt.py')
 apt = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(apt)
+from debian_packages import (ALL_PACKAGES, META_PACKAGE, MONOLITHIC_PACKAGES, SDK_PACKAGES,
+                             dependencies, exact_dependency, is_split_version, sdk_dependencies, sdk_takeover)
 
 
 class AptRepository(unittest.TestCase):
@@ -44,7 +46,10 @@ elif command == 'sudo':
     if args[0] == 'tee':
         sys.stdin.read()
     elif args[:3] == ['apt-get', 'install', '-y']:
-        Path(os.environ['INSTALL_LOG']).write_text('\\n'.join(args[3:]))
+        assert args[3] == '-o' and args[4].startswith('Dir::Etc::preferences=')
+        preferences = Path(args[4].split('=', 1)[1]).read_text()
+        assert preferences.splitlines() == ['Package: ptos-*', 'Pin: version 0.1.0', 'Pin-Priority: 1001']
+        Path(os.environ['INSTALL_LOG']).write_text('\\n'.join(args[5:]))
 elif command == 'bash':
     if args[0] == 'packaging/release-version.sh':
         print('0.1.0')
@@ -68,13 +73,27 @@ else:
                                 ['ptos-sdk-m68k=0.1.0', 'ptos-sdk-arm=0.1.0', 'ptos-sdk-x86-64=0.1.0'])
                     self.assertEqual(log.read_text().splitlines(), expected)
 
-    def package(self, root, name, version, payload='hello'):
+    def package(self, root, name, version, payload='hello', overrides=None):
         stage = root / 'stage'
         (stage / 'DEBIAN').mkdir(parents=True, exist_ok=True)
         (stage / 'DEBIAN').chmod(0o755)
+        fields = {}
+        if name == META_PACKAGE:
+            fields['Depends'] = dependencies(version)
+        elif is_split_version(version):
+            kind, suffix = name.removeprefix('ptos-').split('-', 1)
+            arch = suffix.replace('-', '_')
+            if kind == 'sdk':
+                fields['Depends'] = sdk_dependencies(arch, version)
+            else:
+                fields.update(Breaks=sdk_takeover(arch), Replaces=sdk_takeover(arch))
+                if kind == 'gcc':
+                    fields['Depends'] = exact_dependency(f'ptos-binutils-{suffix}', version)
+        fields.update(overrides or {})
         (stage / 'DEBIAN/control').write_text(
             f'Package: {name}\nVersion: {version}\nArchitecture: amd64\n'
-            'Maintainer: Test <test@example.org>\nDescription: test SDK\n')
+            'Maintainer: Test <test@example.org>\nDescription: test SDK\n'
+            + ''.join(f'{key}: {value}\n' for key, value in fields.items()))
         (stage / 'payload').write_text(payload)
         out = root / f'{name}_{version}_amd64.deb'
         subprocess.run(['dpkg-deb', '--build', '--root-owner-group', str(stage), str(out)],
@@ -86,7 +105,7 @@ else:
             root = Path(temporary)
             assets = root / 'assets'
             assets.mkdir()
-            files = [self.package(assets, name, '0.1.0') for name in sorted(apt.PACKAGES)]
+            files = [self.package(assets, name, '0.1.0') for name in sorted(SDK_PACKAGES)]
             checksums = assets / 'SHA256SUMS'
             checksums.write_text(''.join(f'{apt.digest(p)}  {p.name}\n' for p in files))
             apt.verify_assets(assets, '0.1.0')
@@ -133,7 +152,7 @@ else:
                 repository = root / 'repository'
                 pool = repository / 'pool/main'
                 pool.mkdir(parents=True)
-                for name in sorted(apt.PACKAGES):
+                for name in sorted(SDK_PACKAGES):
                     self.package(pool, name, '0.1.0')
                 __import__('shutil').rmtree(pool / 'stage')
                 apt.build_indexes(repository)
@@ -161,9 +180,9 @@ else:
                 for home in [generation, root / 'signing']:
                     subprocess.run(['gpgconf', '--homedir', str(home), '--kill', 'all'], check=False)
 
-    def release(self, version, size=10):
+    def release(self, version, size=10, layout=SDK_PACKAGES):
         return {'tag_name': 'v' + version, 'version': version, 'draft': False, 'prerelease': False,
-                'assets': [{'name': f'{name}_{version}_amd64.deb', 'size': size} for name in sorted(apt.PACKAGES)]
+                'assets': [{'name': f'{name}_{version}_amd64.deb', 'size': size} for name in sorted(layout)]
                           + [{'name': 'SHA256SUMS', 'size': 100}]}
 
     def test_stable_release_sort_and_filter(self):
@@ -174,6 +193,38 @@ else:
         self.assertEqual([r['version'] for r in apt.stable_releases(releases)], ['0.10.0', '0.2.0', '0.1.0'])
         with self.assertRaisesRegex(ValueError, 'Multiple release tags'):
             apt.stable_releases([self.release('0.1.0'), self.release('0.1.0')])
+
+    def test_split_release_requires_complete_assets_and_matching_dependencies(self):
+        version = '1.1.0'
+        partial = self.release(version, layout=ALL_PACKAGES - {'ptos-gcc-arm'})
+        complete = self.release(version, layout=ALL_PACKAGES)
+        self.assertEqual(apt.stable_releases([partial, self.release(version)]), [])
+        self.assertEqual([r['version'] for r in apt.stable_releases([complete])], [version])
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary)
+            files = [self.package(root, name, version) for name in sorted(ALL_PACKAGES)]
+            checksums = root / 'SHA256SUMS'
+
+            def verify():
+                checksums.write_text(''.join(f'{apt.digest(p)}  {p.name}\n' for p in files if p.exists()))
+                return apt.verify_assets(root, version)
+
+            self.assertEqual(len(verify()), 13)
+            for name, fields, message in (
+                ('ptos-gcc-arm', {'Depends': 'ptos-binutils-arm (>= 1.1.0)'}, 'component dependencies'),
+                ('ptos-gcc-arm', {'Depends': 'ptos-binutils-arm (= 1.1.0), ptos-sysroot-arm'}, 'component dependencies'),
+                ('ptos-binutils-arm', {'Depends': 'ptos-gcc-arm'}, 'component dependencies'),
+                ('ptos-sdk-arm', {'Depends': 'ptos-gcc-arm, ptos-binutils-arm, ptos-sysroot-arm'}, 'exact release version'),
+                ('ptos-sysroot-arm', {'Replaces': 'ptos-sdk-arm (<< 1.2.0)'}, 'versioned Replaces'),
+            ):
+                with self.subTest(name=name, fields=fields):
+                    self.package(root, name, version, overrides=fields)
+                    with self.assertRaisesRegex(ValueError, message):
+                        verify()
+                    self.package(root, name, version)
+            (root / 'ptos-toolchain_1.1.0_amd64.deb').unlink()
+            with self.assertRaisesRegex(ValueError, 'Incomplete or unexpected Debian package layout'):
+                verify()
 
     def test_retention_and_size_budget(self):
         releases = [self.release(f'0.{n}.0') for n in range(5, 0, -1)]
@@ -283,14 +334,14 @@ else:
                                check=True, env=env, stderr=subprocess.DEVNULL)
                 key = subprocess.check_output(['gpg', '--batch', '--export-secret-keys'], env=env)
                 releases = []
-                for n in range(1, 5):
-                    version = f'0.{n}.0'
+                for version, layout in [('0.1.0', SDK_PACKAGES), ('0.2.0', SDK_PACKAGES),
+                                        ('1.0.3', MONOLITHIC_PACKAGES), ('1.1.0', ALL_PACKAGES)]:
                     directory = root / ('v' + version)
                     directory.mkdir()
-                    files = [self.package(directory, name, version) for name in sorted(apt.PACKAGES)]
+                    files = [self.package(directory, name, version) for name in sorted(layout)]
                     shutil.rmtree(directory / 'stage')
                     (directory / 'SHA256SUMS').write_text(''.join(f'{apt.digest(p)}  {p.name}\n' for p in files))
-                    release = self.release(version)
+                    release = self.release(version, layout=layout)
                     for asset in release['assets']:
                         asset['size'] = (directory / asset['name']).stat().st_size
                     releases.append(release)
@@ -308,7 +359,7 @@ else:
                     return original_run(*args, **kwargs)
 
                 state = {'ledger': {}, 'snapshots': []}
-                for attempt, tag in enumerate(['v0.3.0', 'v0.4.0', 'v0.4.0']):
+                for attempt, tag in enumerate(['v1.0.3', 'v1.1.0', 'v1.1.0']):
                     site = root / f'site-{attempt}'
                     with patch.dict(os.environ, GH_TOKEN='fixture', GH_REPO='fixture/repo', RELEASE_TAG=tag,
                                     APT_SIGNING_KEY_B64=base64.b64encode(key).decode(),
@@ -318,10 +369,10 @@ else:
                         apt.main()
                     state = __import__('json').loads((site / 'apt-state.json').read_text())
                     apt.validate_index_references(site)
-                    self.assertEqual((site / apt.BINARY / 'Packages').read_text().count('Package: '), 9)
+                    self.assertEqual((site / apt.BINARY / 'Packages').read_text().count('Package: '), 20 if attempt else 10)
                     self.assertTrue((site / 'index.html').exists())
                     if attempt:
-                        self.assertEqual(len(list((site / 'pool/main').glob('*.deb'))), 12)
+                        self.assertEqual(len(list((site / 'pool/main').glob('*.deb'))), 23)
                         self.assertNotIn('Version: 0.1.0', (site / apt.BINARY / 'Packages').read_text())
                         for snapshot in state['snapshots']:
                             for sha in snapshot['indexes']:

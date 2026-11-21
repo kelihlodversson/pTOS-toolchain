@@ -10,7 +10,7 @@ on:
     inputs:
       release_tag:
         description: Published stable release tag to install
-        default: v0.1.0
+        default: v1.0.3
         required: true
         type: string
   pull_request:
@@ -50,7 +50,7 @@ jobs:
       - name: Install all published SDKs and run smoke tests
         env:
           APT_REPOSITORY_URL: https://apt.ptos.dev
-          RELEASE_TAG: ${{ inputs.release_tag || 'v0.1.0' }}
+          RELEASE_TAG: ${{ inputs.release_tag || 'v1.0.3' }}
         run: bash packaging/test-apt.sh
       - name: Audit installed package dependencies and native ELF symbol requirements
         shell: bash

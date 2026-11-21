@@ -7,7 +7,7 @@ on:
     inputs:
       package_version:
         description: 'Debian version for a test build (no release upload)'
-        default: '0.0.0~ci'
+        default: '1.1.0+ci'
         required: true
         type: string
   pull_request:
@@ -116,16 +116,21 @@ jobs:
           python3 -m venv "$RUNNER_TEMP/venv"
           "$RUNNER_TEMP/venv/bin/pip" install kconfiglib==14.1.0
           echo "$RUNNER_TEMP/venv/bin" >> "$GITHUB_PATH"
-      - name: Build SDK at its installation prefix
+      - name: Build SDK and record Binutils ownership
         run: |
           prefix=/opt/ptos/${{ matrix.arch }}
           sudo install -d -o "$(id -un)" -g "$(id -gn)" "$prefix"
-          ./build.sh '${{ matrix.arch }}' "$prefix"
+          ./build.sh '${{ matrix.arch }}' "$prefix" binutils
+          (cd "$prefix" && find . \( -type f -o -type l \) -printf '%P\n' | LC_ALL=C sort) \
+            > "$RUNNER_TEMP/binutils.manifest"
+          ./build.sh '${{ matrix.arch }}' "$prefix" gcc
+          ./build.sh '${{ matrix.arch }}' "$prefix" sdk
           ./tests/smoke.sh "$prefix" '${{ matrix.arch }}'
-      - name: Assemble Debian package
+      - name: Assemble Debian component packages and SDK metapackage
         run: |
           python3 packaging/package-deb.py '${{ matrix.arch }}' \
-            '/opt/ptos/${{ matrix.arch }}' "$PACKAGE_VERSION" dist
+            '/opt/ptos/${{ matrix.arch }}' "$PACKAGE_VERSION" dist \
+            --binutils-manifest "$RUNNER_TEMP/binutils.manifest"
       - uses: actions/upload-artifact@v4
         with:
           name: deb-${{ matrix.arch }}
@@ -156,8 +161,14 @@ jobs:
           if-no-files-found: error
 
   verify:
+    name: Debian install / ${{ matrix.os }} / ${{ matrix.scenario }}
     needs: [build, metapackage]
-    runs-on: ubuntu-24.04
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-24.04, ubuntu-26.04]
+        scenario: [components, single, all]
+    runs-on: ${{ matrix.os }}
     steps:
       - uses: actions/checkout@v4
       - uses: actions/download-artifact@v4
@@ -165,7 +176,7 @@ jobs:
           pattern: deb-*
           merge-multiple: true
           path: dist
-      - name: Install only the metapackage and resolve all three SDK dependencies
+      - name: Install verification dependencies
         run: |
           printf '%s\tpriority:%s\n' \
             https://mirrors.edge.kernel.org/ubuntu 1 \
@@ -173,11 +184,14 @@ jobs:
             https://security.ubuntu.com/ubuntu 3 | sudo tee /etc/apt/apt-mirrors.txt
           sudo apt-get -o Acquire::Retries=3 -o APT::Update::Error-Mode=any update
           sudo apt-get install -y dpkg-dev apt-utils gnupg gpgv
+      - name: Verify split packages, dependency resolution and upgrades
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
           (cd dist && sha256sum *.deb > SHA256SUMS)
-          # A local file source uses the same authenticated repository machinery
-          # as production; make-test-repository.py signs it with an ephemeral test key.
-          bash packaging/test-metapackage.sh dist
+          bash packaging/test-split-install.sh '${{ matrix.scenario }}' dist
       - name: Check runtime compatibility before publication
+        if: matrix.scenario == 'all'
         run: python3 packaging/audit-runtime.py
 
   bottles:
@@ -214,9 +228,10 @@ jobs:
           GH_REPO: ${{ github.repository }}
           RELEASE_TAG: ${{ github.event.release.tag_name }}
         run: |
-          test "$(find dist -maxdepth 1 -name '*.deb' | wc -l)" -eq 4
           python3 packaging/prepare-bottles.py dist "$GH_REPO" "$RELEASE_TAG"
           (cd dist && sha256sum *.deb *.bottle*.tar.gz *.bottle.json > SHA256SUMS)
+          version=$(bash packaging/release-version.sh "$RELEASE_TAG")
+          python3 packaging/publish-apt.py --verify-assets dist "$version"
           gh release upload "$RELEASE_TAG" dist/*.deb dist/*.bottle*.tar.gz \
             dist/*.bottle.json dist/SHA256SUMS --clobber
           echo "sha=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"

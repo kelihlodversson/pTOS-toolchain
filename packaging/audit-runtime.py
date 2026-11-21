@@ -4,6 +4,8 @@ import re
 from pathlib import Path
 import subprocess
 
+from debian_packages import TARGETS, is_split_version, package_name
+
 
 def native_amd64(path):
     with path.open('rb') as stream:
@@ -14,13 +16,18 @@ def native_amd64(path):
 
 def main():
     requirements = {'GLIBC': set(), 'GLIBCXX': set(), 'CXXABI': set()}
-    for arch in ['m68k', 'arm', 'x86_64']:
-        package = 'ptos-sdk-' + arch.replace('_', '-')
+    for arch, target in TARGETS.items():
+        package = package_name('sdk', arch)
+        version = subprocess.check_output(['dpkg-query', '-W', '-f', '${Version}', package], text=True)
+        native_packages = [package_name(component, arch) for component in ('binutils', 'gcc')] if is_split_version(version) else [package]
         print(subprocess.check_output(['dpkg-query', '-W', '-f',
-                                       '${Package} ${Version} ${Architecture}\nDepends: ${Depends}\n', package], text=True), flush=True)
+                                       '${Package} ${Version} ${Architecture}\nDepends: ${Depends}\n',
+                                       *native_packages], text=True), flush=True)
         count = 0
-        for path in (Path('/opt/ptos') / arch).rglob('*'):
-            if path.is_symlink() or not path.is_file() or not native_amd64(path):
+        prefix = Path('/opt/ptos') / arch
+        for path in prefix.rglob('*'):
+            if (path.is_relative_to(prefix / target / 'sysroot') or path.is_symlink()
+                    or not path.is_file() or not native_amd64(path)):
                 continue
             output = subprocess.check_output(['readelf', '--version-info', str(path)], text=True)
             # Only undefined version requirements, not symbol versions exported

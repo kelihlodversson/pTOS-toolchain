@@ -4,7 +4,8 @@ set -euo pipefail
 : "${RELEASE_TAG:?Missing RELEASE_TAG}"
 version=$(bash packaging/release-version.sh "$RELEASE_TAG")
 key=$(mktemp)
-trap 'rm -f "$key"' EXIT
+preferences=$(mktemp)
+trap 'rm -f "$key" "$preferences"' EXIT
 curl -fsSL "$APT_REPOSITORY_URL/ptos-archive-keyring.gpg" -o "$key"
 sudo install -m 644 "$key" /usr/share/keyrings/ptos-archive-keyring.gpg
 printf 'deb [arch=amd64 signed-by=/usr/share/keyrings/ptos-archive-keyring.gpg] %s stable main\n' "$APT_REPOSITORY_URL" |
@@ -29,5 +30,8 @@ if apt-cache madison ptos-toolchain | awk -v expected="$version" '$3 == expected
 else
   echo "Legacy three-package release $version: installing SDKs directly"
 fi
-sudo apt-get install -y "${packages[@]}"
+# All retained versions share the same suite. Make the requested version the
+# candidate for dependencies as well as for the explicitly requested packages.
+printf 'Package: ptos-*\nPin: version %s\nPin-Priority: 1001\n' "$version" > "$preferences"
+sudo apt-get install -y -o "Dir::Etc::preferences=$preferences" "${packages[@]}"
 bash packaging/test-installed.sh "$version"

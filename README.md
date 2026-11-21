@@ -28,16 +28,13 @@ Install all three target SDKs with the metapackage:
 sudo apt install ptos-toolchain
 ```
 
-The metapackage is introduced in releases **after v0.1.0**. While v0.1.0 is the
-only published version, install its three SDK packages directly:
-
-```sh
-sudo apt install ptos-sdk-m68k ptos-sdk-arm ptos-sdk-x86-64
-```
-
 For just one target, use `sudo apt install ptos-sdk-m68k`,
 `sudo apt install ptos-sdk-arm`, or `sudo apt install ptos-sdk-x86-64`.
-All three SDKs can coexist. Other Ubuntu/Debian hosts are not validated; see the
+All three SDKs can coexist. Starting with the 1.1.0 split, you can install
+`ptos-binutils-m68k` for tools such as `objdump`, or `ptos-gcc-m68k` for
+freestanding C and C++ development. APT installs the matching Binutils with GCC.
+Use the same component names with the suffix `arm` or `x86-64` for other targets.
+Other Ubuntu/Debian hosts are not validated. See the
 [host support matrix](packaging/README.md#host-support-and-runtime-compatibility).
 The [direct GitHub Release installation](#debianubuntu-release-packages) remains
 available if you have not configured APT.
@@ -96,19 +93,23 @@ The ordinary ELF mode also supports `-fPIC -shared` with a GOT and PLT.
 
 ## Debian/Ubuntu release packages
 
-Publishing a GitHub release builds `amd64` host packages for all three targets:
-`ptos-sdk-m68k`, `ptos-sdk-arm` and `ptos-sdk-x86-64`. Each contains GCC,
-Binutils, libgcc, libcmini and startup objects. Packages are built on Ubuntu
-24.04 and tested together on a fresh runner before being attached to the
-release with `SHA256SUMS`. The same signed release packages are installation-tested
-on Ubuntu 24.04 and 26.04 amd64; official builds remain pinned to 24.04 to preserve
-the older host-library baseline. See the [host support matrix](packaging/README.md#host-support-and-runtime-compatibility).
+Publishing a GitHub release builds `amd64` host packages for all three targets.
+Starting with Debian version 1.1.0, each `ptos-sdk-*` depends on the matching
+`ptos-binutils-*`, `ptos-gcc-*` and `ptos-sysroot-*`. Packages are built on
+Ubuntu 24.04 and installation-tested on Ubuntu 24.04 and 26.04 before being
+attached to the release with `SHA256SUMS`.
 
-Download the required `.deb` from a published release and install it with:
+For direct installation, download the four m68k `.deb` files from the same
+published split release and pass them to APT together. For version 1.1.0, use
 
 ```sh
-sudo apt-get install ./ptos-sdk-m68k_*_amd64.deb
+sudo apt-get install ./ptos-sdk-m68k_1.1.0_amd64.deb \
+  ./ptos-binutils-m68k_1.1.0_amd64.deb ./ptos-gcc-m68k_1.1.0_amd64.deb \
+  ./ptos-sysroot-m68k_1.1.0_amd64.deb
 ```
+
+For all targets, pass the 12 target packages and `ptos-toolchain` together.
+Older releases such as v1.0.3 ship the complete per-target SDK in one `.deb`.
 
 The SDKs install under `/opt/ptos/<target-arch>` and expose their target-prefixed
 commands in `/usr/bin`, so no PATH change is needed and all three can coexist.
